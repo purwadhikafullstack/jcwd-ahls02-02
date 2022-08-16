@@ -33,7 +33,7 @@ app.get("/api/greetings", (req, res, next) => {
 
 // ===========================
 
-const { usersRouter, productsRouter } = require("../routers");
+const { usersRouter, productsRouter, adminRouter } = require("../routers");
 app.use("/users", usersRouter);
 app.use("/products", productsRouter);
 app.use("/admin", adminRouter);
