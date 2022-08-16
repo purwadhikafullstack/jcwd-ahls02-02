@@ -33,6 +33,11 @@ app.get("/api/greetings", (req, res, next) => {
 
 // ===========================
 
+const { usersRouter, productsRouter } = require("../routers");
+app.use("/users", usersRouter);
+app.use("/products", productsRouter);
+app.use("/admin", adminRouter);
+
 // not found
 app.use((req, res, next) => {
   if (req.path.includes("/api/")) {
@@ -72,3 +77,5 @@ app.listen(PORT, (err) => {
     console.log(`APP RUNNING at ${PORT} ✅`);
   }
 });
+
+
