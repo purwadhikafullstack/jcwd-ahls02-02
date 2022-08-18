@@ -8,10 +8,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logoutAction } from '../Redux/Actions/userAction';
 
 const Navbar = () => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { name } = useSelector((state) => {
         return {
             name: state.userReducer.name
@@ -35,6 +38,10 @@ const Navbar = () => {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+
+    const handleLogout = () => {
+        dispatch(logoutAction())
+    }
 
     return (
         <AppBar position="sticky" style={{ background: 'white', boxShadow: "none" }}>
@@ -98,7 +105,7 @@ const Navbar = () => {
                                                 <Typography textAlign="center">Order</Typography>
                                             </MenuItem>
                                             <Divider />
-                                            <MenuItem>
+                                            <MenuItem onClick={handleLogout}>
                                                 <Typography textAlign="center">Log Out</Typography>
                                             </MenuItem>
                                         </Menu>
@@ -193,7 +200,7 @@ const Navbar = () => {
                                             <Typography textAlign="center">Order</Typography>
                                         </MenuItem>
                                         <Divider />
-                                        <MenuItem>
+                                        <MenuItem onClick={handleLogout}>
                                             <Typography textAlign="center">Log Out</Typography>
                                         </MenuItem>
                                     </Menu>
