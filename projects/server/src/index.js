@@ -2,19 +2,22 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
+const bearerToken = require('express-bearer-token')
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(
-  cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
-    ],
-  })
-);
+app.use(cors());
+// app.use(
+//   cors({
+//     origin: [
+//       process.env.WHITELISTED_DOMAIN &&
+//       process.env.WHITELISTED_DOMAIN.split(","),
+//     ],
+//   })
+// );
 
 app.use(express.json());
+app.use(bearerToken());
 
 //#region API ROUTES
 
@@ -32,6 +35,17 @@ app.get("/api/greetings", (req, res, next) => {
 });
 
 // ===========================
+
+const { dbConf } = require('../config/database')
+
+dbConf.getConnection((error, connection) => {
+  if (error) {
+    console.log("Error MySQL Connection", error.message, error.sqlMessage);
+  } else {
+    console.log(`Connected to MySQL Server: ${connection.threadId}`)
+  }
+})
+
 
 const { usersRouter, productsRouter, adminRouter } = require("../routers");
 app.use("/users", usersRouter);

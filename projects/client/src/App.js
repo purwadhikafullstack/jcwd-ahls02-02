@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { Routes, Route } from 'react-router-dom'
-import Homepage from "./Pages/Homepage";
+import Homepage from "./Pages/Homepage/Homepage";
 import LoginPage from "./Pages/Auth/LoginPage";
 import RegisterPage from "./Pages/Auth/RegisterPage";
 import ForgotPasswordPage from "./Pages/Auth/ForgotPasswordPage";
