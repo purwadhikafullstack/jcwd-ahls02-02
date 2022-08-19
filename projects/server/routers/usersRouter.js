@@ -5,7 +5,7 @@ const { readToken } = require('../config/encription');
 route.get("/userData", usersController.userData)
 route.post("/register", usersController.register);
 route.post("/login", usersController.login);
-route.post("/login/keep", usersController.keepLogin);
+route.get("/login/keep", readToken, usersController.keepLogin);
 route.patch("/verify", readToken, usersController.verifyAccount);
 route.patch("/verify/send", usersController.resendVerification);
 route.patch("/forgotPassword", usersController.forgotPassword);

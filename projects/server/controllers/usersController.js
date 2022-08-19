@@ -80,6 +80,18 @@ module.exports = {
   },
   keepLogin: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        let result = await dbQuery(`Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id = '${req.dataUser.id}';`)
+
+        let { id, role, name, email, phone_number } = result[0]
+        let token = createToken({ id, role, name, email, phone_number })
+        return res.status(200).send({ ...result[0], token })
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: "Token expired"
+        })
+      }
     } catch (error) {
       return next(error);
     }

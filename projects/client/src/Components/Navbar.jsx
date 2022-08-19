@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logoutAction } from '../Redux/Actions/userAction';
+import Cookies from 'js-cookie';
 
 const Navbar = () => {
 
@@ -41,6 +42,7 @@ const Navbar = () => {
 
     const handleLogout = () => {
         dispatch(logoutAction())
+        Cookies.remove("userToken");
     }
 
     return (
