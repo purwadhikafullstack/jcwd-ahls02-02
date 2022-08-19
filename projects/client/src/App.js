@@ -23,8 +23,14 @@ import AdminPerscriptionPage from "./Pages/Admin/Order/AdminPerscriptionPage";
 import AdminProductPage from "./Pages/Admin/Product/AdminProductPage";
 import AdminCategoryPage from "./Pages/Admin/Product/CategoryPage";
 import ReportPage from "./Pages/Admin/Report/ReportPage";
+import Cookies from "js-cookie";
+import { API_URL } from "./helper";
+import { useDispatch } from "react-redux";
+import { loginAction } from "./Redux/Actions/userAction";
 
 function App() {
+
+  const dispatch = useDispatch();
   // const [message, setMessage] = useState("");
 
   // useEffect(() => {
@@ -35,6 +41,28 @@ function App() {
   //     setMessage(data?.message || "");
   //   })();
   // }, []);
+
+  useEffect(() => {
+    keepLogin()
+  }, [])
+
+  const keepLogin = async () => {
+    try {
+      let token = Cookies.get("userToken")
+      if (token) {
+        let res = await axios.get(`${API_URL}/users/login/keep`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        if (res.data.id) {
+          dispatch(loginAction(res.data))
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
   return (

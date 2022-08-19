@@ -1,7 +1,7 @@
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem, Divider, Grid } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
 
-const InitialNavbar = () => {
+const AuthNavbar = () => {
     const navigate = useNavigate();
 
     return (
@@ -27,4 +27,4 @@ const InitialNavbar = () => {
     );
 };
 
-export default InitialNavbar;
+export default AuthNavbar;
