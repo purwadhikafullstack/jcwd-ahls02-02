@@ -13,6 +13,24 @@ module.exports = {
       return next(error)
     }
   },
+  tokenData: async (req, res, next) => {
+    try {
+      if (req.dataUser.id) {
+        let result = await dbQuery(`Select name, token_verification, token_reset from users where id = '${req.dataUser.id}';`)
+
+        // let { id, role, name, email, phone_number } = result[0]
+        // let token = createToken({ id, role, name, email, phone_number })
+        return res.status(200).send(result[0])
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: "Token expired"
+        })
+      }
+    } catch (error) {
+      return next(error);
+    }
+  },
   register: async (req, res, next) => {
     try {
 
@@ -109,7 +127,7 @@ module.exports = {
 
           let finalToken = createToken({ id, role, name, email, phone_number })
 
-          await dbQuery(`Update users set token_verification = '${finalToken}' WHERE id=${req.dataUser.id};`)
+          await dbQuery(`Update users set token_verification = '' WHERE id=${req.dataUser.id};`)
 
           return res.status(200).send({ ...result[0], finalToken })
         } else {

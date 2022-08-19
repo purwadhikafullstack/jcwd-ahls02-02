@@ -6,14 +6,13 @@ import { Routes, Route } from 'react-router-dom'
 import Homepage from "./Pages/Homepage/Homepage";
 import LoginPage from "./Pages/Auth/LoginPage";
 import RegisterPage from "./Pages/Auth/RegisterPage";
-import ForgotPasswordPage from "./Pages/Auth/ForgotPasswordPage";
 import VerificationPage from "./Pages/Auth/VerificationPage";
-import ResetPasswordPage from "./Pages/Auth/ResetPasswordPage";
+import ResetPasswordPage from "./Pages/Auth/Partials/ResetPasswordModal";
 import CartPage from "./Pages/Cart/CartPage";
 import CheckoutPage from "./Pages/Checkout/CheckoutPage";
 import PaymentPage from "./Pages/Checkout/PaymentPage";
 import OrderListPage from "./Pages/Order/OrderListPage";
-import PerscriptionPage from "./Pages/Order/PerscriptionPage";
+import PrescriptionPage from "./Pages/Order/PrescriptionPage";
 import ProductDetailPage from "./Pages/Products/ProductDetailPage";
 import ProductPage from "./Pages/Products/ProductPage";
 import ProfilePage from "./Pages/User/ProfilePage";
@@ -70,15 +69,14 @@ function App() {
       <Routes>
         <Route path='/' element={<Homepage />} />
         <Route path='/auth/login' element={<LoginPage />} />
-        <Route path='/auth/register' element={<RegisterPage />} />
-        <Route path='/auth/forgot' element={<ForgotPasswordPage />} />
+        <Route path='/auth/register' element={<RegisterPage />} />\
         <Route path='/auth/verification/:token' element={<VerificationPage />} />
         <Route path='/auth/reset/:token' element={<ResetPasswordPage />} />
         <Route path='/cart' element={<CartPage />} />
         <Route path='/checkout' element={<CheckoutPage />} />
         <Route path='/payment' element={<PaymentPage />} />
         <Route path='/order' element={<OrderListPage />} />
-        <Route path='/perscription' element={<PerscriptionPage />} />
+        <Route path='/prescription' element={<PrescriptionPage />} />
         <Route path='/product' element={<ProductPage />} />
         <Route path='/product/detail' element={<ProductDetailPage />} />
         <Route path='/profile' element={<ProfilePage />} />

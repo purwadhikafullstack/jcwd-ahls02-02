@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Toolbar, Typography, Unstable_Grid2 } from "@mui/material";
+import { AppBar, Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, TextField, Toolbar, Typography, Unstable_Grid2 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AuthNavbar from "./Partials/InitialNavbar";
 import { useState } from 'react'
@@ -8,6 +8,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { loginAction } from "../../Redux/Actions/userAction";
 import Cookies from "js-cookie";
+import ResetPasswordModal from "./Partials/ResetPasswordModal";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -21,6 +22,8 @@ const LoginPage = () => {
     const [passwordValidity, setPasswordValidity] = useState("null")
     const [passwordInfo, setPasswordInfo] = useState()
     const [showPassword, setShowPassword] = useState(false)
+
+    const [openModal, setOpenModal] = useState(false)
 
     const [disableButton, setDisableButton] = useState(false)
 
@@ -119,6 +122,9 @@ const LoginPage = () => {
                         />
                         <FormHelperText>{passwordInfo}</FormHelperText>
                     </FormControl>
+                    <Box textAlign='right'>
+                        <Link color='grey.800' underline='hover' href="#" onClick={() => setOpenModal(!openModal)}>Forgot password?</Link>
+                    </Box>
                     <Button
                         type="button"
                         fullWidth
@@ -160,6 +166,11 @@ const LoginPage = () => {
                 </Grid>
             </Grid>
         </Container>
+        <ResetPasswordModal
+            isOpen={openModal}
+            setOpen={setOpenModal}
+            toggle={() => setOpenModal(!openModal)}
+        />
     </div >
 }
 
