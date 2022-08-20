@@ -1,7 +1,10 @@
 import { Box, Button, Grid, Typography } from "@mui/material";
 import { Container } from "@mui/system";
+import { useNavigate } from "react-router-dom";
 
 const Banner = () => {
+    const navigate = useNavigate();
+
     return <Container sx={{ mt: 5 }}>
         <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -24,13 +27,13 @@ const Banner = () => {
                     </Box>
                     <Box sx={{ mb: 3 }}>
                         <Typography variant='subtitle2' sx={{ mb: 2 }} color='grey.600'>
-                            Online pharmacy store that delivers medicine and medical product within 24 hours. We can also provide you with your perscription!
+                            Online pharmacy store that delivers medicine and medical product within 24 hours. We can also provide you with your prescription!
                         </Typography>
                         <Typography variant='subtitle2' color='grey.600'>
                             Order now and get a free bottle of vitamin D3
                         </Typography>
                     </Box>
-                    <Button variant='contained'>Get Your Perscription Now</Button>
+                    <Button variant='contained' onClick={() => navigate('/prescription')}>Get Your Prescription Now</Button>
                 </Box>
                 {/* </Box> */}
                 {/* </Box> */}

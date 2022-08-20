@@ -55,8 +55,8 @@ const Navbar = () => {
                                 <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' style={{ maxWidth: 120 }} />
                             </Box>
                             <Box>
-                                <Button variant='text' sx={{ ml: 2, color: 'grey.800' }}>Product</Button>
-                                <Button variant='text' sx={{ ml: 1, color: 'grey.800' }}>Upload Perscription</Button>
+                                <Button variant='text' sx={{ ml: 2, color: 'grey.800' }} onClick={() => navigate('/product')}>Product</Button>
+                                <Button variant='text' sx={{ ml: 1, color: 'grey.800' }} onClick={() => navigate('/prescription')}>Upload Prescription</Button>
                             </Box>
                             {name ?
                                 <>
@@ -90,19 +90,19 @@ const Navbar = () => {
                                             open={Boolean(anchorElUser)}
                                             onClose={handleCloseUserMenu}
                                         >
-                                            <MenuItem>
+                                            <MenuItem onClick={() => navigate('/profile')}>
                                                 <AccountCircleOutlinedIcon sx={{ mr: 1 }} />
                                                 <Typography textAlign="center">Profile</Typography>
                                             </MenuItem>
-                                            <MenuItem>
+                                            <MenuItem onClick={() => navigate('/prescription')}>
                                                 <MedicationIcon sx={{ mr: 1 }} />
-                                                <Typography textAlign="center">Perscription</Typography>
+                                                <Typography textAlign="center">Prescription</Typography>
                                             </MenuItem>
-                                            <MenuItem>
+                                            <MenuItem onClick={() => navigate('/cart')}>
                                                 <ShoppingCartIcon sx={{ mr: 1 }} />
                                                 <Typography textAlign="center">Cart</Typography>
                                             </MenuItem>
-                                            <MenuItem>
+                                            <MenuItem onClick={() => navigate('/order')}>
                                                 <ShoppingBagIcon sx={{ mr: 1 }} />
                                                 <Typography textAlign="center">Order</Typography>
                                             </MenuItem>
@@ -148,11 +148,11 @@ const Navbar = () => {
                                 >
                                     <MenuItem>
                                         <MedicationIcon sx={{ mr: 1 }} />
-                                        <Typography textAlign="center">Product</Typography>
+                                        <Typography textAlign="center" onClick={() => navigate('/product')}>Product</Typography>
                                     </MenuItem>
                                     <MenuItem>
                                         <HealthAndSafetyIcon sx={{ mr: 1 }} />
-                                        <Typography textAlign="center">Upload Perscription</Typography>
+                                        <Typography textAlign="center" onClick={() => navigate('/perscription')}>Upload Perscription</Typography>
                                     </MenuItem>
                                 </Menu>
                             </Box>
@@ -185,21 +185,21 @@ const Navbar = () => {
                                         open={Boolean(anchorElUser)}
                                         onClose={handleCloseUserMenu}
                                     >
-                                        <MenuItem>
+                                        <MenuItem onClick={() => navigate('/profile')}>
                                             <AccountCircleOutlinedIcon sx={{ mr: 1 }} />
-                                            <Typography textAlign="center">Profile</Typography>
+                                            <Typography textAlign="center" >Profile</Typography>
                                         </MenuItem>
-                                        <MenuItem>
+                                        <MenuItem onClick={() => navigate('/prescription')}>
                                             <HealthAndSafetyIcon sx={{ mr: 1 }} />
-                                            <Typography textAlign="center">Perscription</Typography>
+                                            <Typography textAlign="center" >Prescription</Typography>
                                         </MenuItem>
-                                        <MenuItem>
+                                        <MenuItem onClick={() => navigate('/cart')}>
                                             <ShoppingCartIcon sx={{ mr: 1 }} />
-                                            <Typography textAlign="center">Cart</Typography>
+                                            <Typography textAlign="center" >Cart</Typography>
                                         </MenuItem>
-                                        <MenuItem>
+                                        <MenuItem onClick={() => navigate('/order')}>
                                             <ShoppingBagIcon sx={{ mr: 1 }} />
-                                            <Typography textAlign="center">Order</Typography>
+                                            <Typography textAlign="center" >Order</Typography>
                                         </MenuItem>
                                         <Divider />
                                         <MenuItem onClick={handleLogout}>

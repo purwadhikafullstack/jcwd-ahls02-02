@@ -6,6 +6,7 @@ route.get("/userData", usersController.userData)
 route.post("/register", usersController.register);
 route.post("/login", usersController.login);
 route.get("/login/keep", readToken, usersController.keepLogin);
+route.get("/tokenData", readToken, usersController.tokenData);
 route.patch("/verify", readToken, usersController.verifyAccount);
 route.patch("/verify/send", usersController.resendVerification);
 route.patch("/forgotPassword", usersController.forgotPassword);
