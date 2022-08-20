@@ -14,11 +14,12 @@ const Text = (props) => {
     <Typography
       variant={fontSize}
       underline={underline}
+      color={color}
       sx={{
         textAlign: `${textAlign}`,
         fontWeight: `${fontWeight}`,
         fontStyle: `${fontStyle}`,
-        color: `${color}`,
+        // color: `${color}`,
         display: `${display}`,
         m: 1,
       }}
