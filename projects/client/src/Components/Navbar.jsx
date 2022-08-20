@@ -46,13 +46,13 @@ const Navbar = () => {
     }
 
     return (
-        <AppBar position="sticky" style={{ background: 'white', boxShadow: "none" }}>
+        <AppBar position="sticky" style={{ background: 'white', boxShadow: "none", zIndex: 20 }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Container>
                     <Toolbar disableGutters sx={{ height: 75 }}>
                         <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
                             <Box>
-                                <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' style={{ maxWidth: 120 }} />
+                                <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
                             </Box>
                             <Box>
                                 <Button variant='text' sx={{ ml: 2, color: 'grey.800' }} onClick={() => navigate('/product')}>Product</Button>
@@ -157,10 +157,10 @@ const Navbar = () => {
                                 </Menu>
                             </Box>
                             <Box sx={{ width: '50%' }}>
-                                <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' style={{ maxWidth: 120 }} />
+                                <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
                             </Box>
                             {name ?
-                                <Box>
+                                <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
                                     <Tooltip title='Open settings'>
                                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                             <Avatar />

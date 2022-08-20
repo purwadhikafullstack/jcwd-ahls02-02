@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Toolbar, Typography, Unstable_Grid2 } from "@mui/material";
+import { Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { VisibilityOff, Visibility } from '@mui/icons-material';
@@ -33,7 +33,7 @@ const RegisterPage = () => {
     const [disableSignUp, setDisableSignUp] = useState(false)
 
     const handleButtonAvailability = (email) => {
-        if (email == "") {
+        if (email === "") {
             setEmailValidity("null")
             setEmailInfo()
             setDisableAvailability(true)
@@ -51,7 +51,7 @@ const RegisterPage = () => {
     const handleCheckEmail = async (email) => {
         try {
             let dataEmail = await axios.get(`${API_URL}/users/userData`)
-            let index = dataEmail.data.findIndex(val => val.email == email)
+            let index = dataEmail.data.findIndex(val => val.email === email)
             if (index > 0) {
                 setDisableAvailability(true)
                 setEmailAvailability(false)
@@ -86,7 +86,7 @@ const RegisterPage = () => {
 
         temp.forEach((value) => {
             if (value.toLowerCase() !== value.toUpperCase()) {
-                if (value.toLowerCase() == value) {
+                if (value.toLowerCase() === value) {
                     checkLowerCase = true;
                 }
             }
@@ -94,7 +94,7 @@ const RegisterPage = () => {
 
         temp.forEach((value) => {
             if (value.toLowerCase() !== value.toUpperCase()) {
-                if (value.toUpperCase() == value) {
+                if (value.toUpperCase() === value) {
                     checkUpperCase = true;
                 }
             }
@@ -103,13 +103,13 @@ const RegisterPage = () => {
 
         for (let i = 0; i < temp.length; i++) {
             for (let k = 0; k < arraySymbols.length; k++) {
-                if (temp[i] == arraySymbols[k]) {
+                if (temp[i] === arraySymbols[k]) {
                     checkSymbol = true;
                 }
             }
         }
 
-        if (password == "") {
+        if (password === "") {
             setPasswordValidity("null")
         }
 
@@ -148,7 +148,7 @@ const RegisterPage = () => {
     }
 
     const handleRecheckPassword = (passwordConfirmation) => {
-        if (passwordConfirmation == passwordConf) {
+        if (passwordConfirmation === passwordConf) {
             setPasswordConfValidity(true)
         } else if (passwordConfirmation !== passwordConf) {
             setPasswordConfValidity(false)
@@ -185,101 +185,99 @@ const RegisterPage = () => {
                     <Box sx={{ mt: 3, mb: 3 }}>
                         <Typography variant='h5' color='grey.700'>REGISTER</Typography>
                     </Box>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="fullName"
-                        label="Enter your full name"
-                        name="fullName"
-                        autoComplete="fullName"
-                        autoFocus
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Box sx={{ flexGrow: 1, mr: 1 }}>
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="email"
-                                label="Enter your email"
-                                name="email"
-                                autoComplete="email"
-                                autoFocus
-                                onChange={(e) => {
-                                    setEmail(e.target.value);
-                                    handleButtonAvailability(e.target.value)
-                                    setEmailAvailability(false)
-                                }}
-                                helperText={emailInfo}
-                                color={emailAvailability ? "success" : null}
-                                error={emailValidity == "null" ? null : !emailValidity}
-                            />
-                        </Box>
-                        <Box>
-                            <Button variant='contained' disabled={disableAvailability} onClick={() => handleCheckEmail(email)}>Check Availability</Button>
-                        </Box>
-                    </Box>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="phoneNumber"
-                        label="Enter your phone number"
-                        name="phoneNumber"
-                        autoComplete="phoneNumber"
-                        autoFocus
-                        onChange={(e) => setPhone(e.target.value)}
-                    />
-                    <FormControl fullWidth variant="outlined" margin="normal">
-                        <InputLabel
-                            htmlFor="outlined-adornment-password"
+                    <form>
+                        <TextField
+                            margin="normal"
                             required
-                        >Enter your password</InputLabel>
-                        <OutlinedInput
-                            id="outlined-adornment-password"
-                            onChange={(e) => handleCheckPassword(e.target.value)}
-                            type={showPassword ? 'text' : 'password'}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        aria-label="toggle password visibility"
-                                        // onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            label="Password"
-                            error={passwordValidity == "null" ? null : !passwordValidity}
-                            color={passwordInfo ? "success" : null}
+                            fullWidth
+                            id="fullName"
+                            label="Enter your full name"
+                            name="fullName"
+                            autoComplete="fullName"
+                            onChange={(e) => setName(e.target.value)}
                         />
-                        <FormHelperText>{passwordInfo}</FormHelperText>
-                    </FormControl>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="passConf"
-                        label="Enter your confirmation password"
-                        name="passConf"
-                        autoComplete="passConf"
-                        type="password"
-                        autoFocus
-                        onChange={(e) => handleRecheckPassword(e.target.value)}
-                        error={PasswordConfValidity == "null" ? null : !PasswordConfValidity}
-                        color={PasswordConfValidity ? "success" : null}
-                    />
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Box sx={{ flexGrow: 1, mr: 1 }}>
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="email"
+                                    label="Enter your email"
+                                    name="email"
+                                    autoComplete="email"
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        handleButtonAvailability(e.target.value)
+                                        setEmailAvailability(false)
+                                    }}
+                                    helperText={emailInfo}
+                                    color={emailAvailability ? "success" : null}
+                                    error={emailValidity === "null" ? null : !emailValidity}
+                                />
+                            </Box>
+                            <Box>
+                                <Button variant='contained' disabled={disableAvailability} onClick={() => handleCheckEmail(email)}>Check Availability</Button>
+                            </Box>
+                        </Box>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="phoneNumber"
+                            label="Enter your phone number"
+                            name="phoneNumber"
+                            autoComplete="phoneNumber"
+                            onChange={(e) => setPhone(e.target.value)}
+                        />
+                        <FormControl fullWidth variant="outlined" margin="normal">
+                            <InputLabel
+                                htmlFor="outlined-adornment-password"
+                                required
+                            >Enter your password</InputLabel>
+                            <OutlinedInput
+                                id="outlined-adornment-password"
+                                onChange={(e) => handleCheckPassword(e.target.value)}
+                                type={showPassword ? 'text' : 'password'}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            aria-label="toggle password visibility"
+                                            // onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                                label="Password"
+                                error={passwordValidity === "null" ? null : !passwordValidity}
+                                color={passwordInfo ? "success" : null}
+                            />
+                            <FormHelperText>{passwordInfo}</FormHelperText>
+                        </FormControl>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="passConf"
+                            label="Enter your password confirmation"
+                            name="passConf"
+                            autoComplete="passConf"
+                            type="password"
+                            onChange={(e) => handleRecheckPassword(e.target.value)}
+                            error={PasswordConfValidity === "null" ? null : !PasswordConfValidity}
+                            color={PasswordConfValidity ? "success" : null}
+                        />
+                    </form>
                     <Button
                         type="button"
                         fullWidth
                         variant="contained"
                         sx={{ mt: 2, mb: 2 }}
                         color="primary"
-                        disabled={name && emailAvailability && phone && passwordValidity == true && PasswordConfValidity == true ? disableSignUp : true}
+                        disabled={name && emailAvailability && phone && passwordValidity === true && PasswordConfValidity === true ? disableSignUp : true}
                         onClick={() => handleRegister(name, email, phone, password)}
                     >
                         Sign Up
@@ -294,22 +292,9 @@ const RegisterPage = () => {
 
                         Sign Up with Google
                     </Button>
-                    {/* <Typography variant='body' color='grey.800'>
-                        Already have an account?
-                    </Typography>
-                    <Button
-                        type="button"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 2, mb: 2 }}
-                        color="primary"
-                    >
-
-                        Login
-                    </Button> */}
                 </Grid>
                 <Grid item md={7} sx={{ display: { xs: 'none', md: 'block' } }}>
-                    <img src='https://static.vecteezy.com/system/resources/previews/005/867/677/non_2x/online-registration-illustration-design-concept-vector.jpg' style={{ width: '90%' }} />
+                    <img src='https://static.vecteezy.com/system/resources/previews/005/867/677/non_2x/online-registration-illustration-design-concept-vector.jpg' alt='registration' style={{ width: '90%' }} />
                 </Grid>
             </Grid>
         </Container>

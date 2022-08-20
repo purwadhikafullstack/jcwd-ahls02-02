@@ -10,6 +10,7 @@ route.get("/tokenData", readToken, usersController.tokenData);
 route.patch("/verify", readToken, usersController.verifyAccount);
 route.patch("/verify/send", usersController.resendVerification);
 route.patch("/forgotPassword", usersController.forgotPassword);
+route.patch("/resetPassword", readToken, usersController.resetPassword);
 
 route.get("/profile/:user_id", usersController.userProfile);
 route.patch("/profile/:user_id", usersController.editProfile);

@@ -1,5 +1,7 @@
-import { Modal, Backdrop, Fade, Box, Grid, Avatar, Typography, TextField, Button } from "@mui/material";
+import { Modal, Backdrop, Fade, Box, Grid, Typography, TextField, Button } from "@mui/material";
+import axios from "axios";
 import { useState } from "react";
+import { API_URL } from "../../../helper";
 
 const style = {
     position: 'absolute',
@@ -14,7 +16,7 @@ const style = {
 };
 
 const ResetPasswordModal = (props) => {
-    const { isOpen, setOpen, toggle } = props;
+    const { isOpen, toggle } = props;
     const [email, setEmail] = useState()
     const [helperText, setHelperText] = useState()
     const [emailSent, setEmailSent] = useState(false)
@@ -25,10 +27,27 @@ const ResetPasswordModal = (props) => {
 
     const handleCloseModal = () => {
         toggle();
-        setEmailSent(false)
+        setEmail()
+        setHelperText();
+        setEmailSent(false);
+        setEmailError(false);
     }
 
-    const handleSendLink = () => {
+    const handleSendLink = (email) => {
+        setStatusDisabled(true)
+        axios.patch(`${API_URL}/users/forgotPassword`, { email })
+            .then((res) => {
+                setEmailError(false)
+                setEmailSent(true)
+                setHelperText()
+                setStatusDisabled(false)
+            }).catch((error) => {
+                console.log(error)
+                setStatusDisabled(false)
+                setEmailError(true)
+                setHelperText("Email not found")
+            })
+
 
     }
 
@@ -53,11 +72,7 @@ const ResetPasswordModal = (props) => {
                             alignItems="center"
                             justifyContent="center"
                         >
-                            <Avatar
-                                flexItem
-                                src="https://i.kym-cdn.com/entries/icons/original/000/024/027/blog_image_3822_4926_Webcomic_Name_April_Fools_Day_201703231756.jpg"
-                                sx={{ width: 80, height: 80, mb: 1 }}
-                            />
+                            <img src='https://img.freepik.com/free-vector/confirmed-concept-illustration_114360-5400.jpg?w=2000' alt='forgot password' style={{ width: '100%' }} />
                         </Grid>
                         <Typography id="transition-modal-title" variant="h5" component="h1" textAlign="center" sx={{ mb: 2 }}>
                             It's all done!
@@ -67,8 +82,6 @@ const ResetPasswordModal = (props) => {
                         </Typography>
                     </Box>
                     :
-
-
                     <Box sx={style}>
                         <Grid container
                             spacing={0}
@@ -76,17 +89,13 @@ const ResetPasswordModal = (props) => {
                             alignItems="center"
                             justifyContent="center"
                         >
-                            <Avatar
-                                flexItem
-                                src="https://i.kym-cdn.com/entries/icons/original/000/024/027/blog_image_3822_4926_Webcomic_Name_April_Fools_Day_201703231756.jpg"
-                                sx={{ width: 80, height: 80, mb: 1 }}
-                            />
+                            <img src='https://img.freepik.com/free-vector/forgot-password-concept-illustration_114360-4652.jpg?w=2000' alt='forgot password' style={{ width: '100%' }} />
                         </Grid>
                         <Typography id="transition-modal-title" variant="h5" component="h1" textAlign="center" sx={{ mb: 2 }}>
-                            Don't worry, we got you!
+                            Forgot your password?
                         </Typography>
                         <Typography id="transition-modal-title" variant="body2" component="h1" textAlign="center" color="grey.600" >
-                            Enter your email and we'll send the reset link
+                            Don't worry. Just enter your email and we'll send the reset link
                         </Typography>
                         <TextField
                             margin="normal"
@@ -96,8 +105,11 @@ const ResetPasswordModal = (props) => {
                             label="Enter your email address"
                             name="emailAddress"
                             autoComplete="emailAddress"
-                            autoFocus
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => {
+                                setEmail(e.target.value)
+                                setHelperText();
+                                setEmailError(false);
+                            }}
                             error={emailError}
                             helperText={helperText}
                         />
@@ -107,8 +119,8 @@ const ResetPasswordModal = (props) => {
                             fullWidth
                             variant="contained"
                             sx={{ mt: 2, mb: 2 }}
-                            color="primary"
-                            onClick={handleSendLink}
+                            color="secondary"
+                            onClick={() => handleSendLink(email)}
                             disabled={statusDisabled}
                         >
                             Send reset link!

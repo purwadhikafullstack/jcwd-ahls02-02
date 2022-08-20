@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, TextField, Toolbar, Typography, Unstable_Grid2 } from "@mui/material";
+import { Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AuthNavbar from "./Partials/InitialNavbar";
 import { useState } from 'react'
@@ -19,7 +19,6 @@ const LoginPage = () => {
     const [emailInfo, setEmailInfo] = useState()
 
     const [password, setPassword] = useState("")
-    const [passwordValidity, setPasswordValidity] = useState("null")
     const [passwordInfo, setPasswordInfo] = useState()
     const [showPassword, setShowPassword] = useState(false)
 
@@ -29,7 +28,7 @@ const LoginPage = () => {
 
 
     const handleCheckEmail = (email) => {
-        if (email == "") {
+        if (email === "") {
             setEmailValidity("null")
             setEmailInfo()
         } else if (email.includes("@") && email.includes(".com")) {
@@ -58,7 +57,6 @@ const LoginPage = () => {
             } else if (error.response.data.message === "Password Incorrect") {
                 setDisableButton(false)
                 console.log('Password is incorrect')
-                setPasswordValidity(false)
                 setPasswordInfo('Incorrect password')
             } else {
                 setDisableButton(false)
@@ -85,13 +83,12 @@ const LoginPage = () => {
                         label="Enter your email"
                         name="email"
                         autoComplete="email"
-                        autoFocus
                         onChange={(e) => {
                             setEmail(e.target.value)
                             handleCheckEmail(e.target.value)
                         }}
                         helperText={emailInfo}
-                        error={emailValidity == "null" ? null : !emailValidity}
+                        error={emailValidity === "null" ? null : !emailValidity}
                     />
                     <FormControl fullWidth variant="outlined" margin="normal">
                         <InputLabel
@@ -147,22 +144,9 @@ const LoginPage = () => {
 
                         Login with Google
                     </Button>
-                    {/* <Typography variant='body' color='grey.800'>
-                        Don't have an account?
-                    </Typography>
-                    <Button
-                        type="button"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 2, mb: 2 }}
-                        color="primary"
-                    >
-
-                        Sign Up
-                    </Button> */}
                 </Grid>
                 <Grid item md={7} sx={{ display: { xs: 'none', md: 'block' } }}>
-                    <img src='https://i.ibb.co/qsKyN61/Capture2.png' style={{ width: '80%' }} />
+                    <img src='https://i.ibb.co/qsKyN61/Capture2.png' alt='login' style={{ width: '80%' }} />
                 </Grid>
             </Grid>
         </Container>
