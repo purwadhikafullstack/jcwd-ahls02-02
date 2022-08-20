@@ -1,7 +1,7 @@
 import axios from "axios";
 import "./App.css";
 import { useEffect } from "react";
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Homepage from "./Pages/Homepage/Homepage";
 import LoginPage from "./Pages/Auth/LoginPage";
 import RegisterPage from "./Pages/Auth/RegisterPage";
@@ -22,13 +22,20 @@ import AdminCategoryPage from "./Pages/Admin/Product/CategoryPage";
 import ReportPage from "./Pages/Admin/Report/ReportPage";
 import Cookies from "js-cookie";
 import { API_URL } from "./helper";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginAction } from "./Redux/Actions/userAction";
 import ForgotPasswordPage from "./Pages/Auth/ForgotPasswordPage";
+import NotFoundPage from "./Pages/404";
 
 function App() {
 
   const dispatch = useDispatch();
+  const { role } = useSelector((state) => {
+    return {
+      role: state.userReducer.role
+    }
+  })
+
 
   useEffect(() => {
     keepLogin()
@@ -56,26 +63,42 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path='/' element={<Homepage />} />
-        <Route path='/auth/login' element={<LoginPage />} />
-        <Route path='/auth/register' element={<RegisterPage />} />\
+        {role ? role === "admin" ?
+          <>
+            <Route path='/admin' element={<DashboardPage />} />
+            <Route path='/' element={<Navigate replace to='/admin' />} />
+            <Route path='/admin/order' element={<AdminOrderPage />} />
+            <Route path='/admin/perscription' element={<AdminPerscriptionPage />} />
+            <Route path='/admin/product' element={<AdminProductPage />} />
+            <Route path='/admin/product/category' element={<AdminCategoryPage />} />
+            <Route path='/admin/report' element={<ReportPage />} />
+          </>
+          :
+          <>
+            <Route path='/auth/login' element={<Navigate replace to='/' />} />
+            <Route path='/auth/register' element={<Navigate replace to='/' />} />\
+            <Route path='/' element={<Homepage />} />
+            <Route path='/cart' element={<CartPage />} />
+            <Route path='/checkout' element={<CheckoutPage />} />
+            <Route path='/payment' element={<PaymentPage />} />
+            <Route path='/order' element={<OrderListPage />} />
+            <Route path='/prescription' element={<PrescriptionPage />} />
+            <Route path='/product' element={<ProductPage />} />
+            <Route path='/product/detail' element={<ProductDetailPage />} />
+            <Route path='/profile' element={<ProfilePage />} />
+          </>
+          :
+          <>
+            <Route path='/auth/login' element={<LoginPage />} />
+            <Route path='/auth/register' element={<RegisterPage />} />\
+            <Route path='/' element={<Homepage />} />
+            <Route path='/auth/reset/:token' element={<ForgotPasswordPage />} />
+          </>
+        }
         <Route path='/auth/verification/:token' element={<VerificationPage />} />
-        <Route path='/auth/reset/:token' element={<ForgotPasswordPage />} />
-        <Route path='/cart' element={<CartPage />} />
-        <Route path='/checkout' element={<CheckoutPage />} />
-        <Route path='/payment' element={<PaymentPage />} />
-        <Route path='/order' element={<OrderListPage />} />
-        <Route path='/prescription' element={<PrescriptionPage />} />
-        <Route path='/product' element={<ProductPage />} />
-        <Route path='/product/detail' element={<ProductDetailPage />} />
-        <Route path='/profile' element={<ProfilePage />} />
-        <Route path='/admin' element={<DashboardPage />} />
-        <Route path='/admin/order' element={<AdminOrderPage />} />
-        <Route path='/admin/perscription' element={<AdminPerscriptionPage />} />
-        <Route path='/admin/product' element={<AdminProductPage />} />
-        <Route path='/admin/product/category' element={<AdminCategoryPage />} />
-        <Route path='/admin/report' element={<ReportPage />} />
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
+
     </div>
   );
 }
