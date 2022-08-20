@@ -14,11 +14,24 @@ import Button from "../../../Components/atoms/Button";
 import Text from "../../../Components/atoms/Text";
 
 const MyProfile = () => {
-  const [value, setValue] = useState(null);
+  const [name, setName] = useState("John Doe");
+  const [gender, setGender] = useState("male");
+  const [dateOfBirth, setDateOfBirth] = useState("2022-01-04T15:11:33.000Z");
+  const email = "johndoe@mail.com";
+  const [phoneNumber, setPhoneNumber] = useState("081111111");
+
+  const handleSubmit = () => {
+    console.log(name);
+    console.log(gender);
+    console.log(dateOfBirth);
+    console.log(email);
+    console.log(phoneNumber);
+  };
+
   return (
     <>
-      <Grid xs={12} container spacing={2} alignItems="center">
-        <Grid xs={12}>
+      <Grid container spacing={2} alignItems="center">
+        <Grid>
           <Text fontSize="h5">My Profile</Text>
         </Grid>
 
@@ -26,22 +39,29 @@ const MyProfile = () => {
           <FormControl>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Name</Text>
+                <Text textAlign="right">Name</Text>
               </Grid>
               <Grid item xs={9} alignItems="center" justifyContent="flex-start">
                 <TextField
                   id="user-name"
                   placeholder="Name"
                   variant="outlined"
+                  defaultValue={name}
                   fullWidth
+                  onChange={(e) => setName(e.target.value)}
                 />
               </Grid>
 
               <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Gender</Text>
+                <Text textAlign="right">Gender</Text>
               </Grid>
               <Grid item xs={9} alignItems="center" justifyContent="flex-start">
-                <RadioGroup row name="user-gender">
+                <RadioGroup
+                  row
+                  name="user-gender"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                >
                   <FormControlLabel
                     value="female"
                     control={<Radio size="small" />}
@@ -61,14 +81,16 @@ const MyProfile = () => {
               </Grid>
 
               <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Birthdate</Text>
+                <Text textAlign="right">Birthdate</Text>
               </Grid>
               <Grid item xs={9} textAlign="left" justifyContent="flex-start">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
-                    value={value}
+                    value={dateOfBirth}
                     onChange={(newValue) => {
-                      setValue(newValue);
+                      setDateOfBirth(newValue);
+                      console.log(JSON.stringify(newValue));
+                      console.log(Object.keys(newValue));
                     }}
                     renderInput={(params) => <TextField {...params} />}
                   />
@@ -76,7 +98,7 @@ const MyProfile = () => {
               </Grid>
 
               <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Email</Text>
+                <Text textAlign="right">Email</Text>
               </Grid>
               <Grid item xs={9} alignItems="center" justifyContent="flex-start">
                 <TextField
@@ -85,11 +107,13 @@ const MyProfile = () => {
                   variant="outlined"
                   type="email"
                   fullWidth
+                  defaultValue={email}
+                  disabled
                 />
               </Grid>
 
               <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Phone Number</Text>
+                <Text textAlign="right">Phone Number</Text>
               </Grid>
               <Grid item xs={9} alignItems="center" justifyContent="flex-start">
                 <TextField
@@ -98,9 +122,11 @@ const MyProfile = () => {
                   variant="outlined"
                   type="tel"
                   fullWidth
+                  defaultValue={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                 />
               </Grid>
-              <Grid xs={12} container justifyContent="flex-end" sx={{ py: 3 }}>
+              <Grid container justifyContent="flex-end" sx={{ py: 3 }}>
                 <Grid xs={3} item />
                 <Grid
                   xs={9}
@@ -112,6 +138,7 @@ const MyProfile = () => {
                     width="150px"
                     variant="contained"
                     color="primary"
+                    onClick={() => handleSubmit()}
                   >
                     Submit
                   </Button>
