@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Container, Grid, Toolbar, Typography } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../../helper";
@@ -7,10 +7,11 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginAction } from "../../Redux/Actions/userAction";
-import TokenExpired from "./Partials/TokenExpired";
+import TokenExpiredPage from "./Partials/TokenExpiredPage";
 
 
 const VerificationPage = () => {
+
     let { token } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -55,19 +56,6 @@ const VerificationPage = () => {
     return <div>
         {userData ? userData.token_verification === token ?
             <>
-                <AppBar position="sticky" style={{ background: 'white', boxShadow: "none" }}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <Container>
-                            <Toolbar disableGutters sx={{ height: 75 }}>
-                                <Grid container sx={{ justifyContent: 'space-between' }}>
-                                    <Grid item xs={2} >
-                                        <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
-                                    </Grid>
-                                </Grid>
-                            </Toolbar>
-                        </Container>
-                    </Box>
-                </AppBar>
                 <Container>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 5 }}>
                         <img src="https://cdni.iconscout.com/illustration/premium/thumb/face-recognition-security-5152134-4309034.png" alt="verification" style={{ width: '30%' }} />
@@ -78,9 +66,9 @@ const VerificationPage = () => {
                 </Container>
             </>
             :
-            <TokenExpired />
+            <TokenExpiredPage />
             :
-            <TokenExpired />
+            <TokenExpiredPage />
         }
 
     </div >
