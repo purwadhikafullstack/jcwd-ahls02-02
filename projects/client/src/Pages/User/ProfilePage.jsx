@@ -50,7 +50,7 @@ const ProfilePage = () => {
       {!isLoading && (
         <Container>
           <Box sx={{ display: "flex" }}>
-            <ProfileTabs setOpenTab={setOpenTab} />
+            <ProfileTabs openTab={openTab} setOpenTab={setOpenTab} />
             <Box component="main" sx={{ flexGrow: 1, p: 3, zIndex: 0 }}>
               {/* <Navbar/> */}
               {openTab === 0 && <MyProfile />}

@@ -165,10 +165,16 @@ const Password = () => {
 
         <FormControl>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={3} alignItems="center">
-              <Text textAlign="right">Old Password</Text>
+            <Grid item xs={12} md={2} alignItems="center">
+              <Text textAlign="left">Old Password</Text>
             </Grid>
-            <Grid item xs={9} alignItems="center" justifyContent="flex-start">
+            <Grid
+              item
+              xs={12}
+              md={10}
+              alignItems="center"
+              justifyContent="flex-start"
+            >
               <TextField
                 id="user-old-password"
                 placeholder="Old Password"
@@ -180,25 +186,36 @@ const Password = () => {
               />
             </Grid>
 
-            <Grid item xs={3} alignItems="center">
-              <Text textAlign="right">New Password {' '}
-              <Tooltip title={<>
-                <Text>
-                  Password rules:
-                  <ul>
-                    <li>At least has 8 characters</li>
-                    <li>Includes lowercase character</li>
-                    <li>Includes uppercase character</li>
-                    <li>Includes number</li>
-                    <li>Includes symbol</li>
-                  </ul>
-                </Text>
-              </>}>
-                <HelpOutline sx={{ fontSize: 15 }} color="primary"/>
-              </Tooltip>
+            <Grid item xs={12} md={2} alignItems="center">
+              <Text textAlign="left">
+                New Password{" "}
+                <Tooltip
+                  title={
+                    <>
+                      <Text>
+                        Password rules:
+                        <ul>
+                          <li>At least has 8 characters</li>
+                          <li>Includes lowercase character</li>
+                          <li>Includes uppercase character</li>
+                          <li>Includes number</li>
+                          <li>Includes symbol</li>
+                        </ul>
+                      </Text>
+                    </>
+                  }
+                >
+                  <HelpOutline sx={{ fontSize: 15 }} color="primary" />
+                </Tooltip>
               </Text>
             </Grid>
-            <Grid item xs={9} alignItems="center" justifyContent="flex-start">
+            <Grid
+              item
+              xs={12}
+              md={10}
+              alignItems="center"
+              justifyContent="flex-start"
+            >
               <TextField
                 id="user-new-password"
                 placeholder="New Password"
@@ -224,10 +241,16 @@ const Password = () => {
               <FormHelperText>{passwordInfo}</FormHelperText>
             </Grid>
 
-            <Grid item xs={3} alignItems="center">
-              <Text textAlign="right">Confirmation Password</Text>
+            <Grid item xs={12} md={2} alignItems="center">
+              <Text textAlign="left">Confirmation Password</Text>
             </Grid>
-            <Grid item xs={9} alignItems="center" justifyContent="flex-start">
+            <Grid
+              item
+              xs={12}
+              md={10}
+              alignItems="center"
+              justifyContent="flex-start"
+            >
               <TextField
                 required
                 id="user-confirmation-password"
@@ -247,9 +270,10 @@ const Password = () => {
             </Grid>
 
             <Grid container justifyContent="flex-end" sx={{ py: 3 }}>
-              <Grid xs={3} item />
+              <Grid xs={0} md={2} item />
               <Grid
-                xs={9}
+                xs={12}
+                md={10}
                 item
                 textAlign="left"
                 sx={{ pt: "16px", pr: 0, pb: 0, pl: "16px" }}

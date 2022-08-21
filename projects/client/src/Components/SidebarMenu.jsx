@@ -62,7 +62,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 const SidebarMenu = (props) => {
-  const { title, menu, setOpenTab } = props;
+  const { title, menu, openTab, setOpenTab } = props;
   const [open, setOpen] = useState(true);
 
   const handleDrawer = () => {
@@ -140,7 +140,11 @@ const SidebarMenu = (props) => {
               >
                 {item.icon}
               </ListItemIcon>
-              {open && <Text>{item.text}</Text>}
+              {open && (
+                <Text color={openTab === index ? "primary" : "inherit"}>
+                  {item.text}
+                </Text>
+              )}
             </ListItemButton>
           </ListItem>
         ))}
