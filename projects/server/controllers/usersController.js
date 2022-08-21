@@ -155,9 +155,7 @@ module.exports = {
 
           let finalToken = createToken({ id, role, name, email, phone_number });
 
-          await dbQuery(
-            `Update users set token_verification = '' WHERE id=${req.dataUser.id};`
-          );
+          await dbQuery(`Update users set token_verification = '${finalToken}' WHERE id=${req.dataUser.id};`)
 
           return res.status(200).send({ ...result[0], finalToken });
         } else {
@@ -179,6 +177,34 @@ module.exports = {
   // resend verification email
   resendVerification: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        let result = await dbQuery(`Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id='${req.dataUser.id}';`)
+        console.log(result)
+        let { id, role, name, email, phone_number } = result[0]
+
+        let token = createToken({ id, role, name, email, phone_number })
+
+        await dbQuery(`Update users set token_verification = '${token}' WHERE id=${req.dataUser.id};`)
+
+        let verificationEmail = fs.readFileSync('./mail/verification.html').toString()
+
+        verificationEmail = verificationEmail.replace('#name', name)
+        verificationEmail = verificationEmail.replace('#token', `${process.env.FE_URL}/auth/verification/${token}`)
+
+        await transporter.sendMail({
+          from: "LifeServe Admin",
+          to: email,
+          subject: "Email Verification",
+          html: `${verificationEmail}`
+        })
+
+        return res.status(200).send({ ...result[0], token })
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: "Token expired"
+        })
+      }
     } catch (error) {
       return next(error);
     }
@@ -186,13 +212,46 @@ module.exports = {
   // send reset/forgot password  link
   forgotPassword: async (req, res, next) => {
     try {
+      let data = await dbQuery(`Select id, role, name, phone_number, email from users where email='${req.body.email}';`)
+
+      let { id, role, name, email, phone_number } = data[0]
+      let token = createToken({ id, role, name, email, phone_number })
+
+      await dbQuery(`Update users set token_reset = '${token}' WHERE email='${req.body.email}';`)
+      let finalResult = dbQuery(`Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where email='${req.body.email}';`)
+
+      let resetPassword = fs.readFileSync('./mail/resetPassword.html').toString()
+
+      resetPassword = resetPassword.replace('#fullname', name)
+      resetPassword = resetPassword.replace('#token', `${process.env.FE_URL}/auth/reset/${token}`)
+
+      await transporter.sendMail({
+        from: "Lifeserve Admin",
+        to: email,
+        subject: "Reset Password",
+        html: `${resetPassword}`
+      })
+      return res.status(200).send({ ...finalResult[0], token })
     } catch (error) {
       return next(error);
     }
   },
   // when user wants to reset password after click reset/forgot password link
-  resendVerification: async (req, res, next) => {
+  resetPassword: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        await dbQuery(`Update users set password='${hashPassword(req.body.password)}', token_reset = '' WHERE id=${req.dataUser.id}`)
+
+        return res.status(200).send({
+          success: true,
+          message: "Password reset success"
+        })
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: "Token expired"
+        })
+      }
     } catch (error) {
       return next(error);
     }

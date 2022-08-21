@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, CardMedia, Container, Grid, Typography } from "@mui/material";
+import { Button, Card, CardContent, CardMedia, Container, Grid, Typography } from "@mui/material";
 
 const ProductCard = (props) => {
     const { data } = props

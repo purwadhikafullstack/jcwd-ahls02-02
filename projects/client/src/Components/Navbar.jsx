@@ -11,48 +11,61 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logoutAction } from '../Redux/Actions/userAction';
 import Cookies from 'js-cookie';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import { Send } from '@mui/icons-material';
+import axios from 'axios'
+import { API_URL } from '../helper';
+import SnackBarStatus from './atoms/SnackBar';
 
 const Navbar = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { name } = useSelector((state) => {
+    const { name, verified_status } = useSelector((state) => {
         return {
-            name: state.userReducer.name
+            name: state.userReducer.name,
+            verified_status: state.userReducer.verified_status
         }
     })
 
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
+    const [anchorElUserSmall, setAnchorElUserSmall] = useState(null);
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
-    const handleOpenUserMenu = (event) => {
-        setAnchorElUser(event.currentTarget);
-    };
+    const [openSnackbar, setOpenSnackbar] = useState(false)
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
+    const [disableResend, setDisableResend] = useState(false)
 
     const handleLogout = () => {
         dispatch(logoutAction())
         Cookies.remove("userToken");
     }
 
+    const handleResend = () => {
+        setDisableResend(true)
+        let token = Cookies.get("userToken")
+        axios.patch(`${API_URL}/users/verify/send`, {}, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((response) => {
+            setOpenSnackbar(true)
+            setDisableResend(false)
+        }).catch((error) => {
+            console.log(error)
+            setDisableResend(false)
+
+        })
+    }
+
     return (
-        <AppBar position="sticky" style={{ background: 'white', boxShadow: "none" }}>
+        <AppBar position="sticky" style={{ background: 'white', boxShadow: "none", zIndex: 20 }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Container>
                     <Toolbar disableGutters sx={{ height: 75 }}>
                         <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
                             <Box>
-                                <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' style={{ maxWidth: 120 }} />
+                                <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
                             </Box>
                             <Box>
                                 <Button variant='text' sx={{ ml: 2, color: 'grey.800' }} onClick={() => navigate('/product')}>Product</Button>
@@ -61,13 +74,23 @@ const Navbar = () => {
                             {name ?
                                 <>
                                     <Box sx={{ flexGrow: 1, mr: 2 }}>
-                                        <Typography color='black' variant='subtitle2' sx={{ textAlign: 'right' }}>
-                                            {name ? name.toUpperCase() : null}
-                                        </Typography>
+                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                                            {verified_status === 'verified' ?
+                                                <VerifiedIcon sx={{ mr: 1 }} color='primary' />
+                                                :
+                                                null
+                                                // <Button variant="contained" sx={{ mr: 2 }}>Resend Verification</Button>
+                                            }
+                                            <Typography color='black' variant='subtitle2' sx={{ textAlign: 'right' }}>
+                                                {name ? name.toUpperCase() : null}
+                                            </Typography>
+
+                                        </Box>
+
                                     </Box>
                                     <Box>
                                         <Tooltip title='Open settings'>
-                                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                            <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)} sx={{ p: 0 }}>
                                                 <Avatar />
                                             </IconButton>
                                         </Tooltip>
@@ -81,15 +104,27 @@ const Navbar = () => {
                                             }}
                                             keepMounted
                                             PaperProps={{
-                                                sx: { width: 200 }
+                                                sx: { width: 225 }
                                             }}
                                             transformOrigin={{
                                                 vertical: 'top',
                                                 horizontal: 'right',
                                             }}
                                             open={Boolean(anchorElUser)}
-                                            onClose={handleCloseUserMenu}
+                                            onClose={() => setAnchorElUser(null)}
                                         >
+                                            {verified_status === 'verified' ?
+                                                null
+                                                :
+                                                <>
+                                                    <MenuItem>
+                                                        <Button variant="text" size="small" sx={{ mr: 2 }} startIcon={<Send />} disabled={disableResend} onClick={handleResend}>
+                                                            Resend Verification
+                                                        </Button>
+                                                    </MenuItem>
+                                                    <Divider />
+                                                </>
+                                            }
                                             <MenuItem onClick={() => navigate('/profile')}>
                                                 <AccountCircleOutlinedIcon sx={{ mr: 1 }} />
                                                 <Typography textAlign="center">Profile</Typography>
@@ -123,7 +158,7 @@ const Navbar = () => {
                         <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
                             <Box sx={{ width: '25%', textAlign: 'left' }}>
                                 <Tooltip title='Open settings'>
-                                    <IconButton onClick={handleOpenNavMenu} sx={{ p: 0 }}>
+                                    <IconButton onClick={(e) => setAnchorElNav(e.currentTarget)} sx={{ p: 0 }}>
                                         <MenuIcon />
                                     </IconButton>
                                 </Tooltip>
@@ -137,14 +172,14 @@ const Navbar = () => {
                                     }}
                                     keepMounted
                                     PaperProps={{
-                                        sx: { width: 200 }
+                                        sx: { width: 225 }
                                     }}
                                     transformOrigin={{
                                         vertical: 'top',
                                         horizontal: 'right',
                                     }}
                                     open={Boolean(anchorElNav)}
-                                    onClose={handleCloseNavMenu}
+                                    onClose={() => setAnchorElNav(null)}
                                 >
                                     <MenuItem>
                                         <MedicationIcon sx={{ mr: 1 }} />
@@ -157,34 +192,47 @@ const Navbar = () => {
                                 </Menu>
                             </Box>
                             <Box sx={{ width: '50%' }}>
-                                <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' style={{ maxWidth: 120 }} />
+                                <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
                             </Box>
                             {name ?
-                                <Box>
+                                <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
                                     <Tooltip title='Open settings'>
-                                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                        <IconButton onClick={(e) => setAnchorElUserSmall(e.currentTarget)} sx={{ p: 0 }}>
+                                            {/* <IconButton sx={{ p: 0 }}> */}
                                             <Avatar />
                                         </IconButton>
                                     </Tooltip>
                                     <Menu
                                         sx={{ mt: '45px' }}
                                         id="menu-appbar"
-                                        anchorEl={anchorElUser}
+                                        anchorEl={anchorElUserSmall}
                                         anchorOrigin={{
                                             vertical: 'top',
                                             horizontal: 'right',
                                         }}
                                         keepMounted
                                         PaperProps={{
-                                            sx: { width: 200 }
+                                            sx: { width: 225 }
                                         }}
                                         transformOrigin={{
                                             vertical: 'top',
                                             horizontal: 'right',
                                         }}
-                                        open={Boolean(anchorElUser)}
-                                        onClose={handleCloseUserMenu}
+                                        open={Boolean(anchorElUserSmall)}
+                                        onClose={() => setAnchorElUserSmall(null)}
                                     >
+                                        {verified_status === 'verified' ?
+                                            null
+                                            :
+                                            <>
+                                                <MenuItem>
+                                                    <Button variant="text" size="small" sx={{ mr: 2 }} startIcon={<Send />} disabled={disableResend} onClick={handleResend}>
+                                                        Resend Verification
+                                                    </Button>
+                                                </MenuItem>
+                                                <Divider />
+                                            </>
+                                        }
                                         <MenuItem onClick={() => navigate('/profile')}>
                                             <AccountCircleOutlinedIcon sx={{ mr: 1 }} />
                                             <Typography textAlign="center" >Profile</Typography>
@@ -217,6 +265,12 @@ const Navbar = () => {
                     </Toolbar>
                 </Container>
             </Box>
+            <SnackBarStatus
+                open={openSnackbar}
+                setOpen={setOpenSnackbar}
+                message='Verification email sent!'
+                severity='success'
+            />
         </AppBar>
     );
 };

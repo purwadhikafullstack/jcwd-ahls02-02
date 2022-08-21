@@ -8,8 +8,9 @@ route.post("/login", usersController.login);
 route.get("/login/keep", readToken, usersController.keepLogin);
 route.get("/tokenData", readToken, usersController.tokenData);
 route.patch("/verify", readToken, usersController.verifyAccount);
-route.patch("/verify/send", usersController.resendVerification);
+route.patch("/verify/send", readToken, usersController.resendVerification);
 route.patch("/forgotPassword", usersController.forgotPassword);
+route.patch("/resetPassword", readToken, usersController.resetPassword);
 
 route.get("/profile", readToken, usersController.userProfile);
 route.patch("/profile/:user_id", readToken, usersController.editProfile);
