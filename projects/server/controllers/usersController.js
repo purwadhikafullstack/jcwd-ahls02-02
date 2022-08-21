@@ -149,6 +149,34 @@ module.exports = {
   // resend verification email
   resendVerification: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        let result = await dbQuery(`Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id='${req.dataUser.id}';`)
+        console.log(result)
+        let { id, role, name, email, phone_number } = result[0]
+
+        let token = createToken({ id, role, name, email, phone_number })
+
+        await dbQuery(`Update users set token_verification = '${token}' WHERE id=${req.dataUser.id};`)
+
+        let verificationEmail = fs.readFileSync('./mail/verification.html').toString()
+
+        verificationEmail = verificationEmail.replace('#name', name)
+        verificationEmail = verificationEmail.replace('#token', `${process.env.FE_URL}/auth/verification/${token}`)
+
+        await transporter.sendMail({
+          from: "LifeServe Admin",
+          to: email,
+          subject: "Email Verification",
+          html: `${verificationEmail}`
+        })
+
+        return res.status(200).send({ ...result[0], token })
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: "Token expired"
+        })
+      }
     } catch (error) {
       return next(error);
     }
