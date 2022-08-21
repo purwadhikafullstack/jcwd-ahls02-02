@@ -11,8 +11,8 @@ route.patch("/verify", readToken, usersController.verifyAccount);
 route.patch("/verify/send", usersController.resendVerification);
 route.patch("/forgotPassword", usersController.forgotPassword);
 
-route.get("/profile/:user_id", usersController.userProfile);
-route.patch("/profile/:user_id", usersController.editProfile);
+route.get("/profile", readToken, usersController.userProfile);
+route.patch("/profile/:user_id", readToken, usersController.editProfile);
 route.patch("/profile/profile-picture/:user_id", usersController.editProfilePicture);
 route.patch("/profile/password/:user_id", usersController.changePassword);
 route.post("/profile/address/:user_id", usersController.addAddress);

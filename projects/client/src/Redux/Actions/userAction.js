@@ -13,3 +13,17 @@ export const logoutAction = () => {
         type: "LOGOUT"
     }
 }
+
+export const getProfileDataAction = (data) => {
+    return {
+        type: "GET_PROFILE_DATA",
+        payload: data
+    }
+}
+
+export const editProfileAction = (data) => {
+    return {
+        type: "EDIT_PROFILE",
+        payload: data
+    }
+}

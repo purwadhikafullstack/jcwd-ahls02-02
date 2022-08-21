@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Text from "./atoms/Text";
+import { Toolbar } from "@mui/material";
+import { ChevronRight } from "@mui/icons-material";
 
 const drawerWidth = 240;
 
@@ -60,7 +61,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function SidebarMenu(props) {
+const SidebarMenu = (props) => {
   const { title, menu, setOpenTab } = props;
   const [open, setOpen] = useState(true);
 
@@ -68,32 +69,51 @@ export default function SidebarMenu(props) {
     setOpen(!open);
   };
 
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    function handleResize() {
+      setWidth(window.innerWidth);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [width]);
+
+  useEffect(() => {
+    width < 850 ? setOpen(false) : setOpen(true);
+  }, [width]);
+
   return (
     <Drawer
       variant="permanent"
       open={open}
-      sx={{ position: { xs: open ? "absolute" : "static", sm: "static" } }}
+      sx={{
+        position: { xs: open ? "absolute" : "static", sm: "static", zIndex: 5 },
+      }}
     >
+      <Toolbar sx={{ height: 75, opacity: 0 }} />
       <DrawerHeader>
         {open && (
           <Text fontSize="h5" textAlign="left">
             {title}
           </Text>
         )}
-        <IconButton
-          sx={{
-            m: !open ? "auto" : 0,
-          }}
-          onClick={handleDrawer}
-        >
-          {open ? (
-            <ChevronLeftIcon />
-          ) : (
-            <>
-              <MenuIcon />
-            </>
-          )}
-        </IconButton>
+        {width < 850 && (
+          <IconButton
+            sx={{
+              m: !open ? "auto" : 0,
+            }}
+            onClick={handleDrawer}
+          >
+            {open ? (
+              <ChevronLeftIcon />
+            ) : (
+              <>
+                <ChevronRight />
+              </>
+            )}
+          </IconButton>
+        )}
       </DrawerHeader>
       <Divider />
       <List>
@@ -127,4 +147,6 @@ export default function SidebarMenu(props) {
       </List>
     </Drawer>
   );
-}
+};
+
+export default SidebarMenu;
