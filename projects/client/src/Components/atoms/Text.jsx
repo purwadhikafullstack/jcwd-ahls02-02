@@ -19,7 +19,6 @@ const Text = (props) => {
         textAlign: `${textAlign}`,
         fontWeight: `${fontWeight}`,
         fontStyle: `${fontStyle}`,
-        // color: `${color}`,
         display: `${display}`,
         m: 1,
       }}

@@ -9,117 +9,221 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import axios from "axios";
+import Cookies from "js-cookie";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../Components/atoms/Button";
 import Text from "../../../Components/atoms/Text";
+import { API_URL } from "../../../helper";
+import { editProfileAction } from "../../../Redux/Actions/userAction";
+import { ToastNotification } from "../../../Components/Toast";
 
 const MyProfile = () => {
-  const [value, setValue] = useState(null);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => {
+    return state.userReducer;
+  });
+
+  const [name, setName] = useState(user.name);
+  const [gender, setGender] = useState(user.gender);
+  const [dateOfBirth, setDateOfBirth] = useState(
+    user.birthdate ? JSON.parse(user.birthdate) : null
+  );
+  const email = user.email;
+  const [phoneNumber, setPhoneNumber] = useState(user.phone_number);
+  const [formIsChanged, setFormIsChanged] = useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      const birthdate = JSON.stringify(dateOfBirth);
+      const data = {
+        name,
+        gender,
+        birthdate,
+        email,
+        phone_number: phoneNumber,
+      };
+      const token = Cookies.get("userToken");
+      const res = await axios.patch(
+        `${API_URL}/users/profile/${user.id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.data.success) {
+        toast.success("Your profile successfully updated!");
+        Cookies.set("userToken", res.data.token, { expires: 1, secure: true });
+        dispatch(editProfileAction(res.data.data));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
-      <Grid xs={12} container spacing={2} alignItems="center">
-        <Grid xs={12}>
+      <ToastNotification />
+      <Grid container spacing={2} alignItems="center">
+        <Grid items xs={12} sx={{ pb: 2 }}>
           <Text fontSize="h5">My Profile</Text>
+          <Text>Manage your personal information</Text>
         </Grid>
 
-        <Container>
-          <FormControl>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Name</Text>
-              </Grid>
-              <Grid item xs={9} alignItems="center" justifyContent="flex-start">
-                <TextField
-                  id="user-name"
-                  placeholder="Name"
-                  variant="outlined"
-                  fullWidth
+        <FormControl>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} md={2} alignItems="center">
+              <Text textAlign="left">Name</Text>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={10}
+              alignItems="center"
+              justifyContent="flex-start"
+            >
+              <TextField
+                id="user-name"
+                placeholder="Name"
+                variant="outlined"
+                defaultValue={name}
+                fullWidth
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setFormIsChanged(true);
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={2} alignItems="center">
+              <Text textAlign="left">Gender</Text>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={10}
+              alignItems="center"
+              justifyContent="flex-start"
+            >
+              <RadioGroup
+                row
+                name="user-gender"
+                value={gender}
+                onChange={(e) => {
+                  setGender(e.target.value);
+                  setFormIsChanged(true);
+                }}
+              >
+                <FormControlLabel
+                  value="female"
+                  control={<Radio size="small" />}
+                  label="Female"
                 />
-              </Grid>
-
-              <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Gender</Text>
-              </Grid>
-              <Grid item xs={9} alignItems="center" justifyContent="flex-start">
-                <RadioGroup row name="user-gender">
-                  <FormControlLabel
-                    value="female"
-                    control={<Radio size="small" />}
-                    label="Female"
-                  />
-                  <FormControlLabel
-                    value="male"
-                    control={<Radio size="small" />}
-                    label="Male"
-                  />
-                  <FormControlLabel
-                    value="others"
-                    control={<Radio size="small" />}
-                    label="Others"
-                  />
-                </RadioGroup>
-              </Grid>
-
-              <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Birthdate</Text>
-              </Grid>
-              <Grid item xs={9} textAlign="left" justifyContent="flex-start">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    value={value}
-                    onChange={(newValue) => {
-                      setValue(newValue);
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
-              </Grid>
-
-              <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Email</Text>
-              </Grid>
-              <Grid item xs={9} alignItems="center" justifyContent="flex-start">
-                <TextField
-                  id="user-email"
-                  placeholder="Email"
-                  variant="outlined"
-                  type="email"
-                  fullWidth
+                <FormControlLabel
+                  value="male"
+                  control={<Radio size="small" />}
+                  label="Male"
                 />
-              </Grid>
-
-              <Grid item xs={3} alignItems="center">
-                <Text textAlign="left">Phone Number</Text>
-              </Grid>
-              <Grid item xs={9} alignItems="center" justifyContent="flex-start">
-                <TextField
-                  id="user-phone"
-                  placeholder="Phone Number"
-                  variant="outlined"
-                  type="tel"
-                  fullWidth
+                <FormControlLabel
+                  value="others"
+                  control={<Radio size="small" />}
+                  label="Others"
                 />
-              </Grid>
-              <Grid xs={12} container justifyContent="flex-end" sx={{ py: 3 }}>
-                <Grid xs={3} item />
-                <Grid
-                  xs={9}
-                  item
-                  textAlign="left"
-                  sx={{ pt: "16px", pr: 0, pb: 0, pl: "16px" }}
+              </RadioGroup>
+            </Grid>
+
+            <Grid item xs={12} md={2} alignItems="center">
+              <Text textAlign="left">Birthdate</Text>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={10}
+              textAlign="left"
+              justifyContent="flex-start"
+            >
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  value={dateOfBirth}
+                  onChange={(newValue) => {
+                    setDateOfBirth(newValue);
+                    setFormIsChanged(true);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </Grid>
+
+            <Grid item xs={12} md={2} alignItems="center">
+              <Text textAlign="left">Email</Text>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={10}
+              alignItems="center"
+              justifyContent="flex-start"
+            >
+              <TextField
+                id="user-email"
+                placeholder="Email"
+                variant="outlined"
+                type="email"
+                fullWidth
+                defaultValue={email}
+                disabled
+              />
+            </Grid>
+
+            <Grid item xs={12} md={2} alignItems="center">
+              <Text textAlign="left">Phone Number</Text>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={10}
+              alignItems="center"
+              justifyContent="flex-start"
+            >
+              <TextField
+                id="user-phone"
+                placeholder="Phone Number"
+                variant="outlined"
+                type="tel"
+                fullWidth
+                defaultValue={phoneNumber}
+                onChange={(e) => {
+                  setPhoneNumber(e.target.value);
+                  setFormIsChanged(true);
+                }}
+              />
+            </Grid>
+            <Grid container justifyContent="flex-end" sx={{ py: 3 }}>
+              <Grid xs={2} item />
+              <Grid
+                xs={12}
+                md={10}
+                item
+                textAlign="left"
+                sx={{ pt: "16px", pr: 0, pb: 0, pl: "16px" }}
+              >
+                <Button
+                  width="150px"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleSubmit()}
+                  disabled={!formIsChanged}
                 >
-                  <Button
-                    width="150px"
-                    variant="contained"
-                    color="primary"
-                  >
-                    Submit
-                  </Button>
-                </Grid>
+                  Submit
+                </Button>
               </Grid>
             </Grid>
-          </FormControl>
-        </Container>
+          </Grid>
+        </FormControl>
       </Grid>
     </>
   );

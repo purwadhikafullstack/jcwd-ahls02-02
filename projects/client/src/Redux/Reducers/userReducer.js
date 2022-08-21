@@ -18,6 +18,16 @@ export const userReducer = (state = INITIAL_STATE, action) => {
             };
         case "LOGOUT":
             return INITIAL_STATE;
+        case "GET_PROFILE_DATA":
+            return {
+                ...state,
+                ...action.payload
+            }
+        case "EDIT_PROFILE":
+            return {
+                ...state, 
+                ...action.payload
+            }
         default:
             return state;
     }
