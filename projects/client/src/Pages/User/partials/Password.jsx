@@ -29,6 +29,8 @@ const Password = () => {
 
   const [PasswordConfValidity, setPasswordConfValidity] = useState("null");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const user = useSelector((state) => {
     return state.userReducer;
   });
@@ -126,6 +128,7 @@ const Password = () => {
 
   const handleSubmitPassword = async () => {
     try {
+      setIsSubmitting(true);
       const data = {
         password,
         newPassword,
@@ -146,11 +149,14 @@ const Password = () => {
 
       if (!res.data.success) {
         toast.error(res.data.message);
+        setIsSubmitting(false);
       } else {
         toast.success(res.data.message);
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.log(error);
+      setIsSubmitting(false);
     }
   };
 
@@ -158,15 +164,15 @@ const Password = () => {
     <>
       <ToastNotification />
       <Grid container spacing={2} alignItems="center">
-        <Grid items xs={12} sx={{ pb: 2 }}>
-          <Text fontSize="h5">Change Password</Text>
+        <Grid sx={{ pb: 2 }}>
+          <Text fontSize="h5" fontWeight="bold">Change Password</Text>
           <Text>Change your password to a new one</Text>
         </Grid>
 
         <FormControl>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left">Old Password</Text>
+              <Text textAlign="left" fontWeight="medium">Old Password</Text>
             </Grid>
             <Grid
               item
@@ -187,7 +193,7 @@ const Password = () => {
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left">
+              <Text textAlign="left" fontWeight="medium">
                 New Password{" "}
                 <Tooltip
                   title={
@@ -226,7 +232,7 @@ const Password = () => {
                 onChange={(e) => handleCheckPassword(e.target.value)}
                 error={passwordValidity === "null" ? null : !passwordValidity}
                 color={passwordInfo ? "success" : null}
-                endAdornment={
+                endadornment={
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
@@ -242,7 +248,7 @@ const Password = () => {
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left">Confirmation Password</Text>
+              <Text textAlign="left" fontWeight="medium">Confirmation Password</Text>
             </Grid>
             <Grid
               item
@@ -286,6 +292,7 @@ const Password = () => {
                   disabled={
                     !password || !passwordValidity || !PasswordConfValidity
                   }
+                  isSubmitting={isSubmitting}
                 >
                   Submit
                 </Button>
