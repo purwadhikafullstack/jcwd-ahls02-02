@@ -18,6 +18,7 @@ app.use(cors());
 
 app.use(express.json());
 app.use(bearerToken());
+app.use(express.static("public"));
 
 //#region API ROUTES
 

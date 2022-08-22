@@ -2,6 +2,7 @@ const fs = require("fs");
 const { dbConf, dbQuery } = require("../config/database");
 const { hashPassword, createToken } = require("../config/encription");
 const { transporter } = require("../config/nodemailer");
+const { uploader } = require("../config/uploader");
 
 module.exports = {
   userData: async (req, res, next) => {
@@ -361,6 +362,67 @@ module.exports = {
   },
   editProfilePicture: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        const uploadFile = uploader("/imgUsers", "IMGUSERS").array("image", 1);
+        uploadFile(req, res, async (error) => {
+          try {
+            //remove from directory if user have profile_picture
+            try {
+              const currentPicture = await dbQuery(
+                `select profile_picture from users where id=${req.dataUser.id}`
+              );
+              if (currentPicture[0].profile_picture) {
+                fs.unlinkSync(`./public/${currentPicture[0].profile_picture}`);
+              }
+            } catch (error) {
+              return next(error);
+            }
+
+            const newFileName = req.files[0]
+              ? `'/imgUsers/${req.files[0].filename}'`
+              : null;
+
+            const changePicture = await dbQuery(
+              `update users set profile_picture=${newFileName} where id=${req.dataUser.id};`
+            );
+
+            if (changePicture) {
+              const newUserData = await dbQuery(
+                `select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id = ${req.dataUser.id}`
+              );
+
+              const {
+                id,
+                role,
+                verified_status,
+                name,
+                email,
+                phone_number,
+                profile_picture,
+                birthdate,
+                gender,
+              } = newUserData[0];
+
+              const newToken = createToken({
+                id,
+                role,
+                name,
+                email,
+                phone_number,
+              });
+
+              return res.status(200).send({
+                success: true,
+                message: "Profile picture successfully updated!",
+                data: newUserData[0],
+                token: newToken,
+              });
+            }
+          } catch (error) {
+            return next(error);
+          }
+        });
+      }
     } catch (error) {
       return next(error);
     }
