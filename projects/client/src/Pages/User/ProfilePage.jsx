@@ -23,35 +23,34 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!user.name) {
+      const getUserData = async () => {
+        try {
+          const token = Cookies.get("userToken");
+          const res = await axios.get(`${API_URL}/users/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (res.data.success) {
+            dispatch(getProfileDataAction(res.data.data));
+            setIsLoading(false);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
       getUserData();
     } else {
       setIsLoading(false);
     }
   }, [user]);
 
-  const getUserData = async () => {
-    try {
-      const token = Cookies.get("userToken");
-      const res = await axios.get(`${API_URL}/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.success) {
-        dispatch(getProfileDataAction(res.data.data));
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
     <div>
       {!isLoading && (
         <Container>
           <Box sx={{ display: "flex" }}>
-            <ProfileTabs setOpenTab={setOpenTab} />
+            <ProfileTabs openTab={openTab} setOpenTab={setOpenTab} />
             <Box component="main" sx={{ flexGrow: 1, p: 3, zIndex: 0 }}>
               {/* <Navbar/> */}
               {openTab === 0 && <MyProfile />}
