@@ -1,12 +1,13 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { AppBar, Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Toolbar, Typography } from "@mui/material";
+import { Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../../helper";
-import TokenExpired from "./Partials/TokenExpired";
+import TokenExpiredPage from "./Partials/TokenExpiredPage";
 import { useNavigate } from "react-router-dom";
 import SnackBarStatus from "../../Components/atoms/SnackBar";
+import { Toaster, toast } from "react-hot-toast"
 
 const ForgotPasswordPage = () => {
     let { token } = useParams();
@@ -141,7 +142,7 @@ const ForgotPasswordPage = () => {
         }).then((res) => {
             setOpenSnackbar(true)
             setShowLogin(true)
-            // navigate('/auth/login')
+            toast.success('Reset password success!')
         }).catch((error) => {
             console.log(error)
             setDisableButton(false)
@@ -151,19 +152,6 @@ const ForgotPasswordPage = () => {
     return <div>
         {userData ? userData.token_reset === token ?
             <>
-                <AppBar position="sticky" style={{ background: 'white', boxShadow: "none" }}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <Container>
-                            <Toolbar disableGutters sx={{ height: 75 }}>
-                                <Grid container sx={{ justifyContent: 'space-between' }}>
-                                    <Grid item xs={2} >
-                                        <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
-                                    </Grid>
-                                </Grid>
-                            </Toolbar>
-                        </Container>
-                    </Box>
-                </AppBar>
                 <Container sx={{ mt: 2 }}>
                     <Grid container spacing={1}>
                         <Grid item xs={12} md={5}>
@@ -240,56 +228,23 @@ const ForgotPasswordPage = () => {
                             <img src='https://img.freepik.com/free-vector/my-password-concept-illustration_114360-6924.jpg?w=2000' alt='login' style={{ width: '60%' }} />
                         </Grid>
                     </Grid>
-                    <SnackBarStatus
+                    {/* <SnackBarStatus
                         open={openSnackbar}
                         setOpen={setOpenSnackbar}
                         message='Reset password successful'
                         severity='success'
-                    />
+                    /> */}
                 </Container>
             </>
             :
-            <TokenExpired />
+            <TokenExpiredPage />
             :
-            <TokenExpired />
+            <TokenExpiredPage />
         }
-        {/* {showLogin ?
-            <>
-                <AppBar position="sticky" style={{ background: 'white', boxShadow: "none" }}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <Container>
-                            <Toolbar disableGutters sx={{ height: 75 }}>
-                                <Grid container sx={{ justifyContent: 'space-between' }}>
-                                    <Grid item xs={2} >
-                                        <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
-                                    </Grid>
-                                </Grid>
-                            </Toolbar>
-                        </Container>
-                    </Box>
-                </AppBar>
-                <Container sx={{ mt: 2 }}>
-                    <Grid container spacing={1}>
-                        <Grid item xs={12} md={5}>
-                            <Box sx={{ mt: 3, mb: 3 }}>
-                                <Typography variant='h5' color='grey.700'>SUCCESS!</Typography>
-                                <Typography variant='p' color='grey.700'>Reset password was successful. Please go to the login page and use your new password to log in!</Typography>
-                            </Box>
-                            <Button variant="contained" color='primary' onClick={() => navigate('/auth/login')} >Login</Button>
-                        </Grid>
-                        <Grid item md={7} sx={{ display: { xs: 'none', md: 'block' } }}>
-                            <img src='https://img.freepik.com/free-vector/my-password-concept-illustration_114360-6924.jpg?w=2000' alt='login' style={{ width: '60%' }} />
-                        </Grid>
-                    </Grid>
-
-                </Container>
-                <SnackBarStatus
-                    open={openSnackbar}
-                    setOpen={setOpenSnackbar}
-                    message='Reset password successful'
-                />
-            </>
-            : null} */}
+        <Toaster
+            position="top-center"
+            reverseOrder={false}
+        />
     </div>
 }
 

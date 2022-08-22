@@ -1,6 +1,5 @@
 import { Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import AuthNavbar from "./Partials/InitialNavbar";
 import { useState } from 'react'
 import { VisibilityOff, Visibility } from '@mui/icons-material';
 import { API_URL } from "../../helper";
@@ -9,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { loginAction } from "../../Redux/Actions/userAction";
 import Cookies from "js-cookie";
 import ResetPasswordModal from "./Partials/ResetPasswordModal";
+import { Toaster, toast } from "react-hot-toast"
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -45,6 +45,7 @@ const LoginPage = () => {
             setDisableButton(true)
             let login = await axios.post(`${API_URL}/users/login`, { email, password })
             dispatch(loginAction(login.data))
+            // toast.success('Login success!')
             navigate('/')
             Cookies.set('userToken', login.data.token, { expires: 1 })
 
@@ -66,7 +67,7 @@ const LoginPage = () => {
     }
 
     return <div>
-        <AuthNavbar />
+        {/* <AuthNavbar /> */}
 
         <Container sx={{ mt: 2 }}>
             <Grid container spacing={1}>
@@ -155,6 +156,10 @@ const LoginPage = () => {
             setOpen={setOpenModal}
             toggle={() => setOpenModal(!openModal)}
         />
+        {/* <Toaster
+            position="top-center"
+            reverseOrder={false}
+        /> */}
     </div >
 }
 

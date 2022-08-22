@@ -4,7 +4,6 @@ import { useState } from "react";
 import { VisibilityOff, Visibility } from '@mui/icons-material';
 import axios from "axios";
 import { API_URL } from "../../helper";
-import AuthNavbar from "./Partials/InitialNavbar";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { loginAction } from "../../Redux/Actions/userAction";
@@ -177,7 +176,7 @@ const RegisterPage = () => {
     }
 
     return <div>
-        <AuthNavbar />
+        {/* <AuthNavbar /> */}
 
         <Container sx={{ mt: 2 }}>
             <Grid container spacing={1}>

@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginAction } from "./Redux/Actions/userAction";
 import ForgotPasswordPage from "./Pages/Auth/ForgotPasswordPage";
 import NotFoundPage from "./Pages/404";
+import Navbar from "./Components/Navbar";
 
 function App() {
 
@@ -62,6 +63,7 @@ function App() {
 
   return (
     <div className="App">
+      <Navbar />
       <Routes>
         {role ? role === "admin" ?
           <>
@@ -93,6 +95,8 @@ function App() {
             <Route path='/auth/register' element={<RegisterPage />} />\
             <Route path='/' element={<Homepage />} />
             <Route path='/auth/reset/:token' element={<ForgotPasswordPage />} />
+            <Route path='/product' element={<ProductPage />} />
+            <Route path='/product/detail' element={<ProductDetailPage />} />
           </>
         }
         <Route path='/auth/verification/:token' element={<VerificationPage />} />

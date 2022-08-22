@@ -1,6 +1,11 @@
+import Navbar from "../../Components/Navbar";
+
 const DashboardPage = () => {
     return <div>
-        This is the admin's dashboard / homepage
+        <Navbar />
+        <div>
+            This is the admin's dashboard / homepage
+        </div>
     </div>
 }
 

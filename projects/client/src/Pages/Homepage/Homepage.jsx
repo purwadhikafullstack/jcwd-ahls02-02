@@ -1,7 +1,6 @@
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import Banner from "./Partials/Banner";
 import CategoryShop from "./Partials/CategoryShop";
-import Navbar from "../../Components/Navbar";
 import ProductCard from "../../Components/ProductCard";
 
 let dataProduct = [
@@ -39,7 +38,6 @@ let dataProduct = [
 
 const Homepage = () => {
     return <div>
-        <Navbar />
         <Banner />
         <CategoryShop />
         <Container sx={{ mt: 5 }}>
