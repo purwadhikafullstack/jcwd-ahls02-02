@@ -34,9 +34,11 @@ const MyProfile = () => {
   const email = user.email;
   const [phoneNumber, setPhoneNumber] = useState(user.phone_number);
   const [formIsChanged, setFormIsChanged] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async () => {
     try {
+      setIsSubmitting(true)
       const birthdate = JSON.stringify(dateOfBirth);
       const data = {
         name,
@@ -54,14 +56,16 @@ const MyProfile = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
-      if (res.data.success) {
+        );
+        if (res.data.success) {
+        setIsSubmitting(false)
         toast.success("Your profile successfully updated!");
         Cookies.set("userToken", res.data.token, { expires: 1, secure: true });
         dispatch(editProfileAction(res.data.data));
       }
     } catch (error) {
       console.log(error);
+      setIsSubmitting(false)
     }
   };
 
@@ -69,15 +73,15 @@ const MyProfile = () => {
     <>
       <ToastNotification />
       <Grid container spacing={2} alignItems="center">
-        <Grid items xs={12} sx={{ pb: 2 }}>
-          <Text fontSize="h5">My Profile</Text>
+        <Grid sx={{ pb: 2 }}>
+          <Text fontSize="h5" fontWeight="bold">My Profile</Text>
           <Text>Manage your personal information</Text>
         </Grid>
 
         <FormControl>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left">Name</Text>
+              <Text textAlign="left" fontWeight="medium">Name</Text>
             </Grid>
             <Grid
               item
@@ -100,7 +104,7 @@ const MyProfile = () => {
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left">Gender</Text>
+              <Text textAlign="left" fontWeight="medium">Gender</Text>
             </Grid>
             <Grid
               item
@@ -137,7 +141,7 @@ const MyProfile = () => {
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left">Birthdate</Text>
+              <Text textAlign="left" fontWeight="medium">Birthdate</Text>
             </Grid>
             <Grid
               item
@@ -159,7 +163,7 @@ const MyProfile = () => {
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left">Email</Text>
+              <Text textAlign="left" fontWeight="medium">Email</Text>
             </Grid>
             <Grid
               item
@@ -180,7 +184,7 @@ const MyProfile = () => {
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left">Phone Number</Text>
+              <Text textAlign="left" fontWeight="medium">Phone Number</Text>
             </Grid>
             <Grid
               item
@@ -217,6 +221,7 @@ const MyProfile = () => {
                   color="primary"
                   onClick={() => handleSubmit()}
                   disabled={!formIsChanged}
+                  isSubmitting={isSubmitting}
                 >
                   Submit
                 </Button>
