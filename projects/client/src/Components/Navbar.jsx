@@ -12,10 +12,11 @@ import { useDispatch } from 'react-redux';
 import { logoutAction } from '../Redux/Actions/userAction';
 import Cookies from 'js-cookie';
 import VerifiedIcon from '@mui/icons-material/Verified';
-import { Send } from '@mui/icons-material';
+import { HowToReg, LoginRounded, Send } from '@mui/icons-material';
 import axios from 'axios'
 import { API_URL } from '../helper';
-import SnackBarStatus from './atoms/SnackBar';
+import { toast } from "react-hot-toast"
+import { ToastNotification } from './Toast';
 
 const Navbar = () => {
 
@@ -31,17 +32,66 @@ const Navbar = () => {
     })
 
     const [anchorElNav, setAnchorElNav] = useState(null);
-    const [anchorElUser, setAnchorElUser] = useState(null);
+    const [anchorElUser, setAnchorElUser] = useState(false);
     const [anchorElUserSmall, setAnchorElUserSmall] = useState(null);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false)
-
     const [disableResend, setDisableResend] = useState(false)
+
+    const handleNavigateProfile = () => {
+        setAnchorElUserSmall(false)
+        setAnchorElUser(false)
+        navigate('/profile')
+    }
+
+    const handleNavigateLogin = () => {
+        setAnchorElUserSmall(false)
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+        navigate('/auth/login')
+    }
+
+    const handleNavigateRegister = () => {
+        setAnchorElUserSmall(false)
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+        navigate('/auth/register')
+    }
+
+    const handleNavigateProduct = () => {
+        setAnchorElUserSmall(false)
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+        navigate('/product')
+    }
+
+    const handleNavigatePrescription = () => {
+        setAnchorElUserSmall(false)
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+        navigate('/prescription')
+    }
+
+    const handleNavigateCart = () => {
+        setAnchorElUserSmall(false)
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+        navigate('/cart')
+    }
+
+    const handleNavigateOrder = () => {
+        setAnchorElUserSmall(false)
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+        navigate('/order')
+    }
 
     const handleLogout = () => {
         dispatch(logoutAction())
         navigate('/auth/login')
         Cookies.remove("userToken");
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+        setAnchorElUserSmall(false)
     }
 
     const handleResend = () => {
@@ -52,7 +102,7 @@ const Navbar = () => {
                 'Authorization': `Bearer ${token}`
             }
         }).then((response) => {
-            setOpenSnackbar(true)
+            toast.success('Verification sent!')
             setDisableResend(false)
         }).catch((error) => {
             console.log(error)
@@ -67,10 +117,16 @@ const Navbar = () => {
         } else {
             if (role) {
                 if (role === 'user') {
-                    return <>
-                        <Button variant='text' sx={{ ml: 2, color: 'grey.800' }} onClick={() => navigate('/product')}>Product</Button>
-                        <Button variant='text' sx={{ ml: 1, color: 'grey.800' }} onClick={() => navigate('/prescription')}>Upload Prescription</Button>
-                    </>
+                    if (verified_status === 'verified') {
+                        return <>
+                            <Button variant='text' sx={{ ml: 2, color: 'grey.800' }} onClick={handleNavigateProduct}>Product</Button>
+                            <Button variant='text' sx={{ ml: 1, color: 'grey.800' }} onClick={handleNavigatePrescription}>Upload Prescription</Button>
+                        </>
+                    } else {
+                        return <>
+                            <Button variant='text' sx={{ ml: 2, color: 'grey.800' }} onClick={handleNavigateProduct}>Product</Button>
+                        </>
+                    }
                 } else {
                     return null
                 }
@@ -79,6 +135,7 @@ const Navbar = () => {
     }
 
     const printButton = () => {
+        console.log(anchorElUser)
         if (location.pathname.includes('verification') || location.pathname.includes('reset')) {
             return null
         } else {
@@ -90,14 +147,11 @@ const Navbar = () => {
                                 <VerifiedIcon sx={{ mr: 1 }} color='primary' />
                                 :
                                 null
-                                // <Button variant="contained" sx={{ mr: 2 }}>Resend Verification</Button>
                             }
                             <Typography color='black' variant='subtitle2' sx={{ textAlign: 'right' }}>
                                 {name ? name.toUpperCase() : null}
                             </Typography>
-
                         </Box>
-
                     </Box>
                     <Box>
                         <Tooltip title='Open settings'>
@@ -121,8 +175,8 @@ const Navbar = () => {
                                 vertical: 'top',
                                 horizontal: 'right',
                             }}
-                            open={Boolean(anchorElUser)}
-                            onClose={() => setAnchorElUser(null)}
+                            open={anchorElUser}
+                            onClose={() => setAnchorElUser(false)}
                         >
                             {verified_status === 'verified' ?
                                 null
@@ -135,24 +189,42 @@ const Navbar = () => {
                                     </MenuItem>
                                     <Divider />
                                 </>
-
                             }
-                            <MenuItem onClick={() => navigate('/profile')}>
+                            <MenuItem onClick={handleNavigateProfile}>
                                 <AccountCircleOutlinedIcon sx={{ mr: 1 }} />
                                 <Typography textAlign="center">Profile</Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate('/prescription')}>
-                                <MedicationIcon sx={{ mr: 1 }} />
-                                <Typography textAlign="center">Prescription</Typography>
-                            </MenuItem>
-                            <MenuItem onClick={() => navigate('/cart')}>
-                                <ShoppingCartIcon sx={{ mr: 1 }} />
-                                <Typography textAlign="center">Cart</Typography>
-                            </MenuItem>
-                            <MenuItem onClick={() => navigate('/order')}>
-                                <ShoppingBagIcon sx={{ mr: 1 }} />
-                                <Typography textAlign="center">Order</Typography>
-                            </MenuItem>
+                            {verified_status === 'verified' ?
+                                <>
+                                    <MenuItem onClick={handleNavigatePrescription}>
+                                        <MedicationIcon sx={{ mr: 1 }} />
+                                        <Typography textAlign="center">Prescription</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleNavigateCart}>
+                                        <ShoppingCartIcon sx={{ mr: 1 }} />
+                                        <Typography textAlign="center">Cart</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleNavigateOrder}>
+                                        <ShoppingBagIcon sx={{ mr: 1 }} />
+                                        <Typography textAlign="center">Order</Typography>
+                                    </MenuItem>
+                                </>
+                                :
+                                <>
+                                    <MenuItem disabled onClick={handleNavigatePrescription}>
+                                        <MedicationIcon sx={{ mr: 1 }} />
+                                        <Typography textAlign="center">Prescription</Typography>
+                                    </MenuItem>
+                                    <MenuItem disabled onClick={handleNavigateCart}>
+                                        <ShoppingCartIcon sx={{ mr: 1 }} />
+                                        <Typography textAlign="center">Cart</Typography>
+                                    </MenuItem>
+                                    <MenuItem disabled onClick={handleNavigateOrder}>
+                                        <ShoppingBagIcon sx={{ mr: 1 }} />
+                                        <Typography textAlign="center">Order</Typography>
+                                    </MenuItem>
+                                </>
+                            }
                             <Divider />
                             <MenuItem onClick={handleLogout}>
                                 <Typography textAlign="center">Log Out</Typography>
@@ -162,9 +234,177 @@ const Navbar = () => {
                 </>
             } else {
                 return <Box sx={{ flexGrow: 1, textAlign: 'right' }}>
-                    <Button variant="outlined" sx={{ mr: 1 }} onClick={() => navigate('/auth/login')}>Login</Button>
-                    <Button variant="contained" onClick={() => navigate('/auth/register')}>Register</Button>
+                    <Button variant="outlined" sx={{ mr: 1 }} onClick={handleNavigateLogin}>Login</Button>
+                    <Button variant="contained" onClick={handleNavigateRegister}>Register</Button>
                 </Box>
+            }
+        }
+    }
+
+    const printButtonSmall = () => {
+        if (location.pathname.includes('verification') || location.pathname.includes('reset')) {
+            return null
+        } else {
+            if (name) {
+                return <>
+                    <Box sx={{ width: '25%', textAlign: 'left' }}>
+                        <Tooltip title='Open settings'>
+                            <IconButton onClick={(e) => setAnchorElNav(e.currentTarget)} sx={{ p: 0 }}>
+                                <MenuIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            sx={{ mt: '45px' }}
+                            id="menu-appbar"
+                            anchorEl={anchorElNav}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            PaperProps={{
+                                sx: { width: 225 }
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElNav)}
+                            onClose={() => setAnchorElNav(null)}
+                        >
+                            <MenuItem>
+                                <MedicationIcon sx={{ mr: 1 }} />
+                                <Typography textAlign="center" onClick={handleNavigateProduct}>Product</Typography>
+                            </MenuItem>
+                            <MenuItem>
+                                <HealthAndSafetyIcon sx={{ mr: 1 }} />
+                                <Typography textAlign="center" onClick={handleNavigatePrescription}>Upload Perscription</Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                    <Box sx={{ width: '50%' }}>
+                        <Button onClick={() => navigate('/')}>
+                            <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
+                        </Button>
+                    </Box>
+                    <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
+                        <Tooltip title='Open settings'>
+                            <IconButton onClick={(e) => setAnchorElUserSmall(e.currentTarget)} sx={{ p: 0 }}>
+                                <Avatar />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            sx={{ mt: '45px' }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUserSmall}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            PaperProps={{
+                                sx: { width: 225 }
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElUserSmall)}
+                            onClose={() => setAnchorElUserSmall(null)}
+                        >
+                            {verified_status === 'verified' ?
+                                null
+                                :
+                                <>
+                                    <MenuItem>
+                                        <Button variant="text" size="small" sx={{ mr: 2 }} startIcon={<Send />} disabled={disableResend} onClick={handleResend}>
+                                            Resend Verification
+                                        </Button>
+                                    </MenuItem>
+                                    <Divider />
+                                </>
+                            }
+                            <MenuItem onClick={handleNavigateProfile}>
+                                <AccountCircleOutlinedIcon sx={{ mr: 1 }} />
+                                <Typography textAlign="center" >Profile</Typography>
+                            </MenuItem>
+                            <MenuItem onClick={handleNavigatePrescription}>
+                                <HealthAndSafetyIcon sx={{ mr: 1 }} />
+                                <Typography textAlign="center" >Prescription</Typography>
+                            </MenuItem>
+                            <MenuItem onClick={handleNavigateCart}>
+                                <ShoppingCartIcon sx={{ mr: 1 }} />
+                                <Typography textAlign="center" >Cart</Typography>
+                            </MenuItem>
+                            <MenuItem onClick={handleNavigateOrder}>
+                                <ShoppingBagIcon sx={{ mr: 1 }} />
+                                <Typography textAlign="center" >Order</Typography>
+                            </MenuItem>
+                            <Divider />
+                            <MenuItem onClick={handleLogout}>
+                                <Typography textAlign="center">Log Out</Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+
+
+                </>
+            } else {
+                return <>
+                    <Box sx={{ width: '25%', textAlign: 'left' }}>
+                        <Tooltip title='Open settings'>
+                            <IconButton onClick={(e) => setAnchorElNav(e.currentTarget)} sx={{ p: 0 }}>
+                                <MenuIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            sx={{ mt: '45px' }}
+                            id="menu-appbar"
+                            anchorEl={anchorElNav}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            PaperProps={{
+                                sx: { width: 175 }
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElNav)}
+                            onClose={() => setAnchorElNav(null)}
+                        >
+                            <MenuItem>
+                                <LoginRounded sx={{ mr: 1 }} />
+                                <Typography textAlign="center" onClick={handleNavigateLogin}>
+                                    Login
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem>
+                                <HowToReg sx={{ mr: 1 }} />
+                                <Typography textAlign="center" onClick={handleNavigateRegister}>
+                                    Register
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem>
+                                <HealthAndSafetyIcon sx={{ mr: 1 }} />
+                                <Typography textAlign="center" onClick={handleNavigateProduct}>
+                                    Product</Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                    <Box sx={{ width: '50%' }}>
+                        <Button onClick={() => {
+                            setAnchorElNav(false)
+                            navigate('/')
+                        }}>
+                            <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
+                        </Button>
+                    </Box>
+                    <Box sx={{ width: '25%' }} />
+                </>
             }
         }
     }
@@ -184,121 +424,12 @@ const Navbar = () => {
                             {printButton()}
                         </Box>
                         <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
-                            <Box sx={{ width: '25%', textAlign: 'left' }}>
-                                <Tooltip title='Open settings'>
-                                    <IconButton onClick={(e) => setAnchorElNav(e.currentTarget)} sx={{ p: 0 }}>
-                                        <MenuIcon />
-                                    </IconButton>
-                                </Tooltip>
-                                <Menu
-                                    sx={{ mt: '45px' }}
-                                    id="menu-appbar"
-                                    anchorEl={anchorElNav}
-                                    anchorOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'right',
-                                    }}
-                                    keepMounted
-                                    PaperProps={{
-                                        sx: { width: 225 }
-                                    }}
-                                    transformOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'right',
-                                    }}
-                                    open={Boolean(anchorElNav)}
-                                    onClose={() => setAnchorElNav(null)}
-                                >
-                                    <MenuItem>
-                                        <MedicationIcon sx={{ mr: 1 }} />
-                                        <Typography textAlign="center" onClick={() => navigate('/product')}>Product</Typography>
-                                    </MenuItem>
-                                    <MenuItem>
-                                        <HealthAndSafetyIcon sx={{ mr: 1 }} />
-                                        <Typography textAlign="center" onClick={() => navigate('/perscription')}>Upload Perscription</Typography>
-                                    </MenuItem>
-                                </Menu>
-                            </Box>
-                            <Box sx={{ width: '50%' }}>
-                                <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
-                            </Box>
-                            {name ?
-                                <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
-                                    <Tooltip title='Open settings'>
-                                        <IconButton onClick={(e) => setAnchorElUserSmall(e.currentTarget)} sx={{ p: 0 }}>
-                                            {/* <IconButton sx={{ p: 0 }}> */}
-                                            <Avatar />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Menu
-                                        sx={{ mt: '45px' }}
-                                        id="menu-appbar"
-                                        anchorEl={anchorElUserSmall}
-                                        anchorOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'right',
-                                        }}
-                                        keepMounted
-                                        PaperProps={{
-                                            sx: { width: 225 }
-                                        }}
-                                        transformOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'right',
-                                        }}
-                                        open={Boolean(anchorElUserSmall)}
-                                        onClose={() => setAnchorElUserSmall(null)}
-                                    >
-                                        {verified_status === 'verified' ?
-                                            null
-                                            :
-                                            <>
-                                                <MenuItem>
-                                                    <Button variant="text" size="small" sx={{ mr: 2 }} startIcon={<Send />} disabled={disableResend} onClick={handleResend}>
-                                                        Resend Verification
-                                                    </Button>
-                                                </MenuItem>
-                                                <Divider />
-                                            </>
-                                        }
-                                        <MenuItem onClick={() => navigate('/profile')}>
-                                            <AccountCircleOutlinedIcon sx={{ mr: 1 }} />
-                                            <Typography textAlign="center" >Profile</Typography>
-                                        </MenuItem>
-                                        <MenuItem onClick={() => navigate('/prescription')}>
-                                            <HealthAndSafetyIcon sx={{ mr: 1 }} />
-                                            <Typography textAlign="center" >Prescription</Typography>
-                                        </MenuItem>
-                                        <MenuItem onClick={() => navigate('/cart')}>
-                                            <ShoppingCartIcon sx={{ mr: 1 }} />
-                                            <Typography textAlign="center" >Cart</Typography>
-                                        </MenuItem>
-                                        <MenuItem onClick={() => navigate('/order')}>
-                                            <ShoppingBagIcon sx={{ mr: 1 }} />
-                                            <Typography textAlign="center" >Order</Typography>
-                                        </MenuItem>
-                                        <Divider />
-                                        <MenuItem onClick={handleLogout}>
-                                            <Typography textAlign="center">Log Out</Typography>
-                                        </MenuItem>
-                                    </Menu>
-                                </Box>
-                                :
-                                <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
-                                    <Button size='small' variant="outlined" sx={{ mr: 1 }} onClick={() => navigate('/auth/login')}>Login</Button>
-                                    <Button size='small' variant="contained" onClick={() => navigate('/auth/register')}>Register</Button>
-                                </Box>
-                            }
+                            {printButtonSmall()}
                         </Box>
                     </Toolbar>
                 </Container>
             </Box>
-            <SnackBarStatus
-                open={openSnackbar}
-                setOpen={setOpenSnackbar}
-                message='Verification email sent!'
-                severity='success'
-            />
+            <ToastNotification />
         </AppBar>
     );
 };

@@ -1,4 +1,4 @@
-import { Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
+import { Box, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { VisibilityOff, Visibility } from '@mui/icons-material';
@@ -7,6 +7,7 @@ import { API_URL } from "../../helper";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { loginAction } from "../../Redux/Actions/userAction";
+import Button from "../../Components/atoms/Button";
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -30,6 +31,7 @@ const RegisterPage = () => {
     const [PasswordConfValidity, setPasswordConfValidity] = useState("null")
 
     const [disableSignUp, setDisableSignUp] = useState(false)
+    const [submitData, setSubmitData] = useState(false)
 
     const handleButtonAvailability = (email) => {
         if (email === "") {
@@ -157,7 +159,8 @@ const RegisterPage = () => {
     const handleRegister = async (name, email, phone_number, password) => {
         try {
             if (name && emailAvailability && passwordValidity && PasswordConfValidity) {
-                setDisableSignUp(true)
+                // setDisableSignUp(true)
+                setSubmitData(true)
                 let signup = await axios.post(`${API_URL}/users/register`, {
                     name,
                     email,
@@ -167,17 +170,16 @@ const RegisterPage = () => {
                 navigate('/')
                 dispatch(loginAction(signup.data))
 
-                Cookies.set('userToken', signup.data.token, { expires: 1 })
+                Cookies.set('userToken', signup.data.token, { expires: 1, secure: true })
             }
         } catch (error) {
-            setDisableSignUp(false)
+            setSubmitData(false)
+            // setDisableSignUp(false)
             console.log(error)
         }
     }
 
     return <div>
-        {/* <AuthNavbar /> */}
-
         <Container sx={{ mt: 2 }}>
             <Grid container spacing={1}>
                 <Grid item xs={12} md={5}>
@@ -216,7 +218,7 @@ const RegisterPage = () => {
                                 />
                             </Box>
                             <Box>
-                                <Button variant='contained' disabled={disableAvailability} onClick={() => handleCheckEmail(email)}>Check Availability</Button>
+                                <Button variant='contained' disabled={disableAvailability} onClick={() => handleCheckEmail(email)}>CHECK AVAILABILITY</Button>
                             </Box>
                         </Box>
                         <TextField
@@ -270,26 +272,27 @@ const RegisterPage = () => {
                             color={PasswordConfValidity ? "success" : null}
                         />
                     </form>
+                    <Box sx={{ mt: 2, mb: 2 }}>
+                        <Button
+                            type="button"
+                            width='100%'
+                            variant="contained"
+                            color="primary"
+                            disabled={name && emailAvailability && phone && passwordValidity === true && PasswordConfValidity === true ? disableSignUp : true}
+                            onClick={() => handleRegister(name, email, phone, password)}
+                            isSubmitting={submitData}
+                        >
+                            SIGN UP
+                        </Button>
+                    </Box>
                     <Button
                         type="button"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 2, mb: 2 }}
-                        color="primary"
-                        disabled={name && emailAvailability && phone && passwordValidity === true && PasswordConfValidity === true ? disableSignUp : true}
-                        onClick={() => handleRegister(name, email, phone, password)}
-                    >
-                        Sign Up
-                    </Button>
-                    <Button
-                        type="button"
-                        fullWidth
+                        width='100%'
                         variant="outlined"
-                        sx={{ mb: 2 }}
                         color="primary"
                     >
 
-                        Sign Up with Google
+                        SIGN UP WITH GOOGLE
                     </Button>
                 </Grid>
                 <Grid item md={7} sx={{ display: { xs: 'none', md: 'block' } }}>

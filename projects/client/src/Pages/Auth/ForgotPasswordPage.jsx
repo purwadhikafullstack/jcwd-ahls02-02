@@ -6,8 +6,8 @@ import { useParams } from "react-router-dom";
 import { API_URL } from "../../helper";
 import TokenExpiredPage from "./Partials/TokenExpiredPage";
 import { useNavigate } from "react-router-dom";
-import SnackBarStatus from "../../Components/atoms/SnackBar";
 import { Toaster, toast } from "react-hot-toast"
+import { ToastNotification } from "../../Components/Toast";
 
 const ForgotPasswordPage = () => {
     let { token } = useParams();
@@ -25,9 +25,6 @@ const ForgotPasswordPage = () => {
     const [PasswordConfValidity, setPasswordConfValidity] = useState("null")
 
     const [disableButton, setDisableButton] = useState(false)
-
-    const [openSnackbar, setOpenSnackbar] = useState(false)
-    const [showLogin, setShowLogin] = useState(false)
 
     useEffect(() => {
         getData();
@@ -140,9 +137,8 @@ const ForgotPasswordPage = () => {
                 'Authorization': `Bearer ${token}`
             }
         }).then((res) => {
-            setOpenSnackbar(true)
-            setShowLogin(true)
             toast.success('Reset password success!')
+            navigate('/auth/login')
         }).catch((error) => {
             console.log(error)
             setDisableButton(false)
@@ -172,7 +168,6 @@ const ForgotPasswordPage = () => {
                                             <IconButton
                                                 onClick={() => setShowPassword(!showPassword)}
                                                 aria-label="toggle password visibility"
-                                                // onMouseDown={handleMouseDownPassword}
                                                 edge="end"
                                             >
                                                 {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -210,30 +205,11 @@ const ForgotPasswordPage = () => {
 
                                 Reset Password
                             </Button>
-                            {showLogin ?
-                                <Button
-                                    type="button"
-                                    fullWidth
-                                    variant="contained"
-                                    color='primary'
-                                    onClick={() => {
-                                        navigate('/auth/login')
-                                        setShowLogin(false)
-                                    }} >
-                                    Login
-                                </Button>
-                                : null}
                         </Grid>
                         <Grid item md={7} sx={{ display: { xs: 'none', md: 'block' } }}>
                             <img src='https://img.freepik.com/free-vector/my-password-concept-illustration_114360-6924.jpg?w=2000' alt='login' style={{ width: '60%' }} />
                         </Grid>
                     </Grid>
-                    {/* <SnackBarStatus
-                        open={openSnackbar}
-                        setOpen={setOpenSnackbar}
-                        message='Reset password successful'
-                        severity='success'
-                    /> */}
                 </Container>
             </>
             :
@@ -241,10 +217,7 @@ const ForgotPasswordPage = () => {
             :
             <TokenExpiredPage />
         }
-        <Toaster
-            position="top-center"
-            reverseOrder={false}
-        />
+        <ToastNotification />
     </div>
 }
 
