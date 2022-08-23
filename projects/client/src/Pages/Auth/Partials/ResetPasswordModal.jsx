@@ -1,7 +1,8 @@
-import { Modal, Backdrop, Fade, Box, Grid, Typography, TextField, Button } from "@mui/material";
+import { Modal, Backdrop, Fade, Box, Grid, Typography, TextField } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
 import { API_URL } from "../../../helper";
+import Button from "../../../Components/atoms/Button";
 
 const style = {
     position: 'absolute',
@@ -23,6 +24,7 @@ const ResetPasswordModal = (props) => {
     const [emailError, setEmailError] = useState(false)
 
     const [statusDisabled, setStatusDisabled] = useState(false)
+    const [submitData, setSubmitData] = useState(false)
 
 
     const handleCloseModal = () => {
@@ -34,16 +36,19 @@ const ResetPasswordModal = (props) => {
     }
 
     const handleSendLink = (email) => {
-        setStatusDisabled(true)
+        setSubmitData(true)
+        // setStatusDisabled(true)
         axios.patch(`${API_URL}/users/forgotPassword`, { email })
             .then((res) => {
                 setEmailError(false)
                 setEmailSent(true)
                 setHelperText()
-                setStatusDisabled(false)
+                // setStatusDisabled(false)
+                setSubmitData(false)
             }).catch((error) => {
                 console.log(error)
-                setStatusDisabled(false)
+                // setStatusDisabled(false)
+                setSubmitData(false)
                 setEmailError(true)
                 setHelperText("Email not found")
             })
@@ -113,18 +118,18 @@ const ResetPasswordModal = (props) => {
                             error={emailError}
                             helperText={helperText}
                         />
-
-                        <Button
-                            type="button"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 2, mb: 2 }}
-                            color="secondary"
-                            onClick={() => handleSendLink(email)}
-                            disabled={statusDisabled}
-                        >
-                            Send reset link!
-                        </Button>
+                        <Box sx={{ mt: 1 }}>
+                            <Button
+                                type="button"
+                                width='100%'
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => handleSendLink(email)}
+                                isSubmitting={submitData}
+                            >
+                                SEND RESET LINK!
+                            </Button>
+                        </Box>
                     </Box>
                 }
             </Fade>

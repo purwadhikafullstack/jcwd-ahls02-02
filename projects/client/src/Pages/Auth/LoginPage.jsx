@@ -1,4 +1,4 @@
-import { Box, Button, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, TextField, Typography } from "@mui/material";
+import { Box, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from 'react'
 import { VisibilityOff, Visibility } from '@mui/icons-material';
@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { loginAction } from "../../Redux/Actions/userAction";
 import Cookies from "js-cookie";
 import ResetPasswordModal from "./Partials/ResetPasswordModal";
-import { Toaster, toast } from "react-hot-toast"
+import Button from '../../Components/atoms/Button'
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ const LoginPage = () => {
 
     const [openModal, setOpenModal] = useState(false)
 
-    const [disableButton, setDisableButton] = useState(false)
+    const [submitData, setSubmitData] = useState(false)
 
 
     const handleCheckEmail = (email) => {
@@ -42,33 +42,31 @@ const LoginPage = () => {
 
     const handleLogin = async (email, password) => {
         try {
-            setDisableButton(true)
+            setSubmitData(true)
+            // setDisableButton(true)
             let login = await axios.post(`${API_URL}/users/login`, { email, password })
             dispatch(loginAction(login.data))
-            // toast.success('Login success!')
             navigate('/')
-            Cookies.set('userToken', login.data.token, { expires: 1 })
+            Cookies.set('userToken', login.data.token, { expires: 1, secure: true })
 
         } catch (error) {
             if (error.response.data.message === "User not found") {
-                setDisableButton(false)
+                setSubmitData(false)
                 console.log('Email is not registered')
                 setEmailValidity(false)
                 setEmailInfo("This email is not registered")
             } else if (error.response.data.message === "Password Incorrect") {
-                setDisableButton(false)
+                setSubmitData(false)
                 console.log('Password is incorrect')
                 setPasswordInfo('Incorrect password')
             } else {
-                setDisableButton(false)
+                setSubmitData(false)
                 console.log(error)
             }
         }
     }
 
     return <div>
-        {/* <AuthNavbar /> */}
-
         <Container sx={{ mt: 2 }}>
             <Grid container spacing={1}>
                 <Grid item xs={12} md={5}>
@@ -123,27 +121,27 @@ const LoginPage = () => {
                     <Box textAlign='right'>
                         <Link color='grey.800' underline='hover' href="#" onClick={() => setOpenModal(!openModal)}>Forgot password?</Link>
                     </Box>
-                    <Button
-                        type="button"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 2, mb: 2 }}
-                        color="primary"
-                        onClick={() => handleLogin(email, password)}
-                        disabled={disableButton}
-                    >
+                    <Box sx={{ mt: 2, mb: 2 }}>
+                        <Button
+                            type="button"
+                            width='100%'
+                            variant="contained"
+                            // sx={{ mt: 2, mb: 2 }}
+                            color="primary"
+                            onClick={() => handleLogin(email, password)}
+                            isSubmitting={submitData}
+                        >
 
-                        Login
-                    </Button>
+                            LOGIN
+                        </Button>
+                    </Box>
                     <Button
                         type="button"
-                        fullWidth
+                        width='100%'
                         variant="outlined"
-                        sx={{ mb: 2 }}
                         color="primary"
                     >
-
-                        Login with Google
+                        LOGIN WITH GOOGLE
                     </Button>
                 </Grid>
                 <Grid item md={7} sx={{ display: { xs: 'none', md: 'block' } }}>
@@ -156,10 +154,6 @@ const LoginPage = () => {
             setOpen={setOpenModal}
             toggle={() => setOpenModal(!openModal)}
         />
-        {/* <Toaster
-            position="top-center"
-            reverseOrder={false}
-        /> */}
     </div >
 }
 
