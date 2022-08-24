@@ -9,6 +9,7 @@ const Text = (props) => {
     underline = "none",
     color,
     display = "block", // block, inline
+    sx
   } = props;
   return (
     <Typography
@@ -20,7 +21,7 @@ const Text = (props) => {
         fontWeight: `${fontWeight}`,
         fontStyle: `${fontStyle}`,
         display: `${display}`,
-        m: 1,
+        ...sx
       }}
     >
       {props.children}
