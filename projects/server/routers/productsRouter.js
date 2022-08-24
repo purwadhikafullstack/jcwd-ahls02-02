@@ -3,10 +3,10 @@ const route = require("express").Router();
 
 route.get("/all", productsController.getAllProducts);
 route.get("/", productsController.getProducts);
+route.get("/categories", productsController.getCategories);
 route.get("/:product_id", productsController.getDetailProduct);
 route.post("/", productsController.addProduct);
 
-route.get("/categories", productsController.getCategories);
 route.post("/categories", productsController.addCategories);
 route.patch("/categories", productsController.editCategories);
 route.delete("/categories", productsController.deleteCategories);
