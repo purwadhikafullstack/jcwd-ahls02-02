@@ -1,5 +1,5 @@
-import { Refresh, RotateRight } from "@mui/icons-material";
-import { Button as ButtonMui, CircularProgress } from "@mui/material";
+import { RotateRight } from "@mui/icons-material";
+import { Button as ButtonMui } from "@mui/material";
 
 const Button = (props) => {
   const {
@@ -12,18 +12,17 @@ const Button = (props) => {
     children,
     width,
     height,
+    sx
   } = props;
 
   return (
     <ButtonMui
-      // style={{ maxHeight: "30px", minWidth: "50px", minHeight: "30px" }}
-      style={{ width: `${width}`, height: `${height}` }}
       variant={variant}
       size={size}
       color={color}
       disabled={disabled || isSubmitting}
       onClick={onClick}
-      sx={{ textTransform: `capitalize` }}
+      sx={{ width: `${width}`, height: `${height}`, textTransform: `capitalize`, ...sx }}
     >
       {!isSubmitting ? children : <RotateRight className="icon-spin" />}
     </ButtonMui>

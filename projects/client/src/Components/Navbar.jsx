@@ -23,11 +23,12 @@ const Navbar = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
-    const { name, verified_status, role } = useSelector((state) => {
+    const { name, verified_status, role, profile_picture } = useSelector((state) => {
         return {
             name: state.userReducer.name,
             verified_status: state.userReducer.verified_status,
-            role: state.userReducer.role
+            role: state.userReducer.role,
+            profile_picture: state.userReducer.profile_picture
         }
     })
 
@@ -184,7 +185,7 @@ const Navbar = () => {
                         <Box>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar />
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`}/>
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -525,6 +526,7 @@ const Navbar = () => {
                         </Box>
                     </>
                 }
+
             } else {
                 return <>
                     <Box sx={{ width: '25%', textAlign: 'left' }}>
