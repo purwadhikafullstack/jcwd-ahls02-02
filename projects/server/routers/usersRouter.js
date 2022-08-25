@@ -18,6 +18,7 @@ route.patch("/profile/profile-picture/:user_id", readToken, usersController.edit
 route.patch("/profile/password/:user_id", readToken, usersController.changePassword);
 route.post("/profile/address/:user_id", readToken, usersController.addAddress);
 route.patch("/profile/address/:user_id", readToken, usersController.editAddress);
+route.patch("/profile/default-address/:user_id", readToken, usersController.editDefaultAddress);
 route.delete("/profile/address/:user_id", readToken, usersController.deleteAddress);
 
 route.get("/cart/:user_id", usersController.getUserCart);

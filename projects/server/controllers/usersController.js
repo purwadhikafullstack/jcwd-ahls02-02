@@ -96,7 +96,7 @@ module.exports = {
       if (result.length == 1) {
         let { id, role, name, email, phone_number } = result[0];
         const userAddress = await dbQuery(
-          `select id, street, province_id, province_label, city_id, city_label, postal_code from address where id_user = ${id}`
+          `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${id}`
         );
         let token = createToken({ id, role, name, email, phone_number });
         return res
@@ -496,7 +496,7 @@ module.exports = {
         );
 
         const userAddress = await dbQuery(
-          `select id, street, province_id, province_label, city_id, city_label, postal_code from address where id_user = ${req.dataUser.id}`
+          `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${req.dataUser.id}`
         );
 
         return res.status(200).send({
@@ -543,7 +543,7 @@ module.exports = {
 
         if (updateAddress.affectedRows) {
           const userAddress = await dbQuery(
-            `select id, street, province_id, province_label, city_id, city_label, postal_code from address where id_user = ${req.dataUser.id}`
+            `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${req.dataUser.id}`
           );
 
           return res.status(200).send({
@@ -552,6 +552,53 @@ module.exports = {
             data: userAddress,
           });
         }
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  },
+  editDefaultAddress: async (req, res, next) => {
+    try {
+      if (req.dataUser.id) {
+        // delete current default address
+        const currentDefault = await dbQuery(
+          `select * from address where id_user=${req.dataUser.id} and default_address="true"`
+        );
+
+        if (currentDefault.length) {
+          await dbQuery(
+            `update address set default_address = 'false' where id=${currentDefault[0].id}`
+          );
+        }
+
+        // set new default address
+
+        const setDefaultAddress = await dbQuery(
+          `update address set default_address = 'true' where id=${req.body.addressId}`
+        );
+
+        if (setDefaultAddress.affectedRows) {
+          const userAddress = await dbQuery(
+            `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${req.dataUser.id}`
+          );
+
+          return res.status(200).send({
+            success: true,
+            message: "Address successfully updated",
+            data: userAddress,
+          });
+        }
+
+        return res.status(200).send({
+          success: true,
+          message: "Address successfully updated",
+          // data: userAddress,
+        });
       } else {
         return res.status(200).send({
           success: false,

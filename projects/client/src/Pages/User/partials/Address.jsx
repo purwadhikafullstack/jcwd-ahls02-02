@@ -18,6 +18,7 @@ const Address = () => {
   const user = useSelector((state) => {
     return state.userReducer;
   });
+
   const dispatch = useDispatch();
 
   const [addressList, setAddressList] = useState(user.address);
@@ -70,7 +71,34 @@ const Address = () => {
     }
   }, [confirmDelete]);
 
-  const handleSetDefault = (index) => {};
+  const handleSetDefault = async (addressValue) => {
+    
+    try {
+      const token = Cookies.get("userToken");
+      const addressId = addressValue.id;
+
+      const res = await axios.patch(
+        `${API_URL}/users/profile/default-address/${user.id}`,
+        { addressId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        toast.success(res.data.message);
+        dispatch(editProfileAction({ address: res.data.data }));
+        setAddressList(res.data.data);
+      } else {
+        toast.error("Please try again");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Please try again");
+    }
+  };
 
   const handleEdit = (addressValue, index) => {
     setSelectedAddress({ addressValue, index });
@@ -117,9 +145,24 @@ const Address = () => {
                   </Grid>
                 </Grid>
                 <Grid item xs={3} sx={{ textAlign: "right" }}>
-                  <Button variant="outlined" color="secondary">
-                    Set as Default
-                  </Button>
+                  {value.default_address === "true" ? (
+                    <Text
+                      textAlign="right"
+                      fontWeight="bold"
+                      color="primary"
+                      sx={{ mr: 1 }}
+                    >
+                      Default Address
+                    </Text>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handleSetDefault(value, index)}
+                    >
+                      Set as Default
+                    </Button>
+                  )}
                 </Grid>
                 <Grid item xs={1}>
                   <IconButton color="error" onClick={() => handleDelete(index)}>
@@ -177,8 +220,8 @@ const Address = () => {
         setOpen={setOpenModal}
         toggle={() => {
           setOpenModal(!openModal);
-          setAddressModalMode(null)
-          setSelectedAddress(null)
+          setAddressModalMode(null);
+          setSelectedAddress(null);
         }}
         addressModalMode={addressModalMode}
         setAddressList={setAddressList}
