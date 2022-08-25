@@ -77,6 +77,7 @@ module.exports = {
             sort += `order by ${req.query.sort} asc`
           }
         }
+        console.log(`${filter} ${sort}`)
 
         let allData = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.unit_conversion, p.needs_receipt,  p.image, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
@@ -102,6 +103,7 @@ module.exports = {
           totalPage += Math.ceil(totalData / 12)
         }
 
+        console.log(`${filter} ${sort} ${limit}`)
 
         let resultFilter = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.unit_conversion, p.needs_receipt,  p.image, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id

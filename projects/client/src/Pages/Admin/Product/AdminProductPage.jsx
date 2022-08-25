@@ -14,7 +14,7 @@ const AdminProductPage = () => {
     const [needsReceipt, setNeedsReceipt] = useState()
     const [minPrice, setMinPrice] = useState()
     const [maxPrice, setMaxPrice] = useState()
-    const [sort, setSort] = useState()
+    const [sort, setSort] = useState('')
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
 
