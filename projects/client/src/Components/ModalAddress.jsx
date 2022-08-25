@@ -8,10 +8,16 @@ import {
   MenuItem,
 } from "@mui/material";
 import axios from "axios";
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { API_URL } from "../helper";
 import Button from "./atoms/Button";
 import Text from "./atoms/Text";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastNotification } from "./Toast";
+import toast from "react-hot-toast";
+import { editProfileAction } from "../Redux/Actions/userAction";
+import ModalConfirm from "./ModalConfirm";
 
 const style = {
   position: "absolute",
@@ -26,7 +32,10 @@ const style = {
 };
 
 const ModalAddress = (props) => {
-  const { isOpen, toggle, addressModalMode } = props;
+  const { isOpen, toggle, addressModalMode, setAddressList, selectedAddress } =
+    props;
+  const dispatch = useDispatch();
+
   const handleCloseModal = () => {
     setStreet(null);
     setProvince(null);
@@ -34,6 +43,10 @@ const ModalAddress = (props) => {
     setPostalCode(null);
     toggle();
   };
+
+  const user = useSelector((state) => {
+    return state.userReducer;
+  });
 
   const [street, setStreet] = useState("");
   const [province, setProvince] = useState("");
@@ -47,10 +60,13 @@ const ModalAddress = (props) => {
   const [isLoadingCity, setIsLoadingCity] = useState(false);
   const [isLoadingPostalCode, setIsLoadingPostalCode] = useState(false);
 
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  const [confirmSubmit, setConfirmSubmit] = useState(false);
+
   const handleChangeProvince = async (value) => {
     setProvince(value);
-    setCity(null)
-    setPostalCode(null)
+    setCity(null);
+    setPostalCode(null);
     setIsLoadingCity(true);
     const resCity = await axios.get(
       `${API_URL}/rajaOngkir/city?province=${value}`
@@ -69,35 +85,97 @@ const ModalAddress = (props) => {
     setIsLoadingPostalCode(false);
   };
 
-  const handleSubmit = () => {
-    toggle();
-  };
-
   useEffect(() => {
     const getProvinceOption = async () => {
       const resProvince = await axios.get(`${API_URL}/rajaOngkir/province`);
-      console.log(resProvince);
       setProvinceOption(resProvince.data.rajaongkir.results);
     };
+    const getCityOption = async (provinceId) => {
+      const resCity = await axios.get(
+        `${API_URL}/rajaOngkir/city?province=${provinceId}`
+      );
+      setCityOption(resCity.data.rajaongkir.results);
+    };
+
+    if (selectedAddress) {
+      const { addressValue } = selectedAddress;
+      setPostalCode(addressValue.postal_code);
+      setStreet(addressValue.street);
+      setProvince(addressValue.province_id.toString());
+      setCity(addressValue.city_id.toString());
+      getCityOption(addressValue.province_id);
+    }
 
     getProvinceOption();
-
-    setIsLoading(false);
-
-    if (!province) {
-      const getCityOption = async () => {
-        const resCity = await axios.get(
-          `${API_URL}/rajaOngkir/city?province=${province}`
-        );
-      };
-    }
+    setIsLoading(false)
   }, [isOpen]);
 
-  useEffect(() => {
-    if (provinceOption.length) {
-      setIsLoading(false);
+  const handleSubmit = async () => {
+    try {
+      let provinceLabel;
+      let cityLabel;
+      cityOption.forEach((value, index) => {
+        if (value.city_id === city) {
+          provinceLabel = value.province;
+          cityLabel = value.type + " " + value.city_name;
+        }
+      });
+      const data = {
+        street,
+        province_id: parseInt(province),
+        province_label: provinceLabel,
+        city_id: parseInt(city),
+        city_label: cityLabel,
+        postal_code: parseInt(postalCode),
+      };
+
+      const token = Cookies.get("userToken");
+      let res;
+
+      if (addressModalMode === "Add") {
+        res = await axios.post(
+          `${API_URL}/users/profile/address/${user.id}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (addressModalMode === "Edit") {
+        data.addressId = selectedAddress.addressValue.id;
+        res = await axios.patch(
+          `${API_URL}/users/profile/address/${user.id}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      console.log(res)
+      if (res.data.success) {
+        dispatch(editProfileAction({ address: res.data.data }));
+        setAddressList(res.data.data);
+        toggle();
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Please try again");
     }
-  }, [provinceOption]);
+  };
+
+  useEffect(() => {
+    if (confirmSubmit) {
+      handleSubmit();
+      setConfirmSubmit(false);
+    }
+  }, [confirmSubmit]);
 
   return (
     <Modal
@@ -113,6 +191,7 @@ const ModalAddress = (props) => {
     >
       <Fade in={isOpen}>
         <Box sx={style}>
+          <ToastNotification />
           <Box sx={{ pb: 3 }}>
             <Text fontSize="h5" fontWeight="bold" color="primary">
               {addressModalMode === "Add" ? "Add New Address" : "Edit Address"}
@@ -127,7 +206,7 @@ const ModalAddress = (props) => {
                     required
                     id="street-form"
                     label="Street"
-                    defaultValue={street}
+                    value={street}
                     onChange={(e) => setStreet(e.target.value)}
                   ></TextField>
                 </Box>
@@ -139,7 +218,7 @@ const ModalAddress = (props) => {
                     select
                     id="select-province"
                     label="Province"
-                    defaultValue={province}
+                    value={province}
                     onChange={(e) => handleChangeProvince(e.target.value)}
                   >
                     <MenuItem value="" disabled>
@@ -165,7 +244,7 @@ const ModalAddress = (props) => {
                             select
                             id="select-city"
                             label="City"
-                            defaultValue={city}
+                            value={city}
                             onChange={(e) => handleChangeCity(e.target.value)}
                           >
                             <MenuItem value="" disabled>
@@ -174,7 +253,7 @@ const ModalAddress = (props) => {
                             {cityOption.map((value, index) => {
                               return (
                                 <MenuItem value={value.city_id}>
-                                  {value.city_name}
+                                  {value.type} {value.city_name}
                                 </MenuItem>
                               );
                             })}
@@ -191,7 +270,7 @@ const ModalAddress = (props) => {
                                     disabled
                                     id="select-postal-code"
                                     label="postal-code"
-                                    defaultValue={postalCode}
+                                    value={postalCode}
                                   />
                                 </Box>
                               </>
@@ -221,7 +300,7 @@ const ModalAddress = (props) => {
                     variant="contained"
                     color="primary"
                     width="100px"
-                    onClick={handleSubmit}
+                    onClick={()=>setOpenModalConfirm(true)}
                   >
                     Submit
                   </Button>
@@ -229,6 +308,18 @@ const ModalAddress = (props) => {
               </>
             )}
           </FormControl>
+          <ModalConfirm
+            isOpen={openModalConfirm}
+            setOpen={setOpenModalConfirm}
+            type="confirm"
+            toggle={() => setOpenModalConfirm(false)}
+            text={
+              addressModalMode === "Add"
+                ? "Are you sure you want to add this address?"
+                : "Are you sure you want to change this address?"
+            }
+            handleConfirm={() => setConfirmSubmit(true)}
+          />
         </Box>
       </Fade>
     </Modal>

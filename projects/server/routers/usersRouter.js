@@ -16,9 +16,9 @@ route.get("/profile", readToken, usersController.userProfile);
 route.patch("/profile/:user_id", readToken, usersController.editProfile);
 route.patch("/profile/profile-picture/:user_id", readToken, usersController.editProfilePicture);
 route.patch("/profile/password/:user_id", readToken, usersController.changePassword);
-route.post("/profile/address/:user_id", usersController.addAddress);
-route.patch("/profile/address/:user_id", usersController.editAddress);
-route.delete("/profile/address/:user_id", usersController.deleteAddress);
+route.post("/profile/address/:user_id", readToken, usersController.addAddress);
+route.patch("/profile/address/:user_id", readToken, usersController.editAddress);
+route.delete("/profile/address/:user_id", readToken, usersController.deleteAddress);
 
 route.get("/cart/:user_id", usersController.getUserCart);
 route.post("/cart/:user_id", usersController.addProductToCart);

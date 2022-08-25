@@ -49,7 +49,7 @@ const ProfilePicture = () => {
           },
         }
       );
-      console.log(res);
+
       if (res.data.success) {
         toast.success(res.data.message);
         dispatch(editProfileAction(res.data.data));
