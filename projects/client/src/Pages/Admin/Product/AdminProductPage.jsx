@@ -6,6 +6,7 @@ import ProductTable from "./Partials/ProductTable";
 import axios from "axios";
 import { API_URL } from "../../../helper";
 import { Create, Delete } from "@mui/icons-material";
+import ModalAddProduct from "./Partials/ModalAddProduct";
 
 const AdminProductPage = () => {
 
@@ -19,11 +20,27 @@ const AdminProductPage = () => {
     const [limit, setLimit] = useState(10)
 
     const [productData, setProductData] = useState()
+    const [category, setCategory] = useState()
     const [totalPage, setTotalPage] = useState()
+
+    const [openAddProduct, setOpenAddProduct] = useState(false)
 
     useEffect(() => {
         getData()
     }, [])
+
+    useEffect(() => {
+        getCategory();
+    }, [])
+
+    const getCategory = () => {
+        axios.get(`${API_URL}/products/categories`)
+            .then((response) => {
+                setCategory(response.data)
+            }).catch((error) => {
+                console.log(error)
+            })
+    }
 
     const getData = (filterName = name, filterCategory = idCategory, filterNeedsReceipt = needsReceipt, filterMinPrice = minPrice, filterMaxPrice = maxPrice, filterSort = sort, filterPage = page, filterLimit = limit) => {
 
@@ -157,11 +174,12 @@ const AdminProductPage = () => {
                         minPrice={minPrice}
                         maxPrice={maxPrice}
                         sort={sort}
+                        category={category}
                     />
                 </Grid>
                 <Grid xs={12} md={9} sx={{ pt: 4 }}>
                     <Box textAlign='right'>
-                        <Button variant='contained'>Add New product</Button>
+                        <Button variant='contained' onClick={() => setOpenAddProduct(true)}>Add New product</Button>
                     </Box>
                     <ProductTable
                         productData={productData}
@@ -172,6 +190,11 @@ const AdminProductPage = () => {
                 </Grid>
             </Grid>
         </Container>
+        <ModalAddProduct
+            open={openAddProduct}
+            close={() => setOpenAddProduct(false)}
+            categoryList={category}
+        />
     </div>
 }
 

@@ -1,5 +1,7 @@
 const fs = require("fs");
 const { dbConf, dbQuery } = require("../config/database");
+const { hashPassword, createToken } = require("../config/encription");
+const { uploader } = require("../config/uploader");
 
 module.exports = {
   // get all products
@@ -11,6 +13,7 @@ module.exports = {
       return next(error);
     }
   },
+  // get product category list
   getCategories: async (req, res, next) => {
     try {
       let result = await dbQuery('Select * from category;')
@@ -118,28 +121,11 @@ module.exports = {
   },
   getDetailProduct: async (req, res, next) => {
     try {
+      console.log(req.params)
     } catch (error) {
       return next(error);
     }
   },
-  // get product category list
-  // getCategories: async (req, res, next) => {
-  //   try {
-  //     console.log('hellow')
-  //     // let result = await dbQuery('Select * from category;')
-  //     // console.log(result)
-  //     return res.status(200).send('halo')
-  //   } catch (error) {
-  //     return next(error);
-  //   }
-  // },
-  // getCategories: async (req, res, next) => {
-  //   try {
-  //     console.log('halo')
-  //   } catch (error) {
-  //     return next(error)
-  //   }
-  // },
   addCategories: async (req, res, next) => {
     try {
     } catch (error) {
@@ -161,6 +147,100 @@ module.exports = {
   // sekaligus add data di tabel stock
   addProduct: async (req, res, next) => {
     try {
+      if (req.dataUser.role === 'admin') {
+
+        const uploadFile = uploader("/imgProduct", "IMGPRODUCT").array("image", 1);
+        uploadFile(req, res, async (error) => {
+          try {
+            console.log('req.files', req.files)
+            const newFileName = req.files[0]
+              ? `'/imgProduct/${req.files[0].filename}'`
+              : null;
+
+            let { name, id_category, description, needs_receipt, selling_price, buying_price, stock, unit_conversion } = JSON.parse(req.body.data);
+
+            let newProduct = await dbQuery(
+              `INSERT INTO products (name, description, image, id_category, selling_price, buying_price, unit_conversion, needs_receipt) VALUE ('${name}', '${description}', ${newFileName}, ${id_category}, ${selling_price}, ${buying_price}, ${unit_conversion}, '${needs_receipt}');`
+            );
+
+            if (newProduct.insertId) {
+              let values = ''
+              stock.forEach((val, id) => {
+                if (!values) {
+                  values += `(${newProduct.insertId}, '${val.unit}', '${val.default_unit}', ${val.quantity})`
+                } else {
+                  values += `, (${newProduct.insertId}, '${val.unit}', '${val.default_unit}', ${val.quantity})`
+                }
+              })
+
+              console.log(`INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${values};`)
+
+              await dbQuery(
+                `INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${values};`)
+
+              return res.status(200).send({
+                success: true,
+                message: "Product successfully added!",
+                // data: newProduct
+              })
+
+            } else {
+              return res.status(401).send({
+                success: true,
+                message: "Failed to upload!",
+                // data: newProduct
+              })
+            }
+
+            // await dbQuery(
+            //   `INSERT INTO category (name, description, image, id_category, selling_price, buying_price, unit_conversion, needs_receipt) VALUE (${name}, ${description}, ${newFileName}, ${id_category}, ${selling_price}, ${buying_price}, ${unit_conversion}, ${needs_receipt});`
+            // );
+
+            // if (postProduct) {
+            //   const newUserData = await dbQuery(
+            //     `select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id = ${req.dataUser.id}`
+            //   );
+
+            //   const {
+            //     id,
+            //     role,
+            //     verified_status,
+            //     name,
+            //     email,
+            //     phone_number,
+            //     profile_picture,
+            //     birthdate,
+            //     gender,
+            //   } = newUserData[0];
+
+            //   const newToken = createToken({
+            //     id,
+            //     role,
+            //     name,
+            //     email,
+            //     phone_number,
+            //   });
+
+            // return res.status(200).send({
+            //   success: true,
+            //   message: "Product successfully added!",
+            //   data: newProduct
+            // });
+            // }
+
+
+
+
+          } catch (error) {
+            return next(error);
+          }
+        });
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: 'not authorized'
+        })
+      }
     } catch (error) {
       return next(error);
     }

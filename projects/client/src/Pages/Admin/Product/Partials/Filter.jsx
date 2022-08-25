@@ -7,8 +7,8 @@ import { useEffect, useRef } from "react";
 import Button from "../../../../Components/atoms/Button";
 
 const Filter = (props) => {
-    const { getDataFilter } = props
-    const [category, setCategory] = useState()
+    const { getDataFilter, category } = props
+    // const [category, setCategory] = useState()
 
     const [name, setName] = useState()
     const [idCategory, setIdCategory] = useState()
@@ -21,18 +21,18 @@ const Filter = (props) => {
     const defaultMaxPrice = useRef(null);
     const defaultSort = useRef(null);
 
-    useEffect(() => {
-        getCategory();
-    }, [])
+    // useEffect(() => {
+    //     getCategory();
+    // }, [])
 
-    const getCategory = () => {
-        axios.get(`${API_URL}/products/categories`)
-            .then((response) => {
-                setCategory(response.data)
-            }).catch((error) => {
-                console.log(error)
-            })
-    }
+    // const getCategory = () => {
+    //     axios.get(`${API_URL}/products/categories`)
+    //         .then((response) => {
+    //             setCategory(response.data)
+    //         }).catch((error) => {
+    //             console.log(error)
+    //         })
+    // }
 
     const handleFilter = () => {
         console.log(name, idCategory, minPrice, maxPrice, sort)
@@ -112,7 +112,7 @@ const Filter = (props) => {
                         displayEmpty
                     >
                         <MenuItem value="">
-                            <em>Choose One</em>
+                            <Typography color='grey.600' textAlign='left'>Choose One</Typography>
                         </MenuItem>
                         <MenuItem value={`sort=name&order=asc`}>Product Name (a-z)</MenuItem>
                         <MenuItem value={`sort=name&order=desc`}>Product Name (z-a)</MenuItem>
