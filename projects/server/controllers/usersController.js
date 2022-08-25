@@ -1,8 +1,8 @@
 const fs = require("fs");
 const { dbConf, dbQuery } = require("../config/database");
 const { hashPassword, createToken } = require("../config/encription");
-const { transporter } = require("../config/nodemailer");
 const { uploader } = require("../config/uploader");
+const { transporter } = require("../config/nodemailer");
 
 module.exports = {
   userData: async (req, res, next) => {
