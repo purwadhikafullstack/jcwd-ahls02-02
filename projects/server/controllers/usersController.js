@@ -95,8 +95,13 @@ module.exports = {
       );
       if (result.length == 1) {
         let { id, role, name, email, phone_number } = result[0];
+        const userAddress = await dbQuery(
+          `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${id}`
+        );
         let token = createToken({ id, role, name, email, phone_number });
-        return res.status(200).send({ ...result[0], token });
+        return res
+          .status(200)
+          .send({ ...result[0], token, address: [...userAddress] });
       } else {
         let checkEmail = await dbQuery(
           `Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where email='${email}';`
@@ -123,10 +128,15 @@ module.exports = {
         let result = await dbQuery(
           `Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id = '${req.dataUser.id}';`
         );
+        const userAddress = await dbQuery(
+          `select id, street, province_id, province_label, city_id, city_label, postal_code from address where id_user = ${req.dataUser.id}`
+        );
 
         let { id, role, name, email, phone_number } = result[0];
         let token = createToken({ id, role, name, email, phone_number });
-        return res.status(200).send({ ...result[0], token });
+        return res
+          .status(200)
+          .send({ ...result[0], token, address: [...userAddress] });
       } else {
         return res.status(401).send({
           success: false,
@@ -318,8 +328,8 @@ module.exports = {
             }
           }
         }
+        // remove ,
         editScript = editScript.substring(0, editScript.length - 2);
-        console.log("editScript", editScript);
 
         await dbQuery(
           `update users set ${editScript} where id = ${req.dataUser.id};`
@@ -465,6 +475,41 @@ module.exports = {
   // get user profile data
   addAddress: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        const {
+          street,
+          province_id,
+          province_label,
+          city_id,
+          city_label,
+          postal_code,
+        } = req.body;
+
+        await dbQuery(
+          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${
+            req.dataUser.id
+          }', '${street}','${Number(
+            province_id
+          )}','${province_label}','${Number(
+            city_id
+          )}','${city_label}', '${Number(postal_code)}')`
+        );
+
+        const userAddress = await dbQuery(
+          `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${req.dataUser.id}`
+        );
+
+        return res.status(200).send({
+          success: true,
+          message: "Address inserted successfully",
+          data: userAddress,
+        });
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }
@@ -472,12 +517,121 @@ module.exports = {
   // TBD apakah add & edit bisa jadi 1
   editAddress: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        const { addressId } = req.body;
+
+        const addressData = await dbQuery(
+          `select * from address where id_user = ${req.dataUser.id}`
+        );
+
+        let editScript = "";
+        for (addressProp in addressData[0]) {
+          for (dataProp in req.body) {
+            if (addressProp == dataProp) {
+              editScript += `${addressProp} = ${dbConf.escape(
+                req.body[dataProp]
+              )}, `;
+            }
+          }
+        }
+        // remove ,
+        editScript = editScript.substring(0, editScript.length - 2);
+
+        const updateAddress = await dbQuery(
+          `update address set ${editScript} where id = ${addressId};`
+        );
+
+        if (updateAddress.affectedRows) {
+          const userAddress = await dbQuery(
+            `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${req.dataUser.id}`
+          );
+
+          return res.status(200).send({
+            success: true,
+            message: "Address successfully updated",
+            data: userAddress,
+          });
+        }
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  },
+  editDefaultAddress: async (req, res, next) => {
+    try {
+      if (req.dataUser.id) {
+        // delete current default address
+        const currentDefault = await dbQuery(
+          `select * from address where id_user=${req.dataUser.id} and default_address="true"`
+        );
+
+        if (currentDefault.length) {
+          await dbQuery(
+            `update address set default_address = 'false' where id=${currentDefault[0].id}`
+          );
+        }
+
+        // set new default address
+
+        const setDefaultAddress = await dbQuery(
+          `update address set default_address = 'true' where id=${req.body.addressId}`
+        );
+
+        if (setDefaultAddress.affectedRows) {
+          const userAddress = await dbQuery(
+            `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${req.dataUser.id}`
+          );
+
+          return res.status(200).send({
+            success: true,
+            message: "Address successfully updated",
+            data: userAddress,
+          });
+        }
+
+        return res.status(200).send({
+          success: true,
+          message: "Address successfully updated",
+          // data: userAddress,
+        });
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }
   },
   deleteAddress: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        const deleteAddress = await dbQuery(
+          `delete from address where id = ${req.query.addressId}`
+        );
+
+        if (deleteAddress.affectedRows) {
+          const addressData = await dbQuery(
+            `select id, street, province_id, province_label, city_id, city_label, postal_code from address where id_user = ${req.dataUser.id}`
+          );
+          return res.status(200).send({
+            success: true,
+            message: "Address deleted",
+            data: [...addressData],
+          });
+        }
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }
