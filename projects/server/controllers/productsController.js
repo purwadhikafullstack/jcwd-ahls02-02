@@ -148,7 +148,6 @@ module.exports = {
   addProduct: async (req, res, next) => {
     try {
       if (req.dataUser.role === 'admin') {
-
         const uploadFile = uploader("/imgProduct", "IMGPRODUCT").array("image", 1);
         uploadFile(req, res, async (error) => {
           try {

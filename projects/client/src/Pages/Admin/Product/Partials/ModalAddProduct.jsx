@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Modal, Select, TextField, Typography } from "@mui/material";
 import { ArrowForwardIos, CheckCircle, Delete, DeleteForever } from "@mui/icons-material";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { API_URL } from "../../../../helper";
+import { ToastNotification } from "../../../../Components/Toast";
+import toast from "react-hot-toast";
 
 const style = {
     position: 'absolute',
@@ -34,6 +36,10 @@ const ModalAddProduct = (props) => {
     const [formStock, setFormStock] = useState([{ quantity: '', unit: '', default_unit: true }])
     const [unitConversion, setUnitConversion] = useState()
 
+    const [stockValidity, setStockValidity] = useState(false)
+
+    const defaultName = useRef(null);
+    const defaultDescription = useRef(null);
 
     const [defaultUnit, setDefaultUnit] = useState('')
     const [smallUnit, setSmallUnit] = useState('')
@@ -59,14 +65,20 @@ const ModalAddProduct = (props) => {
 
     const handleClose = () => {
         close();
+        setName();
+        setDescription();
         setNewDataImage()
         setNewImage()
         setPage(1)
         setDefaultUnit('')
         setSmallUnit('')
         setCategory('')
+        setSellingPrice()
+        setBuyingPrice()
         let temp = [{ quantity: '', unit: '', default_unit: false }]
         setFormStock(temp)
+        // defaultName.current.value = ""
+        // defaultDescription.current.value = ""
     }
 
     const handleUpload = (e) => {
@@ -84,6 +96,24 @@ const ModalAddProduct = (props) => {
         let temp = [...formStock]
         temp.push({ quantity: '', unit: '', default_unit: false })
         setFormStock(temp)
+        checkAvailability(temp)
+    }
+
+    const checkAvailability = (temp, unitConversion = null) => {
+        // let temp = [...formStock]
+        if (temp.length == 1) {
+            if (temp[0].quantity && temp[0].unit) {
+                return setStockValidity(true)
+            } else {
+                return setStockValidity(false)
+            }
+        } else if (temp.length == 2) {
+            if (temp[0].quantity && temp[0].unit && temp[1].quantity && temp[1].unit && unitConversion) {
+                return setStockValidity(true)
+            } else {
+                return setStockValidity(false)
+            }
+        }
     }
 
     const printStock = () => {
@@ -108,6 +138,7 @@ const ModalAddProduct = (props) => {
                                             temp[id].quantity = e.target.value
                                         }
                                         setFormStock(temp)
+                                        checkAvailability(temp)
                                     }}
                                 // sx={{ mb: 2 }}
                                 />
@@ -130,6 +161,7 @@ const ModalAddProduct = (props) => {
                                                 temp[id].unit = e.target.value
                                             }
                                             setFormStock(temp)
+                                            checkAvailability(temp)
                                         }}
                                         displayEmpty
                                     >
@@ -168,6 +200,8 @@ const ModalAddProduct = (props) => {
                                             temp[id].quantity = e.target.value
                                         }
                                         console.log('id', id)
+                                        setFormStock(temp)
+                                        checkAvailability(temp)
                                     }}
                                 />
                             </form>
@@ -188,6 +222,7 @@ const ModalAddProduct = (props) => {
                                                 temp[id].unit = e.target.value
                                             }
                                             setFormStock(temp)
+                                            checkAvailability(temp)
                                         }}
                                         displayEmpty
                                     >
@@ -210,6 +245,9 @@ const ModalAddProduct = (props) => {
         let tempForm = [...formStock]
         tempForm.splice(index, 1)
         setFormStock(tempForm)
+        checkAvailability(tempForm)
+        setSmallUnit()
+
     }
 
     const handleSubmit = () => {
@@ -236,21 +274,18 @@ const ModalAddProduct = (props) => {
             }
         }).then((response) => {
             handleClose();
-            console.log('name', name)
-            console.log('category id', category)
-            console.log('description', description)
-            console.log('needs receipt', needsReceipt)
-            console.log('selling price', sellingPrice)
-            console.log('buying price', buyingPrice)
-            console.log('stock', formStock)
-            console.log('conversion', unitConversion)
+            console.log(response.data)
+            toast.success(`Product successfully added`)
+
         }).catch((error) => {
             console.log(error)
+            toast.error(`Something went wrong. Please try again`)
         })
     }
 
     return (
         <div>
+            <ToastNotification />
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -279,6 +314,7 @@ const ModalAddProduct = (props) => {
                                     variant='outlined'
                                     onChange={(e) => setName(e.target.value)}
                                     sx={{ mb: 2 }}
+                                    inputRef={defaultName}
                                 />
                                 <Typography color='grey.600' fontSize='14px'>Product Image</Typography>
 
@@ -327,6 +363,8 @@ const ModalAddProduct = (props) => {
                                     rows={3}
                                     variant='outlined'
                                     onChange={(e) => setDescription(e.target.value)}
+                                    // value={description}
+                                    inputRef={defaultDescription}
                                 />
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     <Checkbox checked={checked} onChange={handleChange} />
@@ -335,7 +373,7 @@ const ModalAddProduct = (props) => {
                             </form>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
                                 <Button color='error' variant='outlined' onClick={handleClose}>Cancel</Button>
-                                <Button color='primary' variant='contained' onClick={() => setPage(2)}>Next</Button>
+                                <Button color='primary' variant='contained' onClick={() => setPage(2)} disabled={name && newDataImage && category && description ? false : true}>Next</Button>
                             </Box>
                         </>
                         :
@@ -381,17 +419,17 @@ const ModalAddProduct = (props) => {
                                         variant='outlined'
                                         sx={{ mb: 2 }}
                                         // sx={{ mb: 2, width: '40%' }}
-                                        onChange={(e) => setUnitConversion(e.target.value)}
+                                        onChange={(e) => {
+                                            setUnitConversion(e.target.value)
+                                            checkAvailability(formStock, e.target.value)
+                                        }}
                                     />
                                 </form>
                                 : null
                             }
-                            {/* {showConversion ?
-                                <div>hai</div>
-                                : null} */}
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
                                 <Button color='error' variant='outlined' onClick={() => setPage(1)}>Back</Button>
-                                <Button color='primary' variant='contained' onClick={handleSubmit}>Submit</Button>
+                                <Button color='primary' variant='contained' onClick={handleSubmit} disabled={sellingPrice && buyingPrice && stockValidity ? false : true}>Submit</Button>
                             </Box>
                         </>
                     }
