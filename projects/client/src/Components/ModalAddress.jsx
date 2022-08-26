@@ -41,6 +41,7 @@ const ModalAddress = (props) => {
     setProvince(null);
     setCity(null);
     setPostalCode(null);
+    setFormIsChanged(false);
     toggle();
   };
 
@@ -62,6 +63,8 @@ const ModalAddress = (props) => {
 
   const [openModalConfirm, setOpenModalConfirm] = useState(false);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
+
+  const [formIsChanged, setFormIsChanged] = useState(false);
 
   const handleChangeProvince = async (value) => {
     setProvince(value);
@@ -107,8 +110,21 @@ const ModalAddress = (props) => {
     }
 
     getProvinceOption();
-    setIsLoading(false)
+    setIsLoading(false);
   }, [isOpen]);
+
+  // const handleFormChanged = () => {
+  //   const { addressValue } = selectedAddress;
+  //   if (
+  //     street === addressValue.street &&
+  //     province === addressValue.province_id.toString() &&
+  //     city === addressValue.city_id.toString()
+  //   ) {
+  //     setFormIsChanged(false);
+  //   } else {
+  //     setFormIsChanged(true);
+  //   }
+  // };
 
   const handleSubmit = async () => {
     try {
@@ -155,7 +171,6 @@ const ModalAddress = (props) => {
         );
       }
 
-      console.log(res)
       if (res.data.success) {
         dispatch(editProfileAction({ address: res.data.data }));
         setAddressList(res.data.data);
@@ -173,6 +188,7 @@ const ModalAddress = (props) => {
   useEffect(() => {
     if (confirmSubmit) {
       handleSubmit();
+      setFormIsChanged(false);
       setConfirmSubmit(false);
     }
   }, [confirmSubmit]);
@@ -207,7 +223,10 @@ const ModalAddress = (props) => {
                     id="street-form"
                     label="Street"
                     value={street}
-                    onChange={(e) => setStreet(e.target.value)}
+                    onChange={(e) => {
+                      setStreet(e.target.value);
+                      setFormIsChanged(true);
+                    }}
                   ></TextField>
                 </Box>
 
@@ -219,7 +238,10 @@ const ModalAddress = (props) => {
                     id="select-province"
                     label="Province"
                     value={province}
-                    onChange={(e) => handleChangeProvince(e.target.value)}
+                    onChange={(e) => {
+                      handleChangeProvince(e.target.value);
+                      setFormIsChanged(true);
+                    }}
                   >
                     <MenuItem value="" disabled>
                       Choose Province
@@ -245,7 +267,10 @@ const ModalAddress = (props) => {
                             id="select-city"
                             label="City"
                             value={city}
-                            onChange={(e) => handleChangeCity(e.target.value)}
+                            onChange={(e) => {
+                              handleChangeCity(e.target.value);
+                              setFormIsChanged(true);
+                            }}
                           >
                             <MenuItem value="" disabled>
                               Choose City
@@ -300,7 +325,14 @@ const ModalAddress = (props) => {
                     variant="contained"
                     color="primary"
                     width="100px"
-                    onClick={()=>setOpenModalConfirm(true)}
+                    onClick={() => setOpenModalConfirm(true)}
+                    disabled={
+                      !formIsChanged ||
+                      !street ||
+                      !province ||
+                      !city ||
+                      !postalCode
+                    }
                   >
                     Submit
                   </Button>
