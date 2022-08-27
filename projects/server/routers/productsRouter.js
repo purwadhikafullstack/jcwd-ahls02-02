@@ -6,13 +6,14 @@ route.get("/all", productsController.getAllProducts);
 route.get("/", productsController.getProducts);
 route.get("/categories", productsController.getCategories);
 route.post("/", readToken, productsController.addProduct);
+route.patch("/editData", readToken, productsController.editProductData);
+route.patch("/editPicture", readToken, productsController.editProductPicture);
 
 route.post("/categories", productsController.addCategories);
 route.patch("/categories", productsController.editCategories);
 route.delete("/categories", productsController.deleteCategories);
 
 route.get("/:product_id", productsController.getDetailProduct);
-route.patch("/:product_id", productsController.editProduct);
 route.delete("/:product_id", productsController.deleteProduct);
 
 route.patch("/stock", productsController.updateStock);

@@ -9,112 +9,14 @@ import { useEffect } from 'react';
 
 const ProductTable = (props) => {
 
-    let { productData, totalPage, changePage, page } = props
-    // let [productData, setProductData] = useState()
-    // let [totalPage, setTotalPage] = useState()
+    let { productData, totalPage, changePage, page, handleOpenEdit } = props
 
-    // useEffect(() => {
-    //     getData()
-    // }, [])
-
-    // const getData = (page = filterPage) => {
-
-    //     let query = ''
-
-    //     if (filterName) {
-    //         if (query) {
-    //             query += `&name=${filterName}`
-    //         } else {
-    //             query += `?name=${filterName}`
-    //         }
-    //     }
-
-    //     if (filterCategory) {
-    //         if (query) {
-    //             query += `&id_category=${filterCategory}`
-    //         } else {
-    //             query += `?id_category=${filterCategory}`
-    //         }
-    //     }
-
-    //     if (filterNeedsReceipt) {
-    //         if (query) {
-    //             query += `&needs_receipt=${filterNeedsReceipt}`
-    //         } else {
-    //             query += `?needs_receipt=${filterNeedsReceipt}`
-    //         }
-    //     }
-
-    //     if (filterMinPrice) {
-    //         if (query) {
-    //             query += `&min_price=${filterMinPrice}`
-    //         } else {
-    //             query += `?min_price=${filterMinPrice}`
-    //         }
-    //     }
-
-    //     if (filterMaxPrice) {
-    //         if (query) {
-    //             query += `&max_price=${filterMaxPrice}`
-    //         } else {
-    //             query += `?max_price=${filterMaxPrice}`
-    //         }
-    //     }
-
-    //     if (page) {
-    //         if (query) {
-    //             query += `&page=${page}`
-    //         } else {
-    //             query += `?page=${page}`
-    //         }
-    //     }
-
-    //     if (filterLimit) {
-    //         if (query) {
-    //             query += `&limit=${filterLimit}`
-    //         } else {
-    //             query += `?limit=${filterLimit}`
-    //         }
-    //     }
-
-    //     if (filterSort) {
-    //         if (query) {
-    //             query += `&${filterSort}`
-    //         } else {
-    //             query += `?${filterSort}`
-    //         }
-    //     }
-
-    //     axios.get(`${API_URL}/products${query}`)
-    //         .then((response) => {
-    //             let temp = []
-    //             response.data.product.forEach((val, id) => {
-    //                 temp.push({
-    //                     no: ((page - 1) * filterLimit) + id + 1,
-    //                     name: val.name,
-    //                     category: val.category_name,
-    //                     quantity: val.quantity,
-    //                     unit: val.unit,
-    //                     price: val.selling_price,
-    //                     action: <>
-    //                         <IconButton aria-label="edit">
-    //                             <Create />
-    //                         </IconButton>
-    //                         <IconButton aria-label="delete">
-    //                             <Delete color='error' />
-    //                         </IconButton>
-    //                     </>
-    //                 })
-    //                 setProductData(temp)
-    //                 setTotalPage(response.data.totalPage)
-    //             })
-    //         }).catch((error) => {
-    //             console.log(error)
-    //         })
-    // }
+    const [newPage, setNewPage] = useState(1)
 
     const clickPage = (event, value) => {
         changePage(value)
+        setNewPage(value)
+        console.log(value)
     }
 
     return (
@@ -154,7 +56,7 @@ const ProductTable = (props) => {
             </TableContainer>
             <Box textAlign='right' sx={{ display: 'flex' }}>
                 {totalPage ?
-                    <Pagination count={totalPage} defaultPage={page} color='primary' onChange={clickPage} />
+                    <Pagination count={totalPage} page={newPage} color='primary' onChange={clickPage} />
                     : null}
             </Box>
         </Box>
