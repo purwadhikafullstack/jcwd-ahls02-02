@@ -40,9 +40,7 @@ const ProductTable = (props) => {
                                 key={data.no}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell component="th" scope="row">
-                                    {data.no}
-                                </TableCell>
+                                <TableCell component="th" scope="row">{data.no}</TableCell>
                                 <TableCell align="center">{data.name}</TableCell>
                                 <TableCell align="center">{data.category}</TableCell>
                                 <TableCell align="center">{data.quantity}</TableCell>
