@@ -80,7 +80,6 @@ module.exports = {
             sort += `order by ${req.query.sort} asc`
           }
         }
-        console.log(`${filter} ${sort}`)
 
         let allData = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.unit_conversion, p.needs_receipt,  p.image, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
@@ -106,12 +105,9 @@ module.exports = {
           totalPage += Math.ceil(totalData / 12)
         }
 
-        console.log(`${filter} ${sort} ${limit}`)
-
         let resultFilter = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.unit_conversion, p.needs_receipt,  p.image, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort} ${limit};`)
-
 
         return res.status(200).send({ product: resultFilter, totalPage });
       }
@@ -151,7 +147,6 @@ module.exports = {
         const uploadFile = uploader("/imgProduct", "IMGPRODUCT").array("image", 1);
         uploadFile(req, res, async (error) => {
           try {
-            console.log('req.files', req.files)
             const newFileName = req.files[0]
               ? `'/imgProduct/${req.files[0].filename}'`
               : null;
@@ -171,8 +166,6 @@ module.exports = {
                   values += `, (${newProduct.insertId}, '${val.unit}', '${val.default_unit}', ${val.quantity})`
                 }
               })
-
-              console.log(`INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${values};`)
 
               await dbQuery(
                 `INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${values};`)
