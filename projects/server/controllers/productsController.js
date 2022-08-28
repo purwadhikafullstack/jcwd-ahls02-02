@@ -95,7 +95,7 @@ module.exports = {
 
         console.log(`${filter} ${sort}`)
 
-        let allData = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt,  p.image, s.is_active from products p
+        let allData = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt, p.image, s.id as id_stock, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort};`)
 
@@ -121,7 +121,7 @@ module.exports = {
 
         console.log(`${filter} ${sort} ${limit}`)
 
-        let resultFilter = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt,  p.image, s.id as id_product, s.is_active from products p
+        let resultFilter = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt,  p.image, s.id as id_stock, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort} ${limit};`)
 
@@ -411,6 +411,28 @@ module.exports = {
   // remove product from list => change product status to inactive
   deleteProduct: async (req, res, next) => {
     try {
+      console.log('req.dataUser.role: ', req.dataUser.role)
+      if (req.dataUser.role === 'admin') {
+        console.log('req.query.id: ', req.query.id)
+        if (req.query.id) {
+          console.log(`UPDATE products SET is_active = 'false' WHERE id = ${req.query.id}`)
+          await dbQuery(`UPDATE products SET is_active = 'false' WHERE id = ${req.query.id}`)
+          return res.status(200).send({
+            success: true,
+            message: 'product successfully deleted'
+          })
+        } else {
+          return res.status(401).send({
+            success: false,
+            message: 'query is missing'
+          })
+        }
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: 'not authorized'
+        })
+      }
     } catch (error) {
       return next(error);
     }

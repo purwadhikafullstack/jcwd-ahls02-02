@@ -8,13 +8,13 @@ route.get("/categories", productsController.getCategories);
 route.post("/", readToken, productsController.addProduct);
 route.patch("/editData", readToken, productsController.editProductData);
 route.patch("/editPicture", readToken, productsController.editProductPicture);
+route.delete("/deleteProduct", readToken, productsController.deleteProduct);
 
 route.post("/categories", productsController.addCategories);
 route.patch("/categories", productsController.editCategories);
 route.delete("/categories", productsController.deleteCategories);
 
 route.get("/:product_id", productsController.getDetailProduct);
-route.delete("/:product_id", productsController.deleteProduct);
 
 route.patch("/stock", productsController.updateStock);
 route.patch("/conversion/:product_id", productsController.unitConversion);
