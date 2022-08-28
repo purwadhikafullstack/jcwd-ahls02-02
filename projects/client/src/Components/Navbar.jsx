@@ -273,7 +273,7 @@ const Navbar = () => {
                         <Box>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar />
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`}/>
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -378,7 +378,7 @@ const Navbar = () => {
                         <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUserSmall(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar />
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`}/>
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -480,7 +480,7 @@ const Navbar = () => {
                         <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUserSmall(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar />
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`}/>
                                 </IconButton>
                             </Tooltip>
                             <Menu
