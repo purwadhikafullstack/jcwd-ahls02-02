@@ -7,6 +7,7 @@ import axios from "axios";
 import { API_URL } from "../../../helper";
 import { Create, Delete } from "@mui/icons-material";
 import ModalAddProduct from "./Partials/ModalAddProduct";
+import ModalEditProduct from "./Partials/ModalEditProduct";
 
 const AdminProductPage = () => {
 
@@ -15,7 +16,7 @@ const AdminProductPage = () => {
     const [needsReceipt, setNeedsReceipt] = useState()
     const [minPrice, setMinPrice] = useState()
     const [maxPrice, setMaxPrice] = useState()
-    const [sort, setSort] = useState('')
+    const [sort, setSort] = useState('sort=id&order=asc')
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
 
@@ -25,8 +26,13 @@ const AdminProductPage = () => {
 
     const [openAddProduct, setOpenAddProduct] = useState(false)
 
+    const [dataEdit, setDataEdit] = useState()
+    const [openEditProduct, setOpenEditProduct] = useState(false)
+    const [idProduct, setIdProduct] = useState()
+
     useEffect(() => {
         getData()
+        console.log('page lagi: ', page)
     }, [])
 
     useEffect(() => {
@@ -122,7 +128,7 @@ const AdminProductPage = () => {
                         unit: val.unit,
                         price: val.selling_price,
                         action: <>
-                            <IconButton aria-label="edit">
+                            <IconButton aria-label="edit" onClick={() => openEditModal(val.id)}>
                                 <Create />
                             </IconButton>
                             <IconButton aria-label="delete">
@@ -138,29 +144,44 @@ const AdminProductPage = () => {
             })
     }
 
-    const getDataFilter = (newName, newIdCategory, newMinPrice, newMaxPrice, newSort) => {
+    const getDataFilter = (newName = name, newIdCategory = idCategory, newMinPrice = minPrice, newMaxPrice = maxPrice, newSort = sort, page = 1) => {
         setName(newName)
         setIdCategory(newIdCategory)
         setMinPrice(newMinPrice)
         setMaxPrice(newMaxPrice)
         setSort(newSort)
-        setPage(1)
+        // if (page !== 1) {
+        getData(newName, newIdCategory, needsReceipt, newMinPrice, newMaxPrice, newSort, page, limit);
+        // } else {
+        //     setPage(1)
 
-        getData(newName, newIdCategory, needsReceipt, newMinPrice, newMaxPrice, newSort, 1, limit);
-
-        // console.log('name', name)
-        // console.log('idCategory', idCategory)
-        // console.log('needsReceipt', needsReceipt)
-        // console.log('minPrice', minPrice)
-        // console.log('maxPrice', maxPrice)
-        // console.log('sort', sort)
-        // console.log('page', page)
-        // console.log('limit', limit)
+        //     getData(newName, newIdCategory, needsReceipt, newMinPrice, newMaxPrice, newSort, 1, limit);
+        // }
     }
 
     const handlePage = (newPage) => {
         setPage(newPage)
         getData(name, idCategory, needsReceipt, minPrice, maxPrice, sort, newPage, limit);
+    }
+
+    const openEditModal = (id) => {
+        axios.get(`${API_URL}/products/?id=${id}`)
+            .then((response) => {
+                let temp = [...response.data.product]
+                setDataEdit(temp)
+                setIdProduct(id)
+                console.log(temp)
+                setOpenEditProduct(true)
+            }).catch((error) => {
+                console.log(error)
+            })
+    }
+
+    const closeEditModal = () => {
+        setOpenEditProduct(false)
+        console.log(page)
+        console.log(`getDataFilter(${name}, ${idCategory}, ${minPrice}, ${maxPrice}, ${sort}, ${page})`)
+        getDataFilter(name, idCategory, minPrice, maxPrice, sort, page)
     }
 
     return <div>
@@ -186,6 +207,7 @@ const AdminProductPage = () => {
                         totalPage={totalPage}
                         changePage={handlePage}
                         page={page}
+                        handleOpenEdit={openEditModal}
                     />
                 </Grid>
             </Grid>
@@ -194,6 +216,14 @@ const AdminProductPage = () => {
             open={openAddProduct}
             close={() => setOpenAddProduct(false)}
             categoryList={category}
+        />
+        <ModalEditProduct
+            open={openEditProduct}
+            close={closeEditModal}
+            categoryList={category}
+            data={dataEdit}
+            index={idProduct}
+            refreshData={getDataFilter}
         />
     </div>
 }

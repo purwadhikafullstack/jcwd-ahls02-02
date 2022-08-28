@@ -38,11 +38,17 @@ module.exports = {
         for (const key in req.query) {
           filterChecklist.forEach(val => {
             if (key == val) {
-              if (key === 'id' || key === 'id_category') {
+              if (key === 'id') {
                 if (filter) {
-                  filter += ` and ${key} = ${req.query[key]}`
+                  filter += ` and p.${key} = ${req.query[key]}`
                 } else {
-                  filter += `where ${key} = ${req.query[key]}`
+                  filter += `where p.${key} = ${req.query[key]}`
+                }
+              } else if (key === 'id_category') {
+                if (filter) {
+                  filter += ` and c.id = ${req.query[key]}`
+                } else {
+                  filter += `where c.id = ${req.query[key]}`
                 }
               } else if (key === 'needs_receipt') {
                 if (filter) {
@@ -80,9 +86,16 @@ module.exports = {
             sort += `order by ${req.query.sort} asc`
           }
         }
+
+        if (filter) {
+          filter += ` and is_active='true'`
+        } else {
+          filter += `where is_active='true'`
+        }
+
         console.log(`${filter} ${sort}`)
 
-        let allData = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.unit_conversion, p.needs_receipt,  p.image, p.is_active from products p
+        let allData = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt,  p.image, s.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort};`)
 
@@ -108,7 +121,7 @@ module.exports = {
 
         console.log(`${filter} ${sort} ${limit}`)
 
-        let resultFilter = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.unit_conversion, p.needs_receipt,  p.image, p.is_active from products p
+        let resultFilter = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt,  p.image, s.id as id_product, s.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort} ${limit};`)
 
@@ -179,57 +192,15 @@ module.exports = {
 
               return res.status(200).send({
                 success: true,
-                message: "Product successfully added!",
-                // data: newProduct
+                message: "Product successfully added!"
               })
 
             } else {
               return res.status(401).send({
-                success: true,
-                message: "Failed to upload!",
-                // data: newProduct
+                success: false,
+                message: "Failed to upload!"
               })
             }
-
-            // await dbQuery(
-            //   `INSERT INTO category (name, description, image, id_category, selling_price, buying_price, unit_conversion, needs_receipt) VALUE (${name}, ${description}, ${newFileName}, ${id_category}, ${selling_price}, ${buying_price}, ${unit_conversion}, ${needs_receipt});`
-            // );
-
-            // if (postProduct) {
-            //   const newUserData = await dbQuery(
-            //     `select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id = ${req.dataUser.id}`
-            //   );
-
-            //   const {
-            //     id,
-            //     role,
-            //     verified_status,
-            //     name,
-            //     email,
-            //     phone_number,
-            //     profile_picture,
-            //     birthdate,
-            //     gender,
-            //   } = newUserData[0];
-
-            //   const newToken = createToken({
-            //     id,
-            //     role,
-            //     name,
-            //     email,
-            //     phone_number,
-            //   });
-
-            // return res.status(200).send({
-            //   success: true,
-            //   message: "Product successfully added!",
-            //   data: newProduct
-            // });
-            // }
-
-
-
-
           } catch (error) {
             return next(error);
           }
@@ -244,8 +215,195 @@ module.exports = {
       return next(error);
     }
   },
-  editProduct: async (req, res, next) => {
+  editProductData: async (req, res, next) => {
     try {
+      // let productType = await dbQuery(`SELECT * FROM stock WHERE id_product = ${req.query.id} and is_active='true'`)
+
+      // console.log('productType: ', productType)
+
+      let newData = ''
+      console.log('req.body', req.body)
+      console.log('req.query', req.query)
+
+      for (const key in req.body) {
+        if (req.body[`${key}`] && key !== 'stock') {
+          if (key === 'name' || key === 'description' || key === 'needs_receipt') {
+            if (newData) {
+              newData += `, ${key} = '${req.body[key]}'`
+            } else {
+              newData += `SET ${key} = '${req.body[key]}'`
+            }
+          } else {
+            if (newData) {
+              newData += `, ${key} = ${req.body[key]}`
+            } else {
+              newData += `SET ${key} = ${req.body[key]}`
+            }
+          }
+
+        }
+      }
+      if (newData) {
+        await dbQuery(`UPDATE products ${newData} WHERE id = ${req.query.id};`)
+      }
+
+      let productType = await dbQuery(`SELECT * FROM stock WHERE id_product = ${req.query.id} and is_active='true'`)
+
+
+      if (productType.length === 0) {
+        let value = ''
+        req.body.stock.forEach((val) => {
+          if (val.quantity && val.unit && val.default_unit) {
+            if (value) {
+              value += `, (${req.query.id}, ${val.quantity}, '${val.unit}', '${val.default_unit}')`
+            } else {
+              value += `(${req.query.id}, ${val.quantity}, '${val.unit}', '${val.default_unit}')`
+            }
+          }
+        })
+        await dbQuery(`INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${value}`)
+      } else if (productType.length === 1) {
+        let update = ``
+        let add = ``
+        req.body.stock.forEach(val => {
+          if (val.default_unit === productType[0].default_unit) {
+            if (val.quantity) {
+              if (update) {
+                update += `, quantity = ${val.quantity}`
+              } else {
+                update += `quantity = ${val.quantity}`
+              }
+            } else if (val.unit) {
+              if (update) {
+                update += `, unit = '${val.unit}'`
+              } else {
+                update += `unit = '${val.unit}'`
+              }
+            }
+          } else {
+            if (val.quantity && val.unit) {
+              add += `(${req.query.id}, '${val.unit}', '${val.default_unit}', ${val.quantity})`
+            }
+          }
+        })
+        if (add) {
+          await dbQuery(`INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${add}`)
+          console.log(`INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${add}`)
+        }
+        if (update) {
+          await dbQuery(`UPDATE stock SET ${update} WHERE id = ${productType[0].id}`)
+          console.log(`UPDATE stock SET ${update} WHERE id = ${productType[0].id}`)
+        }
+      } else if (productType.length === 2) {
+        let firstUpdate = ''
+        let firstId = ''
+        let secondUpdate = ''
+        let secondId = ''
+
+        console.log('productType :', productType)
+
+        productType.forEach(val => {
+          if (req.body.stock[0].default_unit === val.default_unit) {
+            firstId = val.id
+            if (req.body.stock[0].quantity) {
+              if (firstUpdate) {
+                firstUpdate += `, quantity = ${req.body.stock[0].quantity}`
+              } else {
+                firstUpdate += `SET quantity = ${req.body.stock[0].quantity}`
+              }
+            }
+            if (req.body.stock[0].unit) {
+              if (firstUpdate) {
+                firstUpdate += `, unit = '${req.body.stock[0].unit}'`
+              } else {
+                firstUpdate += `SET unit = '${req.body.stock[0].unit}'`
+              }
+            }
+          }
+        })
+
+        productType.forEach(val => {
+          if (req.body.stock[1].default_unit === val.default_unit) {
+            secondId = val.id
+            if (req.body.stock[1].quantity) {
+              if (secondUpdate) {
+                secondUpdate += `, quantity = ${req.body.stock[1].quantity}`
+              } else {
+                secondUpdate += `SET quantity = ${req.body.stock[1].quantity}`
+              }
+            }
+            if (req.body.stock[1].unit) {
+              if (secondUpdate) {
+                secondUpdate += `, unit = '${req.body.stock[1].unit}'`
+              } else {
+                secondUpdate += `SET unit = '${req.body.stock[1].unit}'`
+              }
+            }
+          }
+        })
+
+        console.log('firstUpdate', firstUpdate)
+        console.log('firstId', firstId)
+        console.log(`UPDATE stock ${firstUpdate} WHERE id = ${firstId}`)
+
+        console.log('secondUpdate', secondUpdate)
+        console.log('secondId', secondId)
+        console.log(`UPDATE stock ${secondUpdate} WHERE id = ${secondId}`)
+
+        if (firstUpdate) {
+          await dbQuery(`UPDATE stock ${firstUpdate} WHERE id = ${firstId}`)
+          console.log(`UPDATE stock ${firstUpdate} WHERE id = ${firstId}`)
+        }
+        if (secondUpdate) {
+          await dbQuery(`UPDATE stock ${secondUpdate} WHERE id = ${secondId}`)
+          console.log(`UPDATE stock ${secondUpdate} WHERE id = ${secondId}`)
+        }
+      }
+
+      return res.status(200).send({
+        success: true,
+        message: "Product successfully updated!"
+      })
+
+
+    } catch (error) {
+      return next(error);
+    }
+  },
+  editProductPicture: async (req, res, next) => {
+    try {
+      console.log('halo')
+      const uploadFile = uploader("/imgProduct", "IMGPRODUCT").array("image", 1);
+
+      uploadFile(req, res, async (error) => {
+        try {
+          console.log('req.files', req.files)
+
+          try {
+            const currentPicture = await dbQuery(
+              `select image from products where id=${req.query.id}`
+            );
+            if (currentPicture[0].image) {
+              fs.unlinkSync(`./public/${currentPicture[0].image}`);
+            }
+          } catch (error) {
+            return next(error);
+          }
+
+          const newFileName = req.files[0]
+            ? `'/imgProduct/${req.files[0].filename}'`
+            : null;
+
+          await dbQuery(`UPDATE products SET image = ${newFileName} WHERE id = ${req.query.id};`)
+
+          return res.status(200).send({
+            success: true,
+            message: "Product successfully updated!"
+          })
+        } catch (error) {
+          return next(error)
+        }
+      })
     } catch (error) {
       return next(error);
     }
