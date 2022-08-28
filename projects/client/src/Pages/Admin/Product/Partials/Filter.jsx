@@ -40,12 +40,12 @@ const Filter = (props) => {
     }
 
     const handleReset = () => {
-        getDataFilter(null, null, null, null, null)
+        getDataFilter(null, null, null, null, 'sort=id&order=asc')
         setName(null)
         setIdCategory(null)
         setMinPrice(null)
         setMaxPrice(null)
-        setSort('')
+        setSort('sort=id&order=asc')
         defaultName.current.value = ""
         defaultMinPrice.current.value = ""
         defaultMaxPrice.current.value = ""

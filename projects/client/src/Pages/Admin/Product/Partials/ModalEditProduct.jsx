@@ -81,6 +81,7 @@ const ModalEditProduct = (props) => {
         let temp = [{ quantity: '', unit: '', default_unit: 'false' }]
         setFormStock(temp)
         refreshData()
+        setMoreUnit()
         // defaultName.current.value = ""
         // defaultDescription.current.value = ""
     }
@@ -126,11 +127,10 @@ const ModalEditProduct = (props) => {
         // checkAvailability(temp)
     }
 
-
     const printStockDefault = () => {
         if (data) {
             return data.map((val, id) => {
-                return <Grid container alignItems='center' sx={{ mb: 2 }}>
+                return <Grid container alignItems='center' sx={{ mb: 1 }}>
                     {val.default_unit === 'true' ?
                         <>
                             <Grid xs={5} sx={{ pr: 1 }}>
@@ -352,6 +352,20 @@ const ModalEditProduct = (props) => {
 
     }
 
+    const printDeleteUnit = () => {
+        if (data) {
+            if (data.length < 2 && !moreUnit) {
+                return <Button onClick={handleAddUnit}>Add more unit</Button>
+            } else if (data.length < 2 && moreUnit) {
+                return <Button color='error' onClick={handleDeleteUnit}>Delete additional unit</Button>
+            } else if (data.length === 2) {
+                return null
+            }
+        } else {
+            return null
+        }
+    }
+
     const printImage = () => {
         if (newImage) {
             return <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -386,7 +400,7 @@ const ModalEditProduct = (props) => {
         if (data) {
             if (data.length > 1) {
                 return <form>
-                    <Typography color='grey.600' fontSize='14px'>How many {data[1].unit} per {data[0].unit}</Typography>
+                    <Typography color='grey.600' fontSize='14px'>How many {smallUnit ? smallUnit : data[1].unit} per {defaultUnit ? defaultUnit : data[0].unit}</Typography>
                     <TextField
                         fullWidth
                         type='number'
@@ -406,7 +420,7 @@ const ModalEditProduct = (props) => {
                     if (smallUnit) {
                         // console.log("small unit", smallUnit)
                         return <form>
-                            <Typography color='grey.600' fontSize='14px'>How many {smallUnit} per {data[0].unit}</Typography>
+                            <Typography color='grey.600' fontSize='14px'>How many {smallUnit} per {defaultUnit ? defaultUnit : data[0].unit}</Typography>
                             <TextField
                                 fullWidth
                                 type='number'
@@ -427,7 +441,7 @@ const ModalEditProduct = (props) => {
                 } else if (data[0].default_unit === 'false') {
                     if (defaultUnit) {
                         return <form>
-                            <Typography color='grey.600' fontSize='14px'>How many {data[0].unit} per {defaultUnit}</Typography>
+                            <Typography color='grey.600' fontSize='14px'>How many {smallUnit ? smallUnit : data[0].unit} per {defaultUnit}</Typography>
                             <TextField
                                 fullWidth
                                 type='number'
@@ -498,7 +512,6 @@ const ModalEditProduct = (props) => {
             }
         }).then((response) => {
             console.log(response.data)
-            toast.success(`Product successfully updated`)
             if (newImage) {
                 formData.append('image', newDataImage)
 
@@ -515,86 +528,15 @@ const ModalEditProduct = (props) => {
                     console.log(error)
                     toast.error(`Something went wrong. Please try again`)
                 })
+            } else {
+                toast.success(`Product successfully updated`)
+                handleClose();
             }
         }).catch((error) => {
             console.log(error)
             toast.error(`Something went wrong. Please try again`)
         })
     }
-
-    const updateData = (data, token) => {
-        axios.patch(`${API_URL}/products/editData?id=${index}`, data, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then((response) => {
-            handleClose();
-            console.log(response.data)
-            toast.success(`Product successfully added`)
-
-        }).catch((error) => {
-            console.log(error)
-            toast.error(`Something went wrong. Please try again`)
-        })
-    }
-
-    const updatePicture = (data, token) => {
-        axios.patch(`${API_URL}/products/editPicture?id=${index}`, data, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then((response) => {
-            handleClose();
-            console.log(response.data)
-            toast.success(`Product successfully added`)
-
-        }).catch((error) => {
-            console.log(error)
-            toast.error(`Something went wrong. Please try again`)
-        })
-    }
-    // const handleSubmit = () => {
-    //     let token = Cookies.get("userToken")
-    //     let formData = new FormData();
-
-    //     let temp = [...defaultStock, ...smallStock]
-    //     setFormStock(temp)
-
-    //     let data = {
-    //         name,
-    //         id_category: category,
-    //         description,
-    //         needs_receipt: needsReceipt,
-    //         selling_price: sellingPrice,
-    //         buying_price: buyingPrice,
-    //         stock: temp,
-    //         unit_conversion: unitConversion
-    //     }
-
-    //     formData.append('data', JSON.stringify(data))
-    //     formData.append('image', newDataImage)
-    //     // if (newDataImage) {
-    //     //     formData.append('image', newDataImage)
-    //     // }
-
-
-    //     console.log(data)
-
-    //     axios.patch(`${API_URL}/products/?id=${index}`, formData, {
-    //         // axios.patch(`${API_URL}/products/?id=${index}`, data, {
-    //         headers: {
-    //             'Authorization': `Bearer ${token}`
-    //         }
-    //     }).then((response) => {
-    //         // handleClose();
-    //         console.log(response.data)
-    //         // toast.success(`Product successfully added`)
-
-    //     }).catch((error) => {
-    //         console.log(error)
-    //         toast.error(`Something went wrong. Please try again`)
-    //     })
-    // }
 
     return (
         <div>
@@ -640,7 +582,7 @@ const ModalEditProduct = (props) => {
                                     sx={{ mb: 2 }}
                                 >
                                     <Select
-                                        value={data ? data[0].id_category : category}
+                                        defaultValue={data ? data[0].id_category : category}
                                         onChange={handleChangeCategory}
                                         displayEmpty
                                     >
@@ -663,7 +605,7 @@ const ModalEditProduct = (props) => {
                                 // inputRef={defaultDescription}
                                 />
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Checkbox defaultChecked={data ? data[0].needs_receipt : false} onChange={handleChange} />
+                                    <Checkbox defaultChecked={data ? data[0].needs_receipt === 'false' ? false : true : false} onChange={handleChange} />
                                     <Typography color='grey.600' fontSize='14px'>Requires prescription</Typography>
                                 </Box>
                             </form>
@@ -709,30 +651,8 @@ const ModalEditProduct = (props) => {
                             {printStockDefault()}
                             {printStockSmall()}
                             {printMoreStock()}
-                            {data ? data.length < 2 && !moreUnit ?
-                                <Button onClick={handleAddUnit}>Add more unit</Button>
-                                : <Button color='error' onClick={handleDeleteUnit}>Delete additional unit</Button> : null}
-
+                            {printDeleteUnit()}
                             {printConversion()}
-                            {/* {data ? data.length > 1 ?
-                                <form>
-                                    <Typography color='grey.600' fontSize='14px'>How many {data[1].unit} per {data[0].unit}</Typography>
-                                    <TextField
-                                        fullWidth
-                                        type='number'
-                                        size="small"
-                                        variant='outlined'
-                                        sx={{ mb: 2 }}
-                                        defaultValue={data[0].unit_conversion}
-                                        // sx={{ mb: 2, width: '40%' }}
-                                        onChange={(e) => {
-                                            setUnitConversion(e.target.value)
-                                            // checkAvailability(formStock, e.target.value)
-                                        }}
-                                    />
-                                </form>
-                                : null : null
-                            } */}
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
                                 <Button color='error' variant='outlined' onClick={() => setPage(1)}>Back</Button>
                                 <Button color='primary' variant='contained' onClick={handleSubmit} disabled={name || newDataImage || category || description || sellingPrice || buyingPrice || formStock || unitConversion ? false : true}>Submit</Button>
