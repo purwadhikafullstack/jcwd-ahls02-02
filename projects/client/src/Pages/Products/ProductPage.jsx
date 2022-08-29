@@ -1,7 +1,10 @@
+import { valueToPercent } from "@mui/base";
 import { Box, Container, Grid, IconButton } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { API_URL } from "../../helper";
+import { getProductsDataAction } from "../../Redux/Actions/userProductsAction";
 import FilterProducts from "./partials/ProductPage/Filter";
 import ProductCards from "./partials/ProductPage/ProductCards";
 
@@ -13,13 +16,15 @@ const ProductPage = () => {
   const [maxPrice, setMaxPrice] = useState();
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(16);
+  const [limit, setLimit] = useState(32);
 
   const [productData, setProductData] = useState();
   const [category, setCategory] = useState();
   const [totalPage, setTotalPage] = useState();
 
   const [isLoading, setIsLoading] = useState(true);
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     getData();
@@ -115,32 +120,49 @@ const ProductPage = () => {
       }
 
       const response = await axios.get(`${API_URL}/products${query}`);
-      console.log("productpage", response)
- 
+
       if (response) {
-        let temp = [];
-        response.data.product.forEach((val, id) => {
-          temp.push({
-            no: (filterPage - 1) * filterLimit + id + 1,
-            name: val.name,
-            category: val.category_name,
-            quantity: val.quantity,
-            image: val.image,
-            unit: val.unit,
-            price: val.selling_price,
-            action: (
-              <>
-                <IconButton aria-label="edit">{/* <Create /> */}</IconButton>
-                <IconButton aria-label="delete">
-                  {/* <Delete color="error" /> */}
-                </IconButton>
-              </>
-            ),
-          });
-          setProductData(temp);
-          setTotalPage(response.data.totalPage);
+        let data = [];
+        response.data.product.forEach((value) => {
+          if (value.default_unit === "true") {
+            data.push({
+              id: value.id,
+              name: value.name,
+              category: value.category_name,
+              image: value.image,
+              price: value.selling_price,
+              needs_receipt: value.needs_receipt,
+              description: value.description,
+              quantity: value.quantity,
+            });
+          }
         });
-        setIsLoading(false)
+        dispatch(getProductsDataAction(data))
+        
+
+        // let temp = [];
+        // response.data.product.forEach((val, id) => {
+        //   temp.push({
+        //     no: (filterPage - 1) * filterLimit + id + 1,
+        //     name: val.name,
+        //     category: val.category_name,
+        //     quantity: val.quantity,
+        //     image: val.image,
+        //     unit: val.unit,
+        //     price: val.selling_price,
+        //     // action: (
+        //     //   <>
+        //     //     <IconButton aria-label="edit">{/* <Create /> */}</IconButton>
+        //     //     <IconButton aria-label="delete">
+        //     //       {/* <Delete color="error" /> */}
+        //     //     </IconButton>
+        //     //   </>
+        //     // ),
+        //   });
+        // });
+        setProductData(data);
+        setTotalPage(response.data.totalPage);
+        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -205,7 +227,7 @@ const ProductPage = () => {
               />
             </Grid>
             {/* Product Cards */}
-            <Grid xs={12} md={9} sx={{ pt: 4, pl:0 }}>
+            <Grid xs={12} md={9} sx={{ pt: 4, pl: 0 }}>
               <ProductCards
                 productData={productData}
                 totalPage={totalPage}
