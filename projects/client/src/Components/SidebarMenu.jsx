@@ -94,7 +94,7 @@ const SidebarMenu = (props) => {
       <Toolbar sx={{ height: 75, opacity: 0 }} />
       <DrawerHeader>
         {open && (
-          <Text fontSize="h5" textAlign="left">
+          <Text fontSize="h5" textAlign="left" fontWeight="bold">
             {title}
           </Text>
         )}
