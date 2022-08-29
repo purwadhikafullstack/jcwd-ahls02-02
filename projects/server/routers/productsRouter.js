@@ -10,9 +10,9 @@ route.patch("/editData", readToken, productsController.editProductData);
 route.patch("/editPicture", readToken, productsController.editProductPicture);
 route.delete("/deleteProduct", readToken, productsController.deleteProduct);
 
-route.post("/categories", productsController.addCategories);
-route.patch("/categories", productsController.editCategories);
-route.delete("/categories", productsController.deleteCategories);
+route.post("/categories", readToken, productsController.addCategories);
+route.patch("/categories", readToken, productsController.editCategories);
+route.delete("/categories", readToken, productsController.deleteCategories);
 
 route.get("/:product_id", productsController.getDetailProduct);
 

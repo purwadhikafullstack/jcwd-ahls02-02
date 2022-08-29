@@ -141,18 +141,95 @@ module.exports = {
   },
   addCategories: async (req, res, next) => {
     try {
+      if (req.dataUser.role === 'admin') {
+        if (req.body.category_name) {
+          let update = await dbQuery(`INSERT INTO category (category_name) VALUE ('${req.body.category_name}')`)
+          if (update) {
+            return res.status(200).send({
+              success: true,
+              message: 'Category successfully added'
+            })
+          } else {
+            return res.status(401).send({
+              success: false,
+              message: 'Failed in adding category'
+            })
+          }
+        }
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: 'not authorized'
+        })
+      }
     } catch (error) {
       return next(error);
     }
   },
   editCategories: async (req, res, next) => {
     try {
+      console.log('halo')
+      console.log('req.dataUser.role', req.dataUser.role)
+      if (req.dataUser.role === 'admin') {
+        console.log('req.body.id', req.body.id)
+        if (req.body.id) {
+          console.log(`UPDATE category SET category_name = '${req.body.category_name}' WHERE id=${req.body.id}`)
+          let update = await dbQuery(`UPDATE category SET category_name = '${req.body.category_name}' WHERE id=${req.body.id}`)
+          if (update) {
+            return res.status(200).send({
+              success: true,
+              message: 'Category successfully updated'
+            })
+          } else {
+            return res.status(401).send({
+              success: false,
+              message: 'category not found'
+            })
+          }
+        }
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: 'not authorized'
+        })
+      }
     } catch (error) {
       return next(error);
     }
   },
   deleteCategories: async (req, res, next) => {
     try {
+      if (req.dataUser.role === 'admin') {
+        if (req.query.id) {
+          let productCategory = await dbQuery(`Select * from products where id_category = ${req.query.id};`)
+          if (productCategory.length > 0) {
+            res.status(401).send({
+              success: false,
+              message: 'Category still contain products',
+              data: productCategory
+            })
+          } else {
+            console.log(`Delete from category where id = ${req.query.id};`)
+            let deleteCategory = await dbQuery(`Delete from category where id = ${req.query.id};`)
+            if (deleteCategory) {
+              return res.status(200).send({
+                success: true,
+                message: 'Category successfully updated'
+              })
+            } else {
+              return res.status(401).send({
+                success: false,
+                message: 'Category not found'
+              })
+            }
+          }
+        }
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: 'not authorized'
+        })
+      }
     } catch (error) {
       return next(error);
     }
