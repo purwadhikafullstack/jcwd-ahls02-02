@@ -8,6 +8,10 @@ import { API_URL } from "../../../helper";
 import { Create, Delete } from "@mui/icons-material";
 import ModalAddProduct from "./Partials/ModalAddProduct";
 import ModalEditProduct from "./Partials/ModalEditProduct";
+import ModalConfirm from "../../../Components/ModalConfirm";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import { ToastNotification } from "../../../Components/Toast";
 
 const AdminProductPage = () => {
 
@@ -26,18 +30,23 @@ const AdminProductPage = () => {
 
     const [openAddProduct, setOpenAddProduct] = useState(false)
 
-    const [dataEdit, setDataEdit] = useState()
     const [openEditProduct, setOpenEditProduct] = useState(false)
+    const [dataEdit, setDataEdit] = useState()
     const [idProduct, setIdProduct] = useState()
+
+    const [openDeleteProduct, setOpenDeleteProduct] = useState(false)
+    const [textDelete, setTextDelete] = useState('')
+    const [idDelete, setIdDelete] = useState()
 
     useEffect(() => {
         getData()
+        getCategory();
         console.log('page lagi: ', page)
     }, [])
 
-    useEffect(() => {
-        getCategory();
-    }, [])
+    // useEffect(() => {
+    //     getCategory();
+    // }, [])
 
     const getCategory = () => {
         axios.get(`${API_URL}/products/categories`)
@@ -131,7 +140,12 @@ const AdminProductPage = () => {
                             <IconButton aria-label="edit" onClick={() => openEditModal(val.id)}>
                                 <Create />
                             </IconButton>
-                            <IconButton aria-label="delete">
+                            <IconButton aria-label="delete" onClick={() => {
+                                setOpenDeleteProduct(true)
+                                setTextDelete(`If you delete this, all unit with the same name will also be deleted. Are you sure you want to delete ${val.name}?`)
+                                setIdDelete(val.id)
+                                console.log('delete id', val.id)
+                            }}>
                                 <Delete color='error' />
                             </IconButton>
                         </>
@@ -184,6 +198,21 @@ const AdminProductPage = () => {
         getDataFilter(name, idCategory, minPrice, maxPrice, sort, page)
     }
 
+    const handleDelete = (id = idDelete) => {
+        let token = Cookies.get("userToken")
+
+        axios.delete(`${API_URL}/products/deleteProduct?id=${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((response) => {
+            toast.success(`Product successfully deleted`)
+            getDataFilter();
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
     return <div>
         <Container>
             <Grid container>
@@ -225,6 +254,14 @@ const AdminProductPage = () => {
             index={idProduct}
             refreshData={getDataFilter}
         />
+        <ModalConfirm
+            isOpen={openDeleteProduct}
+            toggle={() => { setOpenDeleteProduct(!openDeleteProduct) }}
+            text={textDelete}
+            type='confirm'
+            handleConfirm={handleDelete}
+        />
+        <ToastNotification />
     </div>
 }
 

@@ -21,19 +21,6 @@ const Filter = (props) => {
     const defaultMaxPrice = useRef(null);
     const defaultSort = useRef(null);
 
-    // useEffect(() => {
-    //     getCategory();
-    // }, [])
-
-    // const getCategory = () => {
-    //     axios.get(`${API_URL}/products/categories`)
-    //         .then((response) => {
-    //             setCategory(response.data)
-    //         }).catch((error) => {
-    //             console.log(error)
-    //         })
-    // }
-
     const handleFilter = () => {
         console.log(name, idCategory, minPrice, maxPrice, sort)
         getDataFilter(name, idCategory, minPrice, maxPrice, sort)

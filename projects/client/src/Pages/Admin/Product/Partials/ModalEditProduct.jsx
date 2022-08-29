@@ -165,6 +165,7 @@ const ModalEditProduct = (props) => {
                                     <FormControl size='small' fullWidth>
                                         <Select
                                             defaultValue={val.unit}
+                                            disabled
                                             // value={val.unit}
                                             onChange={(e) => {
                                                 handleChangeDefaultUnit(e)
@@ -237,6 +238,7 @@ const ModalEditProduct = (props) => {
                                             setSmallStock(temp)
                                         }}
                                         displayEmpty
+                                        disabled
                                     >
                                         <MenuItem value="">
                                             <Typography color='grey.400'>Choose One</Typography>
@@ -408,6 +410,7 @@ const ModalEditProduct = (props) => {
                         variant='outlined'
                         sx={{ mb: 2 }}
                         defaultValue={data[0].unit_conversion}
+                        disabled
                         // sx={{ mb: 2, width: '40%' }}
                         onChange={(e) => {
                             setUnitConversion(e.target.value)

@@ -95,7 +95,7 @@ module.exports = {
 
         console.log(`${filter} ${sort}`)
 
-        let allData = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt,  p.image, s.is_active from products p
+        let allData = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt, p.image, s.id as id_stock, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort};`)
 
@@ -121,7 +121,7 @@ module.exports = {
 
         console.log(`${filter} ${sort} ${limit}`)
 
-        let resultFilter = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt,  p.image, s.id as id_product, s.is_active from products p
+        let resultFilter = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt,  p.image, s.id as id_stock, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort} ${limit};`)
 
@@ -140,18 +140,95 @@ module.exports = {
   },
   addCategories: async (req, res, next) => {
     try {
+      if (req.dataUser.role === 'admin') {
+        if (req.body.category_name) {
+          let update = await dbQuery(`INSERT INTO category (category_name) VALUE ('${req.body.category_name}')`)
+          if (update) {
+            return res.status(200).send({
+              success: true,
+              message: 'Category successfully added'
+            })
+          } else {
+            return res.status(401).send({
+              success: false,
+              message: 'Failed in adding category'
+            })
+          }
+        }
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: 'not authorized'
+        })
+      }
     } catch (error) {
       return next(error);
     }
   },
   editCategories: async (req, res, next) => {
     try {
+      console.log('halo')
+      console.log('req.dataUser.role', req.dataUser.role)
+      if (req.dataUser.role === 'admin') {
+        console.log('req.body.id', req.body.id)
+        if (req.body.id) {
+          console.log(`UPDATE category SET category_name = '${req.body.category_name}' WHERE id=${req.body.id}`)
+          let update = await dbQuery(`UPDATE category SET category_name = '${req.body.category_name}' WHERE id=${req.body.id}`)
+          if (update) {
+            return res.status(200).send({
+              success: true,
+              message: 'Category successfully updated'
+            })
+          } else {
+            return res.status(401).send({
+              success: false,
+              message: 'category not found'
+            })
+          }
+        }
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: 'not authorized'
+        })
+      }
     } catch (error) {
       return next(error);
     }
   },
   deleteCategories: async (req, res, next) => {
     try {
+      if (req.dataUser.role === 'admin') {
+        if (req.query.id) {
+          let productCategory = await dbQuery(`Select * from products where id_category = ${req.query.id};`)
+          if (productCategory.length > 0) {
+            res.status(401).send({
+              success: false,
+              message: 'Category still contain products',
+              data: productCategory
+            })
+          } else {
+            console.log(`Delete from category where id = ${req.query.id};`)
+            let deleteCategory = await dbQuery(`Delete from category where id = ${req.query.id};`)
+            if (deleteCategory) {
+              return res.status(200).send({
+                success: true,
+                message: 'Category successfully updated'
+              })
+            } else {
+              return res.status(401).send({
+                success: false,
+                message: 'Category not found'
+              })
+            }
+          }
+        }
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: 'not authorized'
+        })
+      }
     } catch (error) {
       return next(error);
     }
@@ -407,6 +484,28 @@ module.exports = {
   // remove product from list => change product status to inactive
   deleteProduct: async (req, res, next) => {
     try {
+      console.log('req.dataUser.role: ', req.dataUser.role)
+      if (req.dataUser.role === 'admin') {
+        console.log('req.query.id: ', req.query.id)
+        if (req.query.id) {
+          console.log(`UPDATE products SET is_active = 'false' WHERE id = ${req.query.id}`)
+          await dbQuery(`UPDATE products SET is_active = 'false' WHERE id = ${req.query.id}`)
+          return res.status(200).send({
+            success: true,
+            message: 'product successfully deleted'
+          })
+        } else {
+          return res.status(401).send({
+            success: false,
+            message: 'query is missing'
+          })
+        }
+      } else {
+        return res.status(401).send({
+          success: false,
+          message: 'not authorized'
+        })
+      }
     } catch (error) {
       return next(error);
     }
