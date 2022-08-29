@@ -12,11 +12,11 @@ const style = {
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
-  zIndex:30
+  zIndex: 30
 };
 
 const ModalConfirm = (props) => {
-  const { isOpen, toggle, text, type, handleConfirm } = props;
+  const { isOpen, toggle, text, type, handleConfirm, disabled } = props;
 
   const handleCloseModal = () => {
     toggle();
@@ -27,7 +27,7 @@ const ModalConfirm = (props) => {
   };
 
   const handleButtonConfirm = () => {
-    handleConfirm(); 
+    handleConfirm();
     toggle();
   };
 
@@ -82,6 +82,7 @@ const ModalConfirm = (props) => {
               color="primary"
               width="100px"
               onClick={handleButtonConfirm}
+              disabled={disabled ? disabled : false}
             >
               Confirm
             </Button>
