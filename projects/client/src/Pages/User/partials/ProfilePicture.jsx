@@ -28,7 +28,7 @@ const ProfilePicture = () => {
   );
 
   const [inputKey, setInputKey] = useState(null);
-  const [formIsChanged, setFormIsChanged] = useState(false)
+  const [formIsChanged, setFormIsChanged] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(null);
 
@@ -52,8 +52,9 @@ const ProfilePicture = () => {
 
       if (res.data.success) {
         toast.success(res.data.message);
-        dispatch(editProfileAction(res.data.data));
+        await dispatch(editProfileAction(res.data.data));
         setIsSubmitting(false);
+        setFormIsChanged(false)
       } else {
         toast.error("Please try again");
         setIsSubmitting(false);
@@ -71,7 +72,7 @@ const ProfilePicture = () => {
       event.target.files[0].type === "image/gif"
     ) {
       if (event.target.files[0].size <= 1000000) {
-        setFormIsChanged(true)
+        setFormIsChanged(true);
         setImage(event.target.files[0]);
         const reader = new FileReader();
 
@@ -94,6 +95,7 @@ const ProfilePicture = () => {
   };
 
   const removeUploadedFile = () => {
+    setFormIsChanged(true);
     setSelectedFile(null);
     setImage(null);
     setInputKey(Date.now);
@@ -102,8 +104,11 @@ const ProfilePicture = () => {
   return (
     <Grid container spacing={2}>
       <ToastNotification />
-      <Grid>
-        <Text fontSize="h5">Profile Picture</Text>
+      <Grid sx={{ pb: 2 }}>
+        <Text fontSize="h5" fontWeight="bold">
+          Profile Picture
+        </Text>
+        <Text>Update your profile picture</Text>
       </Grid>
 
       <Container>
