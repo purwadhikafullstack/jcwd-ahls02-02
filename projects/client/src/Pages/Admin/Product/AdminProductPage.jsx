@@ -41,7 +41,6 @@ const AdminProductPage = () => {
     useEffect(() => {
         getData()
         getCategory();
-        console.log('page lagi: ', page)
     }, [])
 
     // useEffect(() => {
@@ -164,13 +163,9 @@ const AdminProductPage = () => {
         setMinPrice(newMinPrice)
         setMaxPrice(newMaxPrice)
         setSort(newSort)
-        // if (page !== 1) {
-        getData(newName, newIdCategory, needsReceipt, newMinPrice, newMaxPrice, newSort, page, limit);
-        // } else {
-        //     setPage(1)
 
-        //     getData(newName, newIdCategory, needsReceipt, newMinPrice, newMaxPrice, newSort, 1, limit);
-        // }
+        getData(newName, newIdCategory, needsReceipt, newMinPrice, newMaxPrice, newSort, page, limit);
+
     }
 
     const handlePage = (newPage) => {
@@ -193,8 +188,8 @@ const AdminProductPage = () => {
 
     const closeEditModal = () => {
         setOpenEditProduct(false)
-        console.log(page)
         console.log(`getDataFilter(${name}, ${idCategory}, ${minPrice}, ${maxPrice}, ${sort}, ${page})`)
+        // setPage(1)
         getDataFilter(name, idCategory, minPrice, maxPrice, sort, page)
     }
 
@@ -236,6 +231,7 @@ const AdminProductPage = () => {
                         totalPage={totalPage}
                         changePage={handlePage}
                         page={page}
+                        setPage={setPage}
                         handleOpenEdit={openEditModal}
                     />
                 </Grid>

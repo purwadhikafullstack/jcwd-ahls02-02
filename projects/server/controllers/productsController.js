@@ -135,6 +135,29 @@ module.exports = {
   getDetailProduct: async (req, res, next) => {
     try {
       console.log(req.params)
+      if (req.params) {
+        let productDetail = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt, p.image, s.id as id_stock, p.is_active from products p
+        LEFT JOIN stock s ON s.id_product = p.id
+        LEFT JOIN category c ON c.id = p.id_category
+        WHERE p.is_active = 'true' and s.default_unit='true' and p.id = ${req.params.product_id}`)
+        if (productDetail) {
+          return res.status(200).send({
+            success: true,
+            message: `Product doesn't exist`,
+            data: productDetail[0]
+          })
+        } else {
+          return res.status(404).send({
+            success: false,
+            message: `Product doesn't exist`
+          })
+        }
+      } else {
+        return res.status(404).send({
+          success: false,
+          message: `Params doesn't exist`
+        })
+      }
     } catch (error) {
       return next(error);
     }
@@ -299,8 +322,6 @@ module.exports = {
       // console.log('productType: ', productType)
 
       let newData = ''
-      console.log('req.body', req.body)
-      console.log('req.query', req.query)
 
       for (const key in req.body) {
         if (req.body[`${key}`] && key !== 'stock') {
@@ -321,10 +342,11 @@ module.exports = {
         }
       }
       if (newData) {
+        console.log(`UPDATE products ${newData} WHERE id = ${req.query.id};`)
         await dbQuery(`UPDATE products ${newData} WHERE id = ${req.query.id};`)
       }
 
-      let productType = await dbQuery(`SELECT * FROM stock WHERE id_product = ${req.query.id} and is_active='true'`)
+      let productType = await dbQuery(`SELECT * FROM stock WHERE id_product = ${req.query.id}`)
 
 
       if (productType.length === 0) {
