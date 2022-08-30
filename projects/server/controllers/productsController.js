@@ -125,7 +125,6 @@ module.exports = {
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort} ${limit};`)
 
-
         return res.status(200).send({ product: resultFilter, totalPage });
       }
     } catch (error) {
@@ -241,7 +240,6 @@ module.exports = {
         const uploadFile = uploader("/imgProduct", "IMGPRODUCT").array("image", 1);
         uploadFile(req, res, async (error) => {
           try {
-            console.log('req.files', req.files)
             const newFileName = req.files[0]
               ? `'/imgProduct/${req.files[0].filename}'`
               : null;
@@ -261,8 +259,6 @@ module.exports = {
                   values += `, (${newProduct.insertId}, '${val.unit}', '${val.default_unit}', ${val.quantity})`
                 }
               })
-
-              console.log(`INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${values};`)
 
               await dbQuery(
                 `INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${values};`)
