@@ -1,5 +1,4 @@
-import { valueToPercent } from "@mui/base";
-import { Box, Container, Grid, IconButton } from "@mui/material";
+]import { Container, Grid } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -138,28 +137,6 @@ const ProductPage = () => {
           }
         });
         dispatch(getProductsDataAction(data))
-        
-
-        // let temp = [];
-        // response.data.product.forEach((val, id) => {
-        //   temp.push({
-        //     no: (filterPage - 1) * filterLimit + id + 1,
-        //     name: val.name,
-        //     category: val.category_name,
-        //     quantity: val.quantity,
-        //     image: val.image,
-        //     unit: val.unit,
-        //     price: val.selling_price,
-        //     // action: (
-        //     //   <>
-        //     //     <IconButton aria-label="edit">{/* <Create /> */}</IconButton>
-        //     //     <IconButton aria-label="delete">
-        //     //       {/* <Delete color="error" /> */}
-        //     //     </IconButton>
-        //     //   </>
-        //     // ),
-        //   });
-        // });
         setProductData(data);
         setTotalPage(response.data.totalPage);
         setIsLoading(false);

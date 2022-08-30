@@ -1,9 +1,7 @@
 import { Search } from "@mui/icons-material";
 import { Box, FormControl, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import axios from 'axios'
-import { API_URL } from "../../../../helper";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Button from "../../../../Components/atoms/Button";
 
 const FilterProducts = (props) => {
@@ -35,7 +33,6 @@ const FilterProducts = (props) => {
     // }
 
     const handleFilter = () => {
-        console.log(name, idCategory, minPrice, maxPrice, sort)
         getDataFilter(name, idCategory, minPrice, maxPrice, sort)
     }
 
