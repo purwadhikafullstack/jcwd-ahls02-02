@@ -72,7 +72,6 @@ const Address = () => {
   }, [confirmDelete]);
 
   const handleSetDefault = async (addressValue) => {
-    
     try {
       const token = Cookies.get("userToken");
       const addressId = addressValue.id;
@@ -181,8 +180,11 @@ const Address = () => {
   return (
     <Grid container spacing={2}>
       <ToastNotification />
-      <Grid sx={{ pb: 3 }}>
-        <Text fontSize="h5">My Address</Text>
+      <Grid sx={{ pb: 2 }}>
+        <Text fontSize="h5" fontWeight="bold">
+          My Address
+        </Text>
+        <Text>Add your address</Text>
       </Grid>
 
       <Grid container alignItems="center">
@@ -231,7 +233,7 @@ const Address = () => {
       <ModalConfirm
         isOpen={openModalConfirm}
         setOpen={setOpenModalConfirm}
-        type="confirm"
+        type="warning"
         toggle={() => setOpenModalConfirm(false)}
         text="Are you sure you want to delete this address?"
         handleConfirm={() => setConfirmDelete(true)}
