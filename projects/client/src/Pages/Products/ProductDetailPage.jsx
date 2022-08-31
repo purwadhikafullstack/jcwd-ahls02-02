@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API_IMAGE_URL, API_URL } from '../../helper'
+import { API_URL, API_IMAGE_URL } from '../../helper'
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Box, Button, Container, Grid, IconButton, TextField, Typography } from '@mui/material'
@@ -59,7 +59,7 @@ const ProductDetailPage = () => {
                 <Box>
                     <Grid container>
                         <Grid item md={6}>
-                            <Box display='flex' sx={{ height: '100%', alignItems: 'center' }}>
+                            <Box display='flex' sx={{ height: '100%', alignItems: 'center', justifyContent: 'center' }}>
                                 <img src={`${API_IMAGE_URL}${detailProduct.image}`} alt='product picture' style={{ width: '80%' }} />
                             </Box>
                         </Grid>

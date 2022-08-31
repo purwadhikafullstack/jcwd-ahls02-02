@@ -14,7 +14,7 @@ import Cookies from 'js-cookie';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import { Category, History, HowToReg, LoginRounded, Medication, Send } from '@mui/icons-material';
 import axios from 'axios'
-import { API_URL } from '../helper';
+import { API_URL, API_IMAGE_URL } from '../helper';
 import { toast } from "react-hot-toast"
 import { ToastNotification } from './Toast';
 
@@ -185,7 +185,7 @@ const Navbar = () => {
                         <Box>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`} />
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_IMAGE_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -273,7 +273,7 @@ const Navbar = () => {
                         <Box>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`} />
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_IMAGE_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -378,7 +378,7 @@ const Navbar = () => {
                         <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUserSmall(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`} />
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_IMAGE_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -511,7 +511,7 @@ const Navbar = () => {
                         <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUserSmall(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`} />
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_IMAGE_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu
