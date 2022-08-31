@@ -3,7 +3,7 @@ import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, IconButton,
 import { ArrowForwardIos, CheckCircle, Delete, DeleteForever } from "@mui/icons-material";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { API_URL } from "../../../../helper";
+import { API_URL, API_IMAGE_URL } from "../../../../helper";
 import { ToastNotification } from "../../../../Components/Toast";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
@@ -377,7 +377,7 @@ const ModalEditProduct = (props) => {
         } else {
             if (data) {
                 return <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <img src={`${API_URL}${data[0].image}`} alt={`product image`} style={{ width: "40%" }} />
+                    <img src={`${API_IMAGE_URL}${data[0].image}`} alt={`product image`} style={{ width: "40%" }} />
                     {/* <img src={`${data[0].image}`} alt={`product image`} style={{ width: "40%" }} /> */}
                     <Button
                         variant="contained"
