@@ -1,7 +1,7 @@
-require("dotenv/config");
+const { join } = require("path");
+require('dotenv').config({ path: join(__dirname, '../.env') });
 const express = require("express");
 const cors = require("cors");
-const { join } = require("path");
 const bearerToken = require('express-bearer-token')
 
 const PORT = process.env.PORT || 8000;
