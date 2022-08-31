@@ -486,7 +486,8 @@ module.exports = {
         } = req.body;
 
         await dbQuery(
-          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${req.dataUser.id
+          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${
+            req.dataUser.id
           }', '${street}','${Number(
             province_id
           )}','${province_label}','${Number(
@@ -644,9 +645,53 @@ module.exports = {
   },
   addProductToCart: async (req, res, next) => {
     try {
-      console.log('req.dataUser', req.dataUser)
-      console.log('req.body', req.body)
+      if (req.dataUser.id) {
+        const userId = req.dataUser.id;
+        const { id_stock, quantity, price } = req.body;
+        let subtotal = quantity * price;
 
+        const userCartData = await dbQuery(
+          `select quantity, subtotal from cart where id_user=${userId} and id_stock=${id_stock}`
+        );
+
+        if (userCartData.length) {
+          const newQuantity = userCartData[0].quantity + quantity;
+          const newSubtotal = userCartData[0].subtotal + subtotal;
+          const updateCart = await dbQuery(
+            `Update cart set quantity='${newQuantity}', subtotal='${newSubtotal}' where id_user=${userId} and id_stock=${id_stock}`
+          );
+
+          const newCartData = await dbQuery(
+            `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${userId}`
+          );
+
+          return res.status(200).send({
+            success: true,
+            message: "Cart successfully updated",
+            data: newCartData,
+          });
+        } else {
+          const addToCart = await dbQuery(
+            `insert into cart (id_user, id_stock, quantity, subtotal) values ('${userId}','${id_stock}', '${quantity}','${subtotal}')`
+          );
+
+          if (addToCart.insertId) {
+            const newCartData = await dbQuery(
+              `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${userId}`
+            );
+            return res.status(200).send({
+              success: true,
+              message: "Cart successfully updated",
+              data: newCartData,
+            });
+          }
+        }
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }

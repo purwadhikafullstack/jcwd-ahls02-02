@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API_URL } from '../../helper'
+import { API_IMAGE_URL, API_URL } from '../../helper'
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Box, Button, Container, Grid, IconButton, TextField, Typography } from '@mui/material'
@@ -7,12 +7,14 @@ import { Add, FileUpload, Remove, ShoppingCartOutlined } from '@mui/icons-materi
 import Text from '../../Components/atoms/Text'
 import toast from 'react-hot-toast'
 import { ToastNotification } from '../../Components/Toast'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
+import { editCartAction } from '../../Redux/Actions/userAction'
 
 const ProductDetailPage = () => {
     let { id } = useParams();
+    const dispatch = useDispatch()
     const navigate = useNavigate();
 
     const { idUser, status } = useSelector((state) => {
@@ -58,7 +60,7 @@ const ProductDetailPage = () => {
                     <Grid container>
                         <Grid item md={6}>
                             <Box display='flex' sx={{ height: '100%', alignItems: 'center' }}>
-                                <img src={`${API_URL}${detailProduct.image}`} alt='product picture' style={{ width: '80%' }} />
+                                <img src={`${API_IMAGE_URL}${detailProduct.image}`} alt='product picture' style={{ width: '80%' }} />
                             </Box>
                         </Grid>
                         <Grid item md={6} sx={{ textAlign: 'left' }}>
@@ -142,13 +144,14 @@ const ProductDetailPage = () => {
             if (idUser) {
                 if (status === 'verified') {
                     let token = Cookies.get("userToken")
-                    let addToCart = await axios.post(`${API_URL}/users/cart/${idUser}`, { id_stock: detailProduct.id_stock, quantity }, {
+                    let addToCart = await axios.post(`${API_URL}/users/cart/${idUser}`, { id_stock: detailProduct.id_stock, quantity, price:detailProduct.selling_price }, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
                     })
                     if (addToCart) {
                         toast.success('Added to cart')
+                        dispatch(editCartAction(addToCart.data.data))  
                     } else {
                         toast.error('Something went wrong, please try again')
                     }
