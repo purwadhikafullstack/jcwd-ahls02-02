@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 
 const ProductTable = (props) => {
 
-    let { productData, totalPage, changePage, page, handleOpenEdit } = props
+    let { productData, totalPage, changePage, page, setPage, handleOpenEdit } = props
 
     const [newPage, setNewPage] = useState(1)
 
@@ -17,6 +17,7 @@ const ProductTable = (props) => {
         changePage(value)
         setNewPage(value)
         console.log(value)
+        setPage(value)
     }
 
     return (
@@ -54,9 +55,11 @@ const ProductTable = (props) => {
             </TableContainer>
             <Box textAlign='right' sx={{ display: 'flex' }}>
                 {totalPage ?
-                    <Pagination count={totalPage} page={newPage} color='primary' onChange={clickPage} />
+                    <Pagination count={totalPage} page={page} color='primary' onChange={clickPage} />
                     : null}
             </Box>
+            {/* <>{newPage}</> */}
+            <>{page}</>
         </Box>
     );
 }
