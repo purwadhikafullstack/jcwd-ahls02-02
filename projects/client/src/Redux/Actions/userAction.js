@@ -27,3 +27,11 @@ export const editProfileAction = (data) => {
         payload: data
     }
 }
+
+export const editCartAction = (data) => {
+    console.log("data",data)
+    return {
+        type: "EDIT_CART",
+        payload: data
+    }
+}
