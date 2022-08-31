@@ -24,7 +24,7 @@ route.delete("/profile/address/:user_id", readToken, usersController.deleteAddre
 route.get("/cart/:user_id", readToken, usersController.getUserCart);
 route.post("/cart/:user_id", readToken, usersController.addProductToCart);
 route.patch("/cart/:user_id", readToken, usersController.editProductInCart);
-route.delete("/cart/:user_id/:stock_id", readToken, usersController.deleteProductInCart);
+route.delete("/cart/:user_id/:cart_id", readToken, usersController.deleteProductInCart);
 
 route.get("/order/:user_id", usersController.getOrderList);
 route.post("/order/:user_id", usersController.addOrder);

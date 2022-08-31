@@ -124,6 +124,32 @@ const CartProductsList = (props) => {
     setTotalPrice(tempTotalPrice);
   };
 
+  const handleDelete = async (itemIndex) => {
+    try {
+      const itemCartId = cartList[itemIndex].id;
+      const token = Cookies.get("userToken");
+      const res = await axios.delete(
+        `${API_URL}/users/cart/${userData.id}/${itemCartId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        let tempCartList = [...cartList];
+        tempCartList.splice(itemIndex, 1);
+        setCartList(tempCartList);
+
+        dispatch(editCartAction(res.data.data));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong, please try again");
+    }
+  };
+
   const printCartList = () => {
     return (
       <>
@@ -185,7 +211,10 @@ const CartProductsList = (props) => {
                 </Grid>
                 <Grid item xs={12} sx={{ pt: 2 }}>
                   <Box sx={{ display: "flex", justifyContent: "right" }}>
-                    <IconButton color="error">
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(index)}
+                    >
                       <Delete />
                     </IconButton>
                     <Divider orientation="vertical" flexItem />

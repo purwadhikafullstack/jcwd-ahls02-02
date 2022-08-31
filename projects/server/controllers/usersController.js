@@ -746,6 +746,31 @@ module.exports = {
   },
   deleteProductInCart: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        const { cart_id } = req.params;
+
+        const userId = req.dataUser.id;
+
+        const deleteItem = await dbQuery(
+          `delete from cart where id = ${cart_id}`
+        );
+
+        if (deleteItem.affectedRows) {
+          const newCartData = await dbQuery(
+            `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal, s.quantity as current_stock from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${userId}`
+          );
+          return res.status(200).send({
+            success: true,
+            message: "Item in cart successfully deleted",
+            data: newCartData,
+          });
+        }
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }
