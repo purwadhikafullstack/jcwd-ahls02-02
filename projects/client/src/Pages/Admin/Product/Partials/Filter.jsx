@@ -62,7 +62,7 @@ const Filter = (props) => {
             </FormControl>
             <Typography fontSize='18px' textAlign='left' sx={{ p: 1, mt: 2, fontWeight: 'bold' }}>Category</Typography>
             {category ? category.map(item => {
-                return <Box textAlign='left'>
+                return <Box textAlign='left' key={item.id}>
                     <Button onClick={() => setIdCategory(item.id)}>
                         <Typography fontSize='14px' textAlign='left' sx={{ pl: 1 }} color={idCategory === item.id ? 'primary' : 'black'}>{item.category_name}</Typography>
                     </Button>

@@ -11,6 +11,21 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import { editCartAction } from '../../Redux/Actions/userAction'
+import SimilarProducts from './partials/ProductDetailPage/SimilarProducts'
+import BasicBreadcrumbs from '../../Components/atoms/Breadcrumb'
+
+// const link = [
+//     {
+//         id: 1,
+//         link: 'Home',
+//         href: '/'
+//     },
+//     {
+//         id: 2,
+//         link: 'Product',
+//         href: '/product'
+//     }
+// ]
 
 const ProductDetailPage = () => {
     let { id } = useParams();
@@ -24,9 +39,22 @@ const ProductDetailPage = () => {
         }
     })
 
-
     let [detailProduct, setDetailProduct] = useState()
+    let [similarProducts, setSimilarProducts] = useState([])
     let [quantity, setQuantity] = useState(1)
+    let [link, setLink] = useState([
+        {
+            id: 1,
+            link: 'Home',
+            href: '/'
+        },
+        {
+            id: 2,
+            link: 'Product',
+            href: '/product'
+        }
+    ])
+
 
     useEffect(() => {
         getData();
@@ -37,7 +65,17 @@ const ProductDetailPage = () => {
             let productData = await axios.get(`${API_URL}/products/${id}`)
 
             if (productData.data.data) {
+                let similar = await axios.get(`${API_URL}/products?id_category=${productData.data.data.id_category}&limit=8`)
                 setDetailProduct(productData.data.data)
+                if (similar.data.product) {
+                    let temp = []
+                    similar.data.product.forEach(value => {
+                        if (value.default_unit === 'true') {
+                            temp.push({ id: value.id, name: value.name, price: value.selling_price, image: value.image })
+                        }
+                    })
+                    setSimilarProducts(temp)
+                }
             } else {
                 console.log('Error?')
             }
@@ -144,14 +182,14 @@ const ProductDetailPage = () => {
             if (idUser) {
                 if (status === 'verified') {
                     let token = Cookies.get("userToken")
-                    let addToCart = await axios.post(`${API_URL}/users/cart/${idUser}`, { id_stock: detailProduct.id_stock, quantity, price:detailProduct.selling_price }, {
+                    let addToCart = await axios.post(`${API_URL}/users/cart/${idUser}`, { id_stock: detailProduct.id_stock, quantity, price: detailProduct.selling_price }, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
                     })
                     if (addToCart) {
                         toast.success('Added to cart')
-                        dispatch(editCartAction(addToCart.data.data))  
+                        dispatch(editCartAction(addToCart.data.data))
                     } else {
                         toast.error('Something went wrong, please try again')
                     }
@@ -181,7 +219,18 @@ const ProductDetailPage = () => {
 
 
     return <Container sx={{ pt: 3 }}>
-        {printProductInfo()}
+        <BasicBreadcrumbs
+            prevLinks={link}
+            currentLink={detailProduct ? detailProduct.name : null}
+        />
+        <Box>
+            {printProductInfo()}
+        </Box>
+        <Box sx={{ mt: 5 }}>
+            <SimilarProducts
+                productData={similarProducts}
+            />
+        </Box>
         <ToastNotification />
     </Container>
 }

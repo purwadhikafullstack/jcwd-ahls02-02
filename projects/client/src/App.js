@@ -27,6 +27,7 @@ import { loginAction } from "./Redux/Actions/userAction";
 import ForgotPasswordPage from "./Pages/Auth/ForgotPasswordPage";
 import NotFoundPage from "./Pages/404";
 import Navbar from "./Components/Navbar";
+import CustomizedMenus from "./Pages/Test";
 
 function App() {
 
@@ -101,6 +102,7 @@ function App() {
         }
         <Route path='/auth/verification/:token' element={<VerificationPage />} />
         <Route path='*' element={<NotFoundPage />} />
+        <Route path='/test' element={<CustomizedMenus />} />
       </Routes>
 
     </div>
