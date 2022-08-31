@@ -93,8 +93,6 @@ module.exports = {
           filter += `where is_active='true'`
         }
 
-        console.log(`${filter} ${sort}`)
-
         let allData = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt, p.image, s.id as id_stock, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort};`)
@@ -119,8 +117,6 @@ module.exports = {
           totalPage += Math.ceil(totalData / 12)
         }
 
-        console.log(`${filter} ${sort} ${limit}`)
-
         let resultFilter = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt,  p.image, s.id as id_stock, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort} ${limit};`)
@@ -133,16 +129,20 @@ module.exports = {
   },
   getDetailProduct: async (req, res, next) => {
     try {
-      console.log(req.params)
       if (req.params) {
         let productDetail = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt, p.image, s.id as id_stock, p.is_active from products p
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category
         WHERE p.is_active = 'true' and s.default_unit='true' and p.id = ${req.params.product_id}`)
-        if (productDetail) {
+
+        let smallestUnit = await dbQuery(`Select unit from stock where id_product=${req.params.product_id} and default_unit = 'false'`)
+
+        productDetail[0].smallest_unit = smallestUnit[0].unit
+
+        if (productDetail[0]) {
           return res.status(200).send({
             success: true,
-            message: `Product doesn't exist`,
+            message: `Successfully get data`,
             data: productDetail[0]
           })
         } else {
@@ -190,12 +190,8 @@ module.exports = {
   },
   editCategories: async (req, res, next) => {
     try {
-      console.log('halo')
-      console.log('req.dataUser.role', req.dataUser.role)
       if (req.dataUser.role === 'admin') {
-        console.log('req.body.id', req.body.id)
         if (req.body.id) {
-          console.log(`UPDATE category SET category_name = '${req.body.category_name}' WHERE id=${req.body.id}`)
           let update = await dbQuery(`UPDATE category SET category_name = '${req.body.category_name}' WHERE id=${req.body.id}`)
           if (update) {
             return res.status(200).send({
@@ -231,7 +227,6 @@ module.exports = {
               data: productCategory
             })
           } else {
-            console.log(`Delete from category where id = ${req.query.id};`)
             let deleteCategory = await dbQuery(`Delete from category where id = ${req.query.id};`)
             if (deleteCategory) {
               return res.status(200).send({
@@ -313,9 +308,6 @@ module.exports = {
   },
   editProductData: async (req, res, next) => {
     try {
-      // let productType = await dbQuery(`SELECT * FROM stock WHERE id_product = ${req.query.id} and is_active='true'`)
-
-      // console.log('productType: ', productType)
 
       let newData = ''
 
@@ -338,7 +330,6 @@ module.exports = {
         }
       }
       if (newData) {
-        console.log(`UPDATE products ${newData} WHERE id = ${req.query.id};`)
         await dbQuery(`UPDATE products ${newData} WHERE id = ${req.query.id};`)
       }
 
@@ -383,11 +374,9 @@ module.exports = {
         })
         if (add) {
           await dbQuery(`INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${add}`)
-          console.log(`INSERT INTO stock (id_product, unit, default_unit, quantity) VALUE ${add}`)
         }
         if (update) {
           await dbQuery(`UPDATE stock SET ${update} WHERE id = ${productType[0].id}`)
-          console.log(`UPDATE stock SET ${update} WHERE id = ${productType[0].id}`)
         }
       } else if (productType.length === 2) {
         let firstUpdate = ''
@@ -395,7 +384,6 @@ module.exports = {
         let secondUpdate = ''
         let secondId = ''
 
-        console.log('productType :', productType)
 
         productType.forEach(val => {
           if (req.body.stock[0].default_unit === val.default_unit) {
@@ -437,21 +425,12 @@ module.exports = {
           }
         })
 
-        console.log('firstUpdate', firstUpdate)
-        console.log('firstId', firstId)
-        console.log(`UPDATE stock ${firstUpdate} WHERE id = ${firstId}`)
-
-        console.log('secondUpdate', secondUpdate)
-        console.log('secondId', secondId)
-        console.log(`UPDATE stock ${secondUpdate} WHERE id = ${secondId}`)
 
         if (firstUpdate) {
           await dbQuery(`UPDATE stock ${firstUpdate} WHERE id = ${firstId}`)
-          console.log(`UPDATE stock ${firstUpdate} WHERE id = ${firstId}`)
         }
         if (secondUpdate) {
           await dbQuery(`UPDATE stock ${secondUpdate} WHERE id = ${secondId}`)
-          console.log(`UPDATE stock ${secondUpdate} WHERE id = ${secondId}`)
         }
       }
 
@@ -467,13 +446,10 @@ module.exports = {
   },
   editProductPicture: async (req, res, next) => {
     try {
-      console.log('halo')
       const uploadFile = uploader("/imgProduct", "IMGPRODUCT").array("image", 1);
 
       uploadFile(req, res, async (error) => {
         try {
-          console.log('req.files', req.files)
-
           try {
             const currentPicture = await dbQuery(
               `select image from products where id=${req.query.id}`
@@ -506,11 +482,8 @@ module.exports = {
   // remove product from list => change product status to inactive
   deleteProduct: async (req, res, next) => {
     try {
-      console.log('req.dataUser.role: ', req.dataUser.role)
       if (req.dataUser.role === 'admin') {
-        console.log('req.query.id: ', req.query.id)
         if (req.query.id) {
-          console.log(`UPDATE products SET is_active = 'false' WHERE id = ${req.query.id}`)
           await dbQuery(`UPDATE products SET is_active = 'false' WHERE id = ${req.query.id}`)
           return res.status(200).send({
             success: true,

@@ -185,7 +185,7 @@ const Navbar = () => {
                         <Box>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`}/>
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -273,7 +273,7 @@ const Navbar = () => {
                         <Box>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`}/>
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -378,7 +378,7 @@ const Navbar = () => {
                         <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUserSmall(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`}/>
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -416,7 +416,38 @@ const Navbar = () => {
                                     <AccountCircleOutlinedIcon sx={{ mr: 1 }} />
                                     <Typography textAlign="center" >Profile</Typography>
                                 </MenuItem>
-                                <MenuItem onClick={handleNavigatePrescription}>
+                                {verified_status === 'verified' ?
+                                    <>
+                                        <MenuItem onClick={handleNavigatePrescription}>
+                                            <MedicationIcon sx={{ mr: 1 }} />
+                                            <Typography textAlign="center">Prescription</Typography>
+                                        </MenuItem>
+                                        <MenuItem onClick={handleNavigateCart}>
+                                            <ShoppingCartIcon sx={{ mr: 1 }} />
+                                            <Typography textAlign="center">Cart</Typography>
+                                        </MenuItem>
+                                        <MenuItem onClick={handleNavigateOrder}>
+                                            <ShoppingBagIcon sx={{ mr: 1 }} />
+                                            <Typography textAlign="center">Order</Typography>
+                                        </MenuItem>
+                                    </>
+                                    :
+                                    <>
+                                        <MenuItem disabled onClick={handleNavigatePrescription}>
+                                            <MedicationIcon sx={{ mr: 1 }} />
+                                            <Typography textAlign="center">Prescription</Typography>
+                                        </MenuItem>
+                                        <MenuItem disabled onClick={handleNavigateCart}>
+                                            <ShoppingCartIcon sx={{ mr: 1 }} />
+                                            <Typography textAlign="center">Cart</Typography>
+                                        </MenuItem>
+                                        <MenuItem disabled onClick={handleNavigateOrder}>
+                                            <ShoppingBagIcon sx={{ mr: 1 }} />
+                                            <Typography textAlign="center">Order</Typography>
+                                        </MenuItem>
+                                    </>
+                                }
+                                {/* <MenuItem onClick={handleNavigatePrescription}>
                                     <HealthAndSafetyIcon sx={{ mr: 1 }} />
                                     <Typography textAlign="center" >Prescription</Typography>
                                 </MenuItem>
@@ -427,7 +458,7 @@ const Navbar = () => {
                                 <MenuItem onClick={handleNavigateOrder}>
                                     <ShoppingBagIcon sx={{ mr: 1 }} />
                                     <Typography textAlign="center" >Order</Typography>
-                                </MenuItem>
+                                </MenuItem> */}
                                 <Divider />
                                 <MenuItem onClick={handleLogout}>
                                     <Typography textAlign="center">Log Out</Typography>
@@ -480,7 +511,7 @@ const Navbar = () => {
                         <Box sx={{ flexGrow: 1, textAlign: 'right', width: '25%' }}>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElUserSmall(e.currentTarget)} sx={{ p: 0 }}>
-                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`}/>
+                                    <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
                             <Menu
