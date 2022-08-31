@@ -28,8 +28,14 @@ export const editProfileAction = (data) => {
     }
 }
 
+export const getCartAction = (data) => {
+    return {
+        type: "GET_CART",
+        payload: data
+    }
+}
+
 export const editCartAction = (data) => {
-    console.log("data",data)
     return {
         type: "EDIT_CART",
         payload: data

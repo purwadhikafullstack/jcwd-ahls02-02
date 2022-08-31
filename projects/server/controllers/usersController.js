@@ -639,6 +639,23 @@ module.exports = {
 
   getUserCart: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        const cartData = await dbQuery(
+          `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal, s.quantity as current_stock from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${req.dataUser.id}`
+        );
+        if (cartData.length) {
+          return res.status(200).send({
+            success: true,
+            message: "Cart data fetched successfully",
+            data: cartData,
+          });
+        }
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }
@@ -662,7 +679,7 @@ module.exports = {
           );
 
           const newCartData = await dbQuery(
-            `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${userId}`
+            `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal, s.quantity as current_stock from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${userId}`
           );
 
           return res.status(200).send({
@@ -677,7 +694,7 @@ module.exports = {
 
           if (addToCart.insertId) {
             const newCartData = await dbQuery(
-              `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${userId}`
+              `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal, s.quantity as current_stock from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${userId}`
             );
             return res.status(200).send({
               success: true,
@@ -698,6 +715,31 @@ module.exports = {
   },
   editProductInCart: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        const { cartId, selling_price, newQuantity } = req.body;
+        const userId = req.dataUser.id;
+        let newSubtotal = selling_price * newQuantity;
+
+        const updateCart = await dbQuery(
+          `Update cart set quantity='${newQuantity}', subtotal='${newSubtotal}' where id=${cartId} and id_user=${userId}`
+        );
+
+        if (updateCart.affectedRows) {
+          const newCartData = await dbQuery(
+            `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal, s.quantity as current_stock from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${userId}`
+          );
+          return res.status(200).send({
+            success: true,
+            message: "Cart successfully updated",
+            data: newCartData,
+          });
+        }
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }
