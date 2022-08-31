@@ -3,9 +3,11 @@ const productsRouter = require("./productsRouter");
 const adminRouter = require("./adminRouter");
 const rajaOngkirRouter = require("./rajaOngkirRouter");
 
-module.exports = {
-  usersRouter,
-  productsRouter,
-  adminRouter,
-  rajaOngkirRouter
-};
+const router = require('express').Router();
+
+router.use("/users", usersRouter);
+router.use("/products", productsRouter);
+router.use("/admin", adminRouter);
+router.use("/rajaOngkir", rajaOngkirRouter);
+
+module.exports = router

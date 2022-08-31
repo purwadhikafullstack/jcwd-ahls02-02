@@ -48,11 +48,8 @@ dbConf.getConnection((error, connection) => {
 })
 
 
-const { usersRouter, productsRouter, adminRouter, rajaOngkirRouter } = require("../routers");
-app.use("/users", usersRouter);
-app.use("/products", productsRouter);
-app.use("/admin", adminRouter);
-app.use("/rajaOngkir", rajaOngkirRouter);
+const configRouter = require("../routers");
+app.use("/api", configRouter);
 
 // not found
 app.use((req, res, next) => {
