@@ -22,7 +22,7 @@ route.patch("/profile/default-address/:user_id", readToken, usersController.edit
 route.delete("/profile/address/:user_id", readToken, usersController.deleteAddress);
 
 route.get("/cart/:user_id", usersController.getUserCart);
-route.post("/cart/:user_id", usersController.addProductToCart);
+route.post("/cart/:user_id", readToken, usersController.addProductToCart);
 route.patch("/cart/:user_id", usersController.editProductInCart);
 route.delete("/cart/:user_id", usersController.deleteProductInCart);
 

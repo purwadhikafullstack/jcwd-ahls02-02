@@ -486,8 +486,7 @@ module.exports = {
         } = req.body;
 
         await dbQuery(
-          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${
-            req.dataUser.id
+          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${req.dataUser.id
           }', '${street}','${Number(
             province_id
           )}','${province_label}','${Number(
@@ -645,6 +644,9 @@ module.exports = {
   },
   addProductToCart: async (req, res, next) => {
     try {
+      console.log('req.dataUser', req.dataUser)
+      console.log('req.body', req.body)
+
     } catch (error) {
       return next(error);
     }

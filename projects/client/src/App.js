@@ -96,7 +96,7 @@ function App() {
             <Route path='/' element={<Homepage />} />
             <Route path='/auth/reset/:token' element={<ForgotPasswordPage />} />
             <Route path='/product' element={<ProductPage />} />
-            <Route path='/product/detail' element={<ProductDetailPage />} />
+            <Route path='/product/:id' element={<ProductDetailPage />} />
           </>
         }
         <Route path='/auth/verification/:token' element={<VerificationPage />} />

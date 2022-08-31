@@ -80,7 +80,7 @@ const ModalEditProduct = (props) => {
         setBuyingPrice()
         let temp = [{ quantity: '', unit: '', default_unit: 'false' }]
         setFormStock(temp)
-        refreshData()
+        // refreshData()
         setMoreUnit()
         // defaultName.current.value = ""
         // defaultDescription.current.value = ""
