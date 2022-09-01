@@ -4,7 +4,7 @@ import Button from "./atoms/Button";
 import Text from "./atoms/Text";
 
 const ProductCard = (props) => {
-  const { id, name, price, image } = props;
+  const { id, name, price, image, handleDetail } = props;
   const navigate = useNavigate();
 
   return (
@@ -56,7 +56,8 @@ const ProductCard = (props) => {
             <Button
               variant="contained"
               sx={{ width: "100%", mt: 2 }}
-              onClick={() => navigate(`/product/${id}`)}
+              onClick={handleDetail}
+            // onClick={() => navigate(`/product/${id}`)}
             >
               Detail
             </Button>

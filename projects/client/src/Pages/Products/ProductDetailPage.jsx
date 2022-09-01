@@ -3,7 +3,7 @@ import { API_URL, API_IMAGE_URL } from '../../helper'
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Box, Button, Container, Grid, IconButton, TextField, Typography } from '@mui/material'
-import { Add, FileUpload, Remove, ShoppingCartOutlined } from '@mui/icons-material'
+import { Add, DoNotDisturb, FileUpload, Remove, ShoppingCartOutlined } from '@mui/icons-material'
 import Text from '../../Components/atoms/Text'
 import toast from 'react-hot-toast'
 import { ToastNotification } from '../../Components/Toast'
@@ -32,10 +32,11 @@ const ProductDetailPage = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate();
 
-    const { idUser, status } = useSelector((state) => {
+    const { idUser, status, cart } = useSelector((state) => {
         return {
             idUser: state.userReducer.id,
-            status: state.userReducer.verified_status
+            status: state.userReducer.verified_status,
+            cart: state.userReducer.cart
         }
     })
 
@@ -71,6 +72,7 @@ const ProductDetailPage = () => {
                     let temp = []
                     similar.data.product.forEach(value => {
                         if (value.default_unit === 'true') {
+                            console.log('id', value.id)
                             temp.push({ id: value.id, name: value.name, price: value.selling_price, image: value.image })
                         }
                     })
@@ -93,8 +95,8 @@ const ProductDetailPage = () => {
     const printProductInfo = () => {
         if (detailProduct) {
             return <>
-                {/* <Box sx={{ display: { xs: 'none', md: 'flex' } }}> */}
-                <Box>
+                <Box sx={{ mt: 2 }}>
+                    {/* <Box sx={{ display: { xs: 'none', md: 'flex', mt: 2 } }}> */}
                     <Grid container>
                         <Grid item md={6}>
                             <Box display='flex' sx={{ height: '100%', alignItems: 'center', justifyContent: 'center' }}>
@@ -113,10 +115,9 @@ const ProductDetailPage = () => {
                                     <Text fontSize='subtitle2' >/ {detailProduct.unit} ({detailProduct.unit_conversion} {detailProduct.smallest_unit})</Text>
                                 </Box>
                                 <Text fontSize='subtitle2' color='grey.800' textAlign='justify'>{detailProduct.description}</Text>
-                                {detailProduct.needs_receipt === 'true' ?
+                                {detailProduct.needs_receipt === 'false' ? detailProduct.quantity < 1 ?
                                     <>
-                                        <Button variant='contained' startIcon={<FileUpload />} sx={{ mt: 2, mb: 1 }} onClick={handleUpload}>Upload Prescription</Button>
-                                        <Text fontSize='body2' color='error' sx={{ fontStyle: 'italic' }}>*This product requires a prescription</Text>
+                                        <Button variant='contained' startIcon={<DoNotDisturb />} sx={{ mt: 4 }} disabled>Out Of Stock</Button>
                                     </>
                                     :
                                     <>
@@ -143,6 +144,11 @@ const ProductDetailPage = () => {
                                             <Button variant='contained' startIcon={<ShoppingCartOutlined />} sx={{ mr: 2 }} onClick={handleAddToCart}>Add to cart</Button>
                                             <Button variant='outlined'>Buy now</Button>
                                         </Box>
+                                    </>
+                                    :
+                                    <>
+                                        <Button variant='contained' startIcon={<FileUpload />} sx={{ mt: 2, mb: 1 }} onClick={handleUpload}>Upload Prescription</Button>
+                                        <Text fontSize='body2' color='error' sx={{ fontStyle: 'italic' }}>*This product requires a prescription</Text>
                                     </>
                                 }
                             </Box>
@@ -181,17 +187,53 @@ const ProductDetailPage = () => {
         try {
             if (idUser) {
                 if (status === 'verified') {
-                    let token = Cookies.get("userToken")
-                    let addToCart = await axios.post(`${API_URL}/users/cart/${idUser}`, { id_stock: detailProduct.id_stock, quantity, price: detailProduct.selling_price }, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
+                    if (cart.length > 0) {
+                        let index = cart.findIndex(value => value.id_stock == detailProduct.id_stock)
+                        if (index >= 0) {
+                            let remainingStock = cart[index].current_stock - cart[index].quantity
+                            if (quantity > remainingStock) {
+                                toast.error(`Stock is insufficient. You already have some in your cart`)
+                            } else {
+                                let token = Cookies.get("userToken")
+                                let addToCart = await axios.post(`${API_URL}/users/cart/${idUser}`, { id_stock: detailProduct.id_stock, quantity, price: detailProduct.selling_price }, {
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`
+                                    }
+                                })
+                                if (addToCart) {
+                                    toast.success('Added to cart')
+                                    dispatch(editCartAction(addToCart.data.data))
+                                } else {
+                                    toast.error('Something went wrong, please try again')
+                                }
+                            }
+                        } else {
+                            let token = Cookies.get("userToken")
+                            let addToCart = await axios.post(`${API_URL}/users/cart/${idUser}`, { id_stock: detailProduct.id_stock, quantity, price: detailProduct.selling_price }, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            })
+                            if (addToCart) {
+                                toast.success('Added to cart')
+                                dispatch(editCartAction(addToCart.data.data))
+                            } else {
+                                toast.error('Something went wrong, please try again')
+                            }
                         }
-                    })
-                    if (addToCart) {
-                        toast.success('Added to cart')
-                        dispatch(editCartAction(addToCart.data.data))
                     } else {
-                        toast.error('Something went wrong, please try again')
+                        let token = Cookies.get("userToken")
+                        let addToCart = await axios.post(`${API_URL}/users/cart/${idUser}`, { id_stock: detailProduct.id_stock, quantity, price: detailProduct.selling_price }, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        })
+                        if (addToCart) {
+                            toast.success('Added to cart')
+                            dispatch(editCartAction(addToCart.data.data))
+                        } else {
+                            toast.error('Something went wrong, please try again')
+                        }
                     }
                 } else {
                     toast.error('Please verify your account first')
@@ -218,15 +260,13 @@ const ProductDetailPage = () => {
 
 
 
-    return <Container sx={{ pt: 3 }}>
+    return <Container sx={{ pt: 3, pb: 5 }}>
         <BasicBreadcrumbs
             prevLinks={link}
             currentLink={detailProduct ? detailProduct.name : null}
         />
-        <Box>
-            {printProductInfo()}
-        </Box>
-        <Box sx={{ mt: 5 }}>
+        {printProductInfo()}
+        <Box sx={{ mt: 10 }}>
             <SimilarProducts
                 productData={similarProducts}
             />
