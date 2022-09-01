@@ -129,7 +129,7 @@ module.exports = {
           `Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id = '${req.dataUser.id}';`
         );
         const userAddress = await dbQuery(
-          `select id, street, province_id, province_label, city_id, city_label, postal_code from address where id_user = ${req.dataUser.id}`
+          `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${req.dataUser.id}`
         );
 
         let { id, role, name, email, phone_number } = result[0];

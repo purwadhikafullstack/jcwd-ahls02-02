@@ -1,8 +1,10 @@
 import { Box, Card, Divider, Grid } from "@mui/material";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../Components/atoms/Button";
 import Text from "../../../Components/atoms/Text";
+import { useNavigate } from "react-router-dom";
+import { storeCheckoutAction } from "../../../Redux/Actions/userCheckoutAction";
 
 const CartOrderSummary = (props) => {
   const { cartList, totalPrice, disableCheckout } = props;
@@ -10,6 +12,9 @@ const CartOrderSummary = (props) => {
   const userData = useSelector((state) => {
     return state.userReducer;
   });
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const printOrderSummary = () => {
     return (
@@ -36,6 +41,21 @@ const CartOrderSummary = (props) => {
         })}
       </>
     );
+  };
+
+  const handleCheckout = () => {
+    let checkoutList = [];
+
+    cartList.forEach((value) => {
+      if (value.selected) {
+        checkoutList.push(value);
+      }
+    });
+
+    dispatch(storeCheckoutAction({ order: checkoutList }));
+    navigate("/checkout", {
+      state: { checkoutList, totalProductPrice: totalPrice },
+    });
   };
 
   return (
@@ -69,6 +89,7 @@ const CartOrderSummary = (props) => {
           color="primary"
           width="100%"
           disabled={disableCheckout}
+          onClick={() => handleCheckout()}
         >
           Checkout
         </Button>
