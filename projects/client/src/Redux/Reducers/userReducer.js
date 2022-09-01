@@ -29,6 +29,11 @@ export const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         ...action.payload,
       };
+    case "GET_CART":
+      return {
+        ...state,
+        cart: action.payload,
+      };
     case "EDIT_CART":
       return {
         ...state,
