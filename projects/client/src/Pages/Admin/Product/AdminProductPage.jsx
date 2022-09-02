@@ -211,7 +211,7 @@ const AdminProductPage = () => {
     return <div>
         <Container>
             <Grid container>
-                <Grid xs={12} md={3} sx={{ p: 1 }}>
+                <Grid item xs={12} md={3} sx={{ p: 1 }}>
                     <Filter
                         getDataFilter={getDataFilter}
                         name={name}
@@ -222,7 +222,7 @@ const AdminProductPage = () => {
                         category={category}
                     />
                 </Grid>
-                <Grid xs={12} md={9} sx={{ pt: 4 }}>
+                <Grid item xs={12} md={9} sx={{ pt: 4 }}>
                     <Box textAlign='right'>
                         <Button variant='contained' onClick={() => setOpenAddProduct(true)}>Add New product</Button>
                     </Box>

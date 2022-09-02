@@ -7,9 +7,9 @@ const ProductCard = (props) => {
         {data ?
             <Grid container spacing={2}>
                 {data.map((value, index) => {
-                    return <Grid item xs={4} md={2}>
+                    return <Grid item xs={4} md={2} key={value.id}>
 
-                        <Card>
+                        <Card >
                             <CardMedia
                                 component="img"
                                 alt={value.product}

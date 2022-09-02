@@ -352,7 +352,7 @@ const ModalAddProduct = (props) => {
                                             <Typography color='grey.400'>Choose One</Typography>
                                         </MenuItem>
                                         {categoryList ? categoryList.map(val => {
-                                            return <MenuItem value={val.id}>{val.category_name}</MenuItem>
+                                            return <MenuItem key={val.id} value={val.id}>{val.category_name}</MenuItem>
                                         }) : null}
                                     </Select>
                                 </FormControl>
