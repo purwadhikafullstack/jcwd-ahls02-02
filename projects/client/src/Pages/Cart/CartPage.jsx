@@ -23,7 +23,6 @@ const CartPage = () => {
   const getCartData = async () => {
     try {
       const token = Cookies.get("userToken");
-      console.log(token)
       const res = await axios.get(`${API_URL}/users/cart/${user.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
