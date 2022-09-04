@@ -9,6 +9,10 @@ import Text from "../../../Components/atoms/Text";
 import NumberStepper from "../../../Components/NumberStepper";
 import { API_IMAGE_URL, API_URL } from "../../../helper";
 import { editCartAction } from "../../../Redux/Actions/userAction";
+import ModalConfirm from "../../../Components/ModalConfirm";
+import { useEffect } from "react";
+import Button from "../../../Components/atoms/Button";
+import { useNavigate } from "react-router-dom";
 
 const CartProductsList = (props) => {
   const {
@@ -20,11 +24,15 @@ const CartProductsList = (props) => {
   } = props;
 
   const [selectAll, setSelectAll] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [indexDelete, setIndexDelete] = useState(null);
 
   const userData = useSelector((state) => {
     return state.userReducer;
   });
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // from numberstepper component
   const onQuantityChange = async (newValue, type, itemIndex) => {
@@ -124,9 +132,9 @@ const CartProductsList = (props) => {
     setTotalPrice(tempTotalPrice);
   };
 
-  const handleDelete = async (itemIndex) => {
+  const handleDelete = async () => {
     try {
-      const itemCartId = cartList[itemIndex].id;
+      const itemCartId = cartList[indexDelete].id;
       const token = Cookies.get("userToken");
       const res = await axios.delete(
         `${API_URL}/users/cart/${userData.id}/${itemCartId}`,
@@ -139,15 +147,33 @@ const CartProductsList = (props) => {
 
       if (res.data.success) {
         let tempCartList = [...cartList];
-        tempCartList.splice(itemIndex, 1);
+        tempCartList.splice(indexDelete, 1);
         setCartList(tempCartList);
+        setConfirmDelete(false);
+        setIndexDelete(null);
+        toast.success("Item Deleted from cart");
 
         dispatch(editCartAction(res.data.data));
+      } else {
+        toast.error("Something went wrong, please try again");
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong, please try again");
+      setConfirmDelete(false);
+      setIndexDelete(null);
     }
+  };
+
+  useEffect(() => {
+    if (confirmDelete) {
+      handleDelete();
+    }
+  }, [confirmDelete]);
+
+  const handleButtonDelete = (index) => {
+    setIndexDelete(index);
+    setOpenModalConfirm(true);
   };
 
   const printCartList = () => {
@@ -213,7 +239,7 @@ const CartProductsList = (props) => {
                   <Box sx={{ display: "flex", justifyContent: "right" }}>
                     <IconButton
                       color="error"
-                      onClick={() => handleDelete(index)}
+                      onClick={() => handleButtonDelete(index)}
                     >
                       <Delete />
                     </IconButton>
@@ -239,20 +265,49 @@ const CartProductsList = (props) => {
 
   return (
     <Card variant="outlined" sx={{ p: 2 }}>
-      <Grid container alignItems="center">
-        <Grid item xs={1}>
-          <Checkbox
-            checked={selectAll}
-            onClick={(e) => handleSelectAll(e.target.checked)}
-          />
-        </Grid>
-        <Grid item xs={11} sx={{ pl: { xs: 2, sm: 0 } }}>
-          <Text>Select All</Text>
-        </Grid>
-      </Grid>
-      <Divider />
-      {/* LIST ITEM */}
-      {printCartList()}
+      {cartList.length ? (
+        <>
+          <Grid container alignItems="center">
+            <Grid item xs={1}>
+              <Checkbox
+                checked={selectAll}
+                onClick={(e) => handleSelectAll(e.target.checked)}
+              />
+            </Grid>
+            <Grid item xs={11} sx={{ pl: { xs: 2, sm: 0 } }}>
+              <Text>Select All</Text>
+            </Grid>
+          </Grid>
+          <Divider />
+          {/* LIST ITEM */}
+          {printCartList()}
+        </>
+      ) : (
+        <>
+          <Box sx={{px:1, py:2}}>
+            <Box sx={{pb:1}}>
+              <Text textAlign="center">You don't have any item in your cart yet</Text>
+            </Box>
+            <Box sx={{pt:1}}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate("/product")}
+              >
+                Back to Shopping
+              </Button>
+            </Box>
+          </Box>
+        </>
+      )}
+      <ModalConfirm
+        isOpen={openModalConfirm}
+        setOpen={setOpenModalConfirm}
+        type="warning"
+        toggle={() => setOpenModalConfirm(false)}
+        text="Are you sure you want to delete this product?"
+        handleConfirm={() => setConfirmDelete(true)}
+      />
     </Card>
   );
 };

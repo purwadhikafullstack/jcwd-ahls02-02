@@ -23,12 +23,14 @@ const CartPage = () => {
   const getCartData = async () => {
     try {
       const token = Cookies.get("userToken");
+      console.log(token)
       const res = await axios.get(`${API_URL}/users/cart/${user.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (res.data.success) {
+      
+      if (res.data.success && res.data.data) {
         const resDataData = res.data.data;
         dispatch(getCartAction(resDataData));
         let tempData = [];
@@ -38,9 +40,12 @@ const CartPage = () => {
 
         setCartList(tempData);
         setIsLoading(false);
+      } else if (res.data.success && !res.data.data) {
+        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   };
 
