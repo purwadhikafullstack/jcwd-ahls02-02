@@ -2,6 +2,8 @@ import { Modal, Backdrop, Fade, Box, Card, Grid, Chip } from "@mui/material";
 import Text from "../../../Components/atoms/Text";
 import Button from "../../../Components/atoms/Button";
 import { AddCircleOutlined } from "@mui/icons-material";
+import { useState } from "react";
+import ModalAddress from "../../../Components/ModalAddress";
 
 const style = {
   position: "absolute",
@@ -25,7 +27,7 @@ const ModalSelectAddress = (props) => {
     setAddressList,
     selectedAddress,
     setSelectedAddress,
-    setShippingPrice
+    setShippingPrice,
   } = props;
 
   const handleCloseModal = () => {
@@ -34,8 +36,10 @@ const ModalSelectAddress = (props) => {
 
   const handleSelectAddress = (value) => {
     setSelectedAddress(value);
-    setShippingPrice(0)
+    setShippingPrice(0);
   };
+
+  const [openAddAddressModal, setOpenAddAddressModal] = useState(false);
 
   return (
     <Modal
@@ -108,12 +112,17 @@ const ModalSelectAddress = (props) => {
               );
             })}
             <Box sx={{ p: 1 }}>
-              <Button variant="outlined" width="100%" color="inherit">
+              <Button
+                variant="outlined"
+                width="100%"
+                color="inherit"
+                onClick={() => setOpenAddAddressModal(true)}
+              >
                 <AddCircleOutlined /> Add New Address
               </Button>
             </Box>
           </Box>
-          <Box >
+          <Box>
             <Button
               variant="contained"
               color="primary"
@@ -124,6 +133,16 @@ const ModalSelectAddress = (props) => {
               Close
             </Button>
           </Box>
+          <ModalAddress
+            isOpen={openAddAddressModal}
+            setOpen={setOpenAddAddressModal}
+            toggle={() => {
+              setOpenAddAddressModal(!openAddAddressModal);
+            }}
+            addressModalMode={"Add"}
+            setAddressList={setAddressList}
+            selectedAddress={null}
+          />
         </Box>
       </Fade>
     </Modal>

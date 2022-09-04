@@ -1,4 +1,4 @@
-import { Box, Divider, Card, Grid } from "@mui/material";
+import { Box, Divider, Card, Grid, Chip } from "@mui/material";
 import Text from "../../../Components/atoms/Text";
 import Button from "../../../Components/atoms/Button";
 import { useSelector } from "react-redux";
@@ -7,8 +7,13 @@ import ModalSelectAddress from "./ModalSelectAddress";
 import { useState } from "react";
 
 const AddressSelection = (props) => {
-  const { addressList, setAddressList, selectedAddress, setSelectedAddress, setShippingPrice } =
-    props;
+  const {
+    addressList,
+    setAddressList,
+    selectedAddress,
+    setSelectedAddress,
+    setShippingPrice,
+  } = props;
 
   const [openSelectAddress, setOpenSelectAddress] = useState(false);
 
@@ -45,6 +50,11 @@ const AddressSelection = (props) => {
                     <Phone sx={{ fontSize: "20px", mr: 1 }} color="primary" />
                     {user.phone_number}
                   </Text>
+                  {selectedAddress.default_address === "true" && (
+                    <Box sx={{pl:1}}>
+                      <Chip label="Default" color="primary" size="small" />
+                    </Box>
+                  )}
                 </Box>
                 <Box>
                   <Text>

@@ -68,6 +68,10 @@ const ShippingMethod = (props) => {
     });
     setSelectedService(tempSelectedService);
     setShippingPrice(tempSelectedService.cost[0].value);
+    setShippingMethod({
+      courier:selectedCourier.toUpperCase(),
+      service:tempSelectedService
+    })
   };
 
   return (

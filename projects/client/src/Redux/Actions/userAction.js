@@ -29,7 +29,6 @@ export const editProfileAction = (data) => {
 }
 
 export const getCartAction = (data) => {
-    console.log('get_cart', data)
     return {
         type: "GET_CART",
         payload: data
