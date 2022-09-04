@@ -6,7 +6,10 @@ const CheckoutOrderSummary = (props) => {
   const { productList } = props;
   return (
     <>
-      <Card variant="outlined" sx={{ maxHeight: "50vh", overflowY: "auto" }}>
+      <Card
+        variant="outlined"
+        sx={{ height: "50vh", maxHeight: "50vh", overflowY: "auto" }}
+      >
         <Box
           sx={{ p: 2, position: "sticky", top: 0, backgroundColor: "white" }}
         >
@@ -20,7 +23,7 @@ const CheckoutOrderSummary = (props) => {
             return (
               <>
                 <Grid container alignItems="center">
-                  <Grid item xs={3} sx={{ height: "100px" }}>
+                  <Grid item xs={3} md={2} sx={{ height: "100px" }}>
                     <Box
                       display="flex"
                       sx={{
@@ -36,7 +39,7 @@ const CheckoutOrderSummary = (props) => {
                       />
                     </Box>
                   </Grid>
-                  <Grid item xs={9}>
+                  <Grid item xs={9} md={10}>
                     <Grid container alignItems="center">
                       <Grid item xs={12} sm={7}>
                         <Text fontWeight="medium">{value.name}</Text>
@@ -45,13 +48,21 @@ const CheckoutOrderSummary = (props) => {
                           {value.selling_price.toLocaleString()}
                         </Text>
                       </Grid>
-                      <Grid item xs={12} sm={5}>
-                        <Text textAlign="right" fontSize="subtitle1">
-                          IDR{" "}
-                          {(
-                            value.quantity * value.selling_price
-                          ).toLocaleString()}
-                        </Text>
+                      <Grid item xs={12} sm={5} sx={{ pr: 2 }}>
+                        <Grid container>
+                          <Grid item xs={6} sm={5} md={8}>
+                            <Text textAlign="right" fontSize="subtitle1">
+                              IDR
+                            </Text>
+                          </Grid>
+                          <Grid item xs={6} sm={7} md={4}>
+                            <Text textAlign="right" fontSize="subtitle1">
+                              {(
+                                value.quantity * value.selling_price
+                              ).toLocaleString()}
+                            </Text>
+                          </Grid>
+                        </Grid>
                       </Grid>
                     </Grid>
                   </Grid>

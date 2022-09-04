@@ -11,30 +11,22 @@ import ShippingMethod from "./partials/ShippingMethod";
 const CheckoutPage = () => {
   const location = useLocation();
   const userData = useSelector((state) => {
+    let tempAddress = state.userReducer.address.map((value) => {
+      return { ...value, selected: value.default_address === "true" };
+    });
+
     return state.userReducer;
   });
   const productList = location.state.checkoutList;
   const totalProductPrice = location.state.totalProductPrice;
-  console.log("-----------------")
-  console.log("location", location)
-  const originAddress = {
-    province_id: 6,
-    province_label: "DKI Jakarta",
-    city: {
-      id: 152,
-      type: "Kota",
-      city_name: "Jakarta Pusat",
-      postal_code: 10540,
-    },
-  };
-
+  
   //   console.log(userData)
   const [addressList, setAddressList] = useState(userData.address);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [shippingMethod, setShippingMethod] = useState(null);
   const [shippingPrice, setShippingPrice] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [totalPrice, setTotalPrice] = useState(totalProductPrice);
+  // const [totalPrice, setTotalPrice] = useState(totalProductPrice);
 
   useEffect(() => {
     addressList.forEach((value) => {
@@ -54,7 +46,36 @@ const CheckoutPage = () => {
       </Box>
       {!isLoading && (
         <>
+          <Grid container>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ m: 1 }}>
+                <AddressSelection
+                  addressList={addressList}
+                  setAddressList={setAddressList}
+                  selectedAddress={selectedAddress}
+                  setSelectedAddress={setSelectedAddress}
+                  setShippingPrice={setShippingPrice}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ m: 1 }}>
+                <ShippingMethod
+                  selectedAddress={selectedAddress}
+                  shippingMethod={shippingMethod}
+                  setShippingMethod={setShippingMethod}
+                  setShippingPrice={setShippingPrice}
+                />
+              </Box>
+            </Grid>
+          </Grid>
           <Box sx={{ m: 1 }}>
+            <CheckoutOrderSummary
+              productList={productList}
+              totalProductPrice={totalProductPrice}
+            />
+          </Box>
+          {/* <Box sx={{ m: 1 }}>
             <AddressSelection
               addressList={addressList}
               setAddressList={setAddressList}
@@ -81,12 +102,11 @@ const CheckoutPage = () => {
                 />
               </Box>
             </Grid>
-          </Grid>
+          </Grid> */}
           <Box sx={{ m: 1 }}>
             <CheckoutSummary
               totalProductPrice={totalProductPrice}
               shippingPrice={shippingPrice}
-              totalPrice={totalPrice}
             />
           </Box>
         </>
