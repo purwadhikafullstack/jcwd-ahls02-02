@@ -103,6 +103,7 @@ const ProductDetailPage = () => {
                                 <img src={`${API_IMAGE_URL}${detailProduct.image}`} alt='product picture' style={{ width: '80%' }} />
                             </Box>
                         </Grid>
+                        {/* <Grid item md={6} sx={{ textAlign: { xs: 'center', md: 'left' } }}> */}
                         <Grid item md={6} sx={{ textAlign: 'left' }}>
                             <Box display='flex' sx={{ py: 2, flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
                                 <Text
