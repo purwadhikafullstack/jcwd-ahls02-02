@@ -159,6 +159,8 @@ const Navbar = () => {
                 } else {
                     return null
                 }
+            } else {
+                return <Button variant='text' sx={{ ml: 2, color: 'grey.800' }} onClick={handleNavigateProduct}>Product</Button>
             }
         }
     }
@@ -570,7 +572,8 @@ const Navbar = () => {
                     </>
                 } else {
                     return <>
-                        <Box sx={{ width: '25%', textAlign: 'left' }}>
+                        <Box sx={{ width: '25%' }} />
+                        {/* <Box sx={{ width: '25%', textAlign: 'left' }}>
                             <Tooltip title='Open settings'>
                                 <IconButton onClick={(e) => setAnchorElNav(e.currentTarget)} sx={{ p: 0 }}>
                                     <MenuIcon />
@@ -604,7 +607,7 @@ const Navbar = () => {
                                     <Typography textAlign="center" onClick={handleNavigatePrescription}>Upload Perscription</Typography>
                                 </MenuItem>
                             </Menu>
-                        </Box>
+                        </Box> */}
                         <Box sx={{ width: '50%' }}>
                             <Button onClick={() => navigate('/')}>
                                 <img src='https://i.ibb.co/mv7cmnF/Life-Serve-Logo-1.png' alt='logo' style={{ maxWidth: 120 }} />
