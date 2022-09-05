@@ -23,6 +23,7 @@ const ProductCards = (props) => {
                   name={value.name}
                   price={value.price}
                   image={`${API_IMAGE_URL}${value.image}`}
+                  quantity={value.quantity}
                   handleDetail={() => navigate(`/product/${value.id}`)}
                 />
               </Box>

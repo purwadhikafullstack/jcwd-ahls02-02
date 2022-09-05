@@ -4,7 +4,7 @@ import Button from "./atoms/Button";
 import Text from "./atoms/Text";
 
 const ProductCard = (props) => {
-  const { id, name, price, image, handleDetail } = props;
+  const { id, name, price, image, quantity, handleDetail } = props;
   const navigate = useNavigate();
 
   return (
@@ -50,12 +50,16 @@ const ProductCard = (props) => {
               {name.toUpperCase()}
             </Text>
 
-            <Text variant="body2" color="grey.600" sx={{ textAlign: "left" }}>
+            <Text fontSize="body2" color="grey.600" sx={{ textAlign: "left" }}>
               IDR {price.toLocaleString()}
             </Text>
+            <Text fontSize="subtitle2" color="grey.600" sx={{ textAlign: "left" }}>
+              Stock: {quantity}
+            </Text>
+            
             <Button
               variant="contained"
-              sx={{ width: "100%", mt: 2 }}
+              sx={{ width: "100%", mt: 1 }}
               onClick={handleDetail}
             // onClick={() => navigate(`/product/${id}`)}
             >
