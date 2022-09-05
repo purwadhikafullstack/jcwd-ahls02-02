@@ -644,11 +644,17 @@ module.exports = {
         const cartData = await dbQuery(
           `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal, s.quantity as current_stock, s.id as id_stock from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product where c.id_user = ${req.dataUser.id}`
         );
+        console.log("cartData", cartData);
         if (cartData.length) {
           return res.status(200).send({
             success: true,
             message: "Cart data fetched successfully",
             data: cartData,
+          });
+        } else if (cartData.length === 0) {
+          return res.status(200).send({
+            success: true,
+            message: "Cart is empty",
           });
         }
       } else {

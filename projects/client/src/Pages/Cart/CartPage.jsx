@@ -28,7 +28,8 @@ const CartPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (res.data.success) {
+      
+      if (res.data.success && res.data.data) {
         const resDataData = res.data.data;
         dispatch(getCartAction(resDataData));
         let tempData = [];
@@ -38,9 +39,12 @@ const CartPage = () => {
 
         setCartList(tempData);
         setIsLoading(false);
+      } else if (res.data.success && !res.data.data) {
+        setIsLoading(false);
       }
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   };
 
