@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const SimilarProducts = (props) => {
     const { productData } = props
     const navigate = useNavigate();
-
+    
     return <>
         <Text fontSize='h4' sx={{ textAlign: 'left', mt: 3, mb: 2 }}>
             Similar Products
@@ -26,6 +26,7 @@ const SimilarProducts = (props) => {
                                     navigate(`/product/${value.id}`)
                                     window.location.reload()
                                 }}
+                                quantity={value.quantity}
                             />
                         </Box>
                     </Grid>

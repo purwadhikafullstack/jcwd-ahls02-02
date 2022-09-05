@@ -73,7 +73,7 @@ const ProductDetailPage = () => {
                     similar.data.product.forEach(value => {
                         if (value.default_unit === 'true') {
                             console.log('id', value.id)
-                            temp.push({ id: value.id, name: value.name, price: value.selling_price, image: value.image })
+                            temp.push({ id: value.id, name: value.name, price: value.selling_price, image: value.image, quantity: value.quantity })
                         }
                     })
                     setSimilarProducts(temp)
