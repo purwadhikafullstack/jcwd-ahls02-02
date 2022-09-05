@@ -3,6 +3,7 @@ const { dbConf, dbQuery } = require("../config/database");
 const { hashPassword, createToken } = require("../config/encription");
 const { uploader } = require("../config/uploader");
 const { transporter } = require("../config/nodemailer");
+const crypto = require("crypto");
 
 module.exports = {
   userData: async (req, res, next) => {
@@ -129,7 +130,7 @@ module.exports = {
           `Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id = '${req.dataUser.id}';`
         );
         const userAddress = await dbQuery(
-          `select id, street, province_id, province_label, city_id, city_label, postal_code from address where id_user = ${req.dataUser.id}`
+          `select id, street, province_id, province_label, city_id, city_label, postal_code, default_address from address where id_user = ${req.dataUser.id}`
         );
 
         let { id, role, name, email, phone_number } = result[0];
@@ -486,7 +487,8 @@ module.exports = {
         } = req.body;
 
         await dbQuery(
-          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${req.dataUser.id
+          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${
+            req.dataUser.id
           }', '${street}','${Number(
             province_id
           )}','${province_label}','${Number(
@@ -783,6 +785,72 @@ module.exports = {
   // when users checkouts products OR
   addOrder: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        const idUser = req.dataUser.id;
+        const {
+          productList,
+          selectedAddress,
+          shippingMethod,
+          totalProductPrice,
+          shippingPrice,
+          status,
+        } = req.body;
+
+        const invoiceNumber =
+          "LS-" + crypto.randomBytes(10).toString("hex").toUpperCase();
+
+        const address = `${selectedAddress.street}, ${selectedAddress.city_label}, ${selectedAddress.province_label}, ${selectedAddress.postal_code}`;
+
+        const shipment = `${shippingMethod.courier}-${shippingMethod.service.service}`;
+
+        // add to order list
+        const addOrderList = await dbQuery(
+          `insert into order_list (id_user, status, shipping_address, shipping_method, invoice_number, subtotal, shipping_cost) value ('${idUser}','${status}','${address}', '${shipment}', '${invoiceNumber}', '${totalProductPrice}', '${shippingPrice}')`
+        );
+
+        // add cart data to order content with id from order list
+        if (addOrderList.insertId) {
+          let cartIds = ""; // to delete cart
+          let insertOrderContentQuery = "";
+
+          productList.forEach((value, index) => {
+            cartIds += `${value.id}`;
+            insertOrderContentQuery += `(${addOrderList.insertId}, ${value.id_stock}, ${value.quantity}, ${value.selling_price})`;
+            if (index < productList.length - 1) {
+              cartIds += ", ";
+              insertOrderContentQuery += ", ";
+            }
+          });
+
+          const addOrderContent = await dbQuery(
+            `insert into order_content (id_order, id_stock, quantity, selling_price) values ${insertOrderContentQuery}`
+          );
+          console.log("addOrderContent", addOrderContent);
+          
+          // delete cart data where id in productlist
+          const deleteCart = await dbQuery(
+            `delete from cart WHERE id IN (${cartIds})`
+          );
+          if (deleteCart.affectedRows) {
+            const orderList = await dbQuery(
+              `select ol.id, ol.status, ol.invoice_number, ol.shipping_address, ol.shipping_method, ol.subtotal, ol.shipping_cost, p.name, p.image, s.unit, oc.quantity, oc.selling_price from order_list ol JOIN order_content oc ON oc.id_order = ol.id JOIN stock s ON s.id = oc.id_stock JOIN products p ON p.id = s.id_product WHERE ol.id_user=${idUser}`
+            );
+            const newCartData = await dbQuery(
+              `select c.id, p.name, p.image, p.selling_price, s.unit, c.id_prescription, c.quantity, c.subtotal, s.quantity as current_stock from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product WHERE c.id_user = ${idUser}`
+            );
+            return res.status(200).send({
+              success: true,
+              message: "Checkout success",
+              data: { orderList, newCartData },
+            });
+          }
+        }
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }

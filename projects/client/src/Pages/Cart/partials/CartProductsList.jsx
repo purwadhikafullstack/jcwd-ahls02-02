@@ -110,6 +110,7 @@ const CartProductsList = (props) => {
 
   const handleSelectAll = (checkValue) => {
     setSelectAll(checkValue);
+    setDisableCheckout(!checkValue)
     let tempCartList = [...cartList];
     let tempTotalPrice = 0;
 
