@@ -29,7 +29,7 @@ const ProductTable = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {productData ? productData.map((data) => (
+                        {productData ? productData.length > 0 ? productData.map((data) => (
                             <TableRow
                                 key={data.no}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -42,7 +42,7 @@ const ProductTable = (props) => {
                                 <TableCell align="center">Rp {data.price.toLocaleString()}</TableCell>
                                 <TableCell align="center">{data.action}</TableCell>
                             </TableRow>
-                        )) : null}
+                        )) : null : null}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -67,7 +67,7 @@ const ProductTable = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {productData ? productData.map((data) => (
+                        {productData ? productData.length > 0 ? productData.map((data) => (
                             <TableRow
                                 key={data.no}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -80,7 +80,7 @@ const ProductTable = (props) => {
                                 <TableCell align="center">Rp {data.price.toLocaleString()}</TableCell> */}
                                 <TableCell align="center">{data.action}</TableCell>
                             </TableRow>
-                        )) : null}
+                        )) : null : null}
                     </TableBody>
                 </Table>
             </TableContainer>

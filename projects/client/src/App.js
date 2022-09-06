@@ -28,6 +28,7 @@ import ForgotPasswordPage from "./Pages/Auth/ForgotPasswordPage";
 import NotFoundPage from "./Pages/404";
 import Navbar from "./Components/Navbar";
 import CustomizedMenus from "./Pages/Test";
+import PrescriptionListPage from "./Pages/Order/PrescriptionListPage";
 
 function App() {
 
@@ -85,7 +86,8 @@ function App() {
             <Route path='/checkout' element={<CheckoutPage />} />
             <Route path='/payment' element={<PaymentPage />} />
             <Route path='/order' element={<OrderListPage />} />
-            <Route path='/prescription' element={<PrescriptionPage />} />
+            <Route path='/prescription/upload' element={<PrescriptionPage />} />
+            <Route path='/prescription' element={<PrescriptionListPage />} />
             <Route path='/product' element={<ProductPage />} />
             <Route path='/product/:id' element={<ProductDetailPage />} />
             <Route path='/profile' element={<ProfilePage />} />

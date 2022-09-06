@@ -33,6 +33,6 @@ route.delete("/order/:user_id", readToken, usersController.deleteOrder);
 route.patch("/order/payment/:user_id", readToken, usersController.uploadPaymentReceipt);
 
 route.get("/prescription/:user_id", usersController.getPrescriptionList);
-route.post("/prescription/:user_id", usersController.uploadPrescription);
+route.post("/prescription/:user_id", readToken, usersController.uploadPrescription);
 
 module.exports = route

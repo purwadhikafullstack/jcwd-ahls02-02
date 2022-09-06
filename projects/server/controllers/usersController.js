@@ -487,8 +487,7 @@ module.exports = {
         } = req.body;
 
         await dbQuery(
-          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${
-            req.dataUser.id
+          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${req.dataUser.id
           }', '${street}','${Number(
             province_id
           )}','${province_label}','${Number(
@@ -637,7 +636,6 @@ module.exports = {
       return next(error);
     }
   },
-
   getUserCart: async (req, res, next) => {
     try {
       if (req.dataUser.id) {
@@ -832,7 +830,7 @@ module.exports = {
             `insert into order_content (id_order, id_stock, quantity, selling_price) values ${insertOrderContentQuery}`
           );
           console.log("addOrderContent", addOrderContent);
-          
+
           // delete cart data where id in productlist
           const deleteCart = await dbQuery(
             `delete from cart WHERE id IN (${cartIds})`
@@ -889,6 +887,56 @@ module.exports = {
   },
   uploadPrescription: async (req, res, next) => {
     try {
+      if (req.dataUser.role === 'user') {
+        const uploadFile = uploader("/imgPrescription", "IMGPRESCRIPTION").array("image", 1);
+        uploadFile(req, res, async (error) => {
+          try {
+            let { selectedAddress, shippingPrice, shippingMethod } = JSON.parse(req.body.data);
+
+            const newFileName = req.files[0]
+              ? `'/imgPrescription/${req.files[0].filename}'`
+              : null;
+
+            const invoiceNumber =
+              "LS-" + crypto.randomBytes(10).toString("hex").toUpperCase();
+
+            const address = `${selectedAddress.street}, ${selectedAddress.city_label}, ${selectedAddress.province_label}, ${selectedAddress.postal_code}`;
+
+            const shipment = `${shippingMethod.courier}-${shippingMethod.service.service}`;
+
+            let newOrder = await dbQuery(`INSERT INTO order_list (id_user, status, shipping_address, shipping_method, invoice_number, subtotal, shipping_cost) VALUE(${req.params.user_id}, 'Waiting for Prescription Validation', '${address}', '${shipment}', '${invoiceNumber}', 0, ${shippingPrice})`)
+
+            if (newOrder.insertId) {
+              let newPrescription = await dbQuery(`INSERT INTO prescription (id_user, id_order, processed_status, prescription_image) VALUE (${req.params.user_id}, ${newOrder.insertId}, 'false', ${newFileName})`)
+
+              if (newPrescription.insertId) {
+                return res.status(200).send({
+                  success: true,
+                  message: "Prescription successfully added",
+                });
+              } else {
+                return res.status(400).send({
+                  success: false,
+                  message: "Failed to add new prescription",
+                });
+              }
+            } else {
+              return res.status(400).send({
+                success: false,
+                message: "Failed to add new order",
+              });
+            }
+          } catch (error) {
+            console.log(error)
+          }
+        })
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Not authorized",
+        });
+      }
+
     } catch (error) {
       return next(error);
     }

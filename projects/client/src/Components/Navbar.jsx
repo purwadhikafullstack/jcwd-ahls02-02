@@ -65,6 +65,13 @@ const Navbar = () => {
         navigate('/product')
     }
 
+    const handleNavigatePrescriptionUpload = () => {
+        setAnchorElUserSmall(false)
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+        navigate('/prescription/upload')
+    }
+
     const handleNavigatePrescription = () => {
         setAnchorElUserSmall(false)
         setAnchorElNav(false)
@@ -149,7 +156,7 @@ const Navbar = () => {
                     if (verified_status === 'verified') {
                         return <>
                             <Button variant='text' sx={{ ml: 2, color: 'grey.800' }} onClick={handleNavigateProduct}>Product</Button>
-                            <Button variant='text' sx={{ ml: 1, color: 'grey.800' }} onClick={handleNavigatePrescription}>Upload Prescription</Button>
+                            <Button variant='text' sx={{ ml: 1, color: 'grey.800' }} onClick={handleNavigatePrescriptionUpload}>Upload Prescription</Button>
                         </>
                     } else {
                         return <>
@@ -390,7 +397,7 @@ const Navbar = () => {
                                 </MenuItem>
                                 <MenuItem>
                                     <HealthAndSafetyIcon sx={{ mr: 1 }} />
-                                    <Typography textAlign="center" onClick={handleNavigatePrescription}>Upload Perscription</Typography>
+                                    <Typography textAlign="center" onClick={handleNavigatePrescriptionUpload}>Upload Perscription</Typography>
                                 </MenuItem>
                             </Menu>
                         </Box>
