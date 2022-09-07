@@ -43,7 +43,7 @@ const ProductDetailPage = () => {
     let [detailProduct, setDetailProduct] = useState()
     let [similarProducts, setSimilarProducts] = useState([])
     let [quantity, setQuantity] = useState(1)
-    let [link, setLink] = useState([
+    const [link, setLink] = useState([
         {
             id: 1,
             link: 'Home',
@@ -72,7 +72,7 @@ const ProductDetailPage = () => {
                     let temp = []
                     similar.data.product.forEach(value => {
                         if (value.default_unit === 'true') {
-                            console.log('id', value.id)
+                            // console.log('id', value.id)
                             temp.push({ id: value.id, name: value.name, price: value.selling_price, image: value.image, quantity: value.quantity })
                         }
                     })
@@ -186,12 +186,15 @@ const ProductDetailPage = () => {
 
     const handleAddToCart = async () => {
         try {
+            // console.log('cart reducer', cart)
             if (idUser) {
                 if (status === 'verified') {
                     if (cart.length > 0) {
                         let index = cart.findIndex(value => value.id_stock == detailProduct.id_stock)
                         if (index >= 0) {
                             let remainingStock = cart[index].current_stock - cart[index].quantity
+                            console.log('remainingStock', remainingStock)
+                            console.log('quantity', quantity)
                             if (quantity > remainingStock) {
                                 toast.error(`Stock is insufficient. You already have some in your cart`)
                             } else {

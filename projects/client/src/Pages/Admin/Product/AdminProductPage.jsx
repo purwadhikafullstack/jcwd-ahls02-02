@@ -43,10 +43,6 @@ const AdminProductPage = () => {
         getCategory();
     }, [])
 
-    // useEffect(() => {
-    //     getCategory();
-    // }, [])
-
     const getCategory = () => {
         axios.get(`${API_URL}/products/categories`)
             .then((response) => {
@@ -149,9 +145,10 @@ const AdminProductPage = () => {
                             </IconButton>
                         </>
                     })
-                    setProductData(temp)
-                    setTotalPage(response.data.totalPage)
                 })
+                setProductData(temp)
+                setTotalPage(response.data.totalPage)
+                console.log('temp', temp)
             }).catch((error) => {
                 console.log(error)
             })
