@@ -862,16 +862,54 @@ module.exports = {
   // updates order status, send status_before and status_after
   updateOrder: async (req, res, next) => {
     try {
+      const { order_id, new_status } = req.body
+
+      let currentStatus = await dbQuery(`select status from order_list where id=${order_id}`)
+
+      if (currentStatus.length > 0) {
+        if (new_status) {
+          if (new_status === "Waiting for Payment") {
+            let updateStatus = await dbQuery(`update order_list set status = '${new_status}' WHERE id=${order_id}`)
+            let updatePrescription = await dbQuery(`update prescription set processed_status = 'true' WHERE id_order=${order_id}`)
+
+            return res.status(200).send({
+              success: true,
+              message: 'Status successfully updated',
+              data: {
+                status_before: currentStatus[0],
+                status_after: new_status
+              }
+            })
+          } else {
+            let updateStatus = await dbQuery(`update order_list set status = '${new_status}' WHERE id=${order_id}`)
+
+            return res.status(200).send({
+              success: true,
+              message: 'Status successfully updated',
+              data: {
+                status_before: currentStatus[0],
+                status_after: new_status
+              }
+            })
+          }
+        } else {
+          return res.status(400).send({
+            success: false,
+            message: 'req.body missing'
+          })
+        }
+      }
     } catch (error) {
       return next(error);
     }
   },
-  deleteOrder: async (req, res, next) => {
-    try {
-    } catch (error) {
-      return next(error);
-    }
-  },
+  // cancelOrder: async (req, res, next) => {
+  //   try {
+  //     console.log(req.params)
+  //   } catch (error) {
+  //     return next(error);
+  //   }
+  // },
   uploadPaymentReceipt: async (req, res, next) => {
     try {
     } catch (error) {
@@ -881,6 +919,15 @@ module.exports = {
   // get user prescription list
   getPrescriptionList: async (req, res, next) => {
     try {
+      let prescriptionList = await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+      LEFT JOIN order_list o ON o.id = p.id_order where p.id_user = ${req.params.user_id} order by p.updated_at desc`)
+
+      return res.status(200).send({
+        success: true,
+        message: "success",
+        data: prescriptionList
+      });
+
     } catch (error) {
       return next(error);
     }
