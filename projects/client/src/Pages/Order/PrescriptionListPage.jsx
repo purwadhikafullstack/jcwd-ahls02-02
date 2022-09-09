@@ -109,11 +109,13 @@ const PrescriptionListPage = () => {
                 new_status: "Cancelled"
             }
 
-            let cancel = await axios.patch(`${API_URL}/users/order/${userId}`, data, {
+            // let cancel = await axios.patch(`${API_URL}/users/order/${userId}`, data, {
+            let cancel = await axios.patch(`${API_URL}/users/order`, data, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             })
+            // console.log('cancel', cancel)
             if (cancel.data.success) {
                 toast.success('order cancelled')
                 getData()

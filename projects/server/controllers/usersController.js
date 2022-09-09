@@ -642,7 +642,7 @@ module.exports = {
         const cartData = await dbQuery(
           `select c.id, p.name, p.description, p.image, ca.category_name, p.selling_price, p.buying_price, s.unit, p.unit_conversion, c.id_prescription, c.quantity, c.subtotal, s.quantity as current_stock, s.id as id_stock from cart c JOIN stock s ON c.id_stock = s.id JOIN products p ON p.id = s.id_product JOIN category ca ON p.id_category = ca.id where c.id_user = ${req.dataUser.id}`
         );
-        
+
         if (cartData.length) {
           return res.status(200).send({
             success: true,
@@ -862,42 +862,114 @@ module.exports = {
   updateOrder: async (req, res, next) => {
     try {
       const { order_id, new_status } = req.body
-
       let currentStatus = await dbQuery(`select status from order_list where id=${order_id}`)
 
-      if (currentStatus.length > 0) {
-        if (new_status) {
-          if (new_status === "Waiting for Payment") {
-            let updateStatus = await dbQuery(`update order_list set status = '${new_status}' WHERE id=${order_id}`)
-            let updatePrescription = await dbQuery(`update prescription set processed_status = 'true' WHERE id_order=${order_id}`)
+      if (req.dataUser.role === "user") {
+        if (currentStatus.length > 0) {
+          if (new_status) {
+            if (new_status === "Waiting for Payment") {
+              let updateStatus = await dbQuery(`update order_list set status = '${new_status}' WHERE id=${order_id}`)
+              let updatePrescription = await dbQuery(`update prescription set processed_status = 'true' WHERE id_order=${order_id}`)
 
-            return res.status(200).send({
-              success: true,
-              message: 'Status successfully updated',
-              data: {
-                status_before: currentStatus[0],
-                status_after: new_status
-              }
-            })
+              return res.status(200).send({
+                success: true,
+                message: 'Status successfully updated',
+                data: {
+                  status_before: currentStatus[0].status,
+                  status_after: new_status
+                }
+              })
+            } else {
+              let updateStatus = await dbQuery(`update order_list set status = '${new_status}' WHERE id=${order_id}`)
+
+              return res.status(200).send({
+                success: true,
+                message: 'Status successfully updated',
+                data: {
+                  status_before: currentStatus[0].status,
+                  status_after: new_status
+                }
+              })
+            }
           } else {
-            let updateStatus = await dbQuery(`update order_list set status = '${new_status}' WHERE id=${order_id}`)
-
-            return res.status(200).send({
-              success: true,
-              message: 'Status successfully updated',
-              data: {
-                status_before: currentStatus[0],
-                status_after: new_status
-              }
+            return res.status(400).send({
+              success: false,
+              message: 'req.body missing'
             })
           }
         } else {
           return res.status(400).send({
             success: false,
-            message: 'req.body missing'
+            message: 'order not found'
           })
         }
+
+      } else if (req.dataUser.role === "admin") {
+        if (currentStatus.length > 0) {
+          if (new_status) {
+            if (new_status === "Waiting for Payment") {
+              let updateStatus = await dbQuery(`update order_list set status = '${new_status}' WHERE id=${order_id}`)
+              let updatePrescription = await dbQuery(`update prescription set processed_status = 'true' WHERE id_order=${order_id}`)
+
+              return res.status(200).send({
+                success: true,
+                message: 'Status successfully updated',
+                data: {
+                  status_before: currentStatus[0].status,
+                  status_after: new_status
+                }
+              })
+            } else if (new_status === "Cancelled") {
+              if (currentStatus[0].status === "Waiting for Confirmation") {
+                let updateStatus = await dbQuery(`update order_list set status = 'Waiting for Payment' WHERE id=${order_id}`)
+                return res.status(200).send({
+                  success: true,
+                  message: 'Status successfully updated',
+                  data: {
+                    status_before: currentStatus[0].status,
+                    status_after: new_status
+                  }
+                })
+              } else {
+                let updateStatus = await dbQuery(`update order_list set status = 'Cancelled' WHERE id=${order_id}`)
+                return res.status(200).send({
+                  success: true,
+                  message: 'Status successfully updated',
+                  data: {
+                    status_before: currentStatus[0].status,
+                    status_after: new_status
+                  }
+                })
+              }
+            } else {
+              let updateStatus = await dbQuery(`update order_list set status = '${new_status}' WHERE id=${order_id}`)
+
+              return res.status(200).send({
+                success: true,
+                message: 'Status successfully updated',
+                data: {
+                  status_before: currentStatus[0].status,
+                  status_after: new_status
+                }
+              })
+            }
+          } else {
+            return res.status(400).send({
+              success: false,
+              message: 'req.body missing'
+            })
+          }
+        } else {
+          return res.status(400).send({
+            success: false,
+            message: 'order not found'
+          })
+        }
+      } else {
+
       }
+
+
     } catch (error) {
       return next(error);
     }

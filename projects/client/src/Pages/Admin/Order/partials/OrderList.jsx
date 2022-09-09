@@ -1,6 +1,12 @@
 import { Box, Grid, MenuItem, Pagination, Select } from "@mui/material";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import AdminOrderCard from "../../../../Components/AdminOrderCard";
 import Text from "../../../../Components/atoms/Text";
+import ModalConfirm from "../../../../Components/ModalConfirm";
+import { API_URL } from "../../../../helper";
 
 const OrderList = (props) => {
   const {
@@ -13,6 +19,9 @@ const OrderList = (props) => {
     limit,
     setLimit,
   } = props;
+
+  let [openConfirm, setOpenConfirm] = useState(false)
+  let [orderId, setOrderId] = useState()
 
   const handleChangeSort = (sortValue) => {
     setCurrentPage(0);
@@ -27,6 +36,36 @@ const OrderList = (props) => {
   const handleClickPage = (event, value) => {
     setCurrentPage(value);
   };
+
+  const handleOpenModal = (order_id) => {
+    setOrderId(order_id)
+    setOpenConfirm(true)
+  }
+
+  const handleCancelOrder = async () => {
+    try {
+      let token = Cookies.get("userToken")
+      let data = {
+        order_id: orderId,
+        new_status: "Cancelled"
+      }
+
+      let cancel = await axios.patch(`${API_URL}/users/order`, data, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (cancel.data.success) {
+        toast.success('order cancelled')
+        // getData()
+        setOrderId()
+      } else {
+        toast.error('something went wrong, please try again')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <Box sx={{ pb: 2 }}>
@@ -104,7 +143,10 @@ const OrderList = (props) => {
             {orderData.map((value, index) => {
               return (
                 <Box sx={{ p: 2 }} key={`${value.name}-${index}`}>
-                  <AdminOrderCard orderData={value} />
+                  <AdminOrderCard
+                    orderData={value}
+                    handleCancelOrder={handleOpenModal}
+                  />
                 </Box>
               );
             })}
@@ -123,6 +165,13 @@ const OrderList = (props) => {
           />
         </Box>
       )}
+      <ModalConfirm
+        isOpen={openConfirm}
+        toggle={() => setOpenConfirm(!openConfirm)}
+        text='Are you sure you want to cancel this order?'
+        type='warning'
+        handleConfirm={() => handleCancelOrder(orderId)}
+      />
     </Box>
   );
 };

@@ -1,10 +1,11 @@
 import { Box, Card, Divider, Grid } from "@mui/material";
+import axios from "axios";
 import { API_IMAGE_URL } from "../helper";
 import Button from "./atoms/Button";
 import Text from "./atoms/Text";
 
 const AdminOrderCard = (props) => {
-  const { orderData } = props;
+  const { orderData, handleCancelOrder } = props;
   const { status } = orderData;
   let statusColor = "";
 
@@ -26,7 +27,9 @@ const AdminOrderCard = (props) => {
       statusColor = "black";
   }
 
-  const handleCancelOrder = () => {};
+  // const handleCancelOrder = async () => {
+
+  // };
 
   const handleConfirmOrder = () => {
     if (status === "Waiting for Confirmation") {
@@ -136,34 +139,35 @@ const AdminOrderCard = (props) => {
           >
             {(status === "Waiting for Confirmation" ||
               status === "Processed") && (
-              <>
-                <Box sx={{ mr: 1 }}>
-                  <Button
-                    variant="text"
-                    color="error"
-                    size="small"
-                    onClick={handleCancelOrder}
-                  >
-                    Cancel Order
-                  </Button>
-                </Box>
-                <Box sx={{ mr: 1 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    width="130px"
-                    onClick={handleConfirmOrder}
-                  >
-                    {status === "Waiting for Confirmation" ? (
-                      <>Confirm Payment</>
-                    ) : status === "Processed" ? (
-                      <>Send Order</>
-                    ) : null}
-                  </Button>
-                </Box>
-              </>
-            )}
+                <>
+                  <Box sx={{ mr: 1 }}>
+                    <Button
+                      variant="text"
+                      color="error"
+                      size="small"
+                      // onClick={() => console.log(orderData)}
+                      onClick={() => handleCancelOrder(orderData.id)}
+                    >
+                      Cancel Order
+                    </Button>
+                  </Box>
+                  <Box sx={{ mr: 1 }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      width="130px"
+                      onClick={handleConfirmOrder}
+                    >
+                      {status === "Waiting for Confirmation" ? (
+                        <>Confirm Payment</>
+                      ) : status === "Processed" ? (
+                        <>Send Order</>
+                      ) : null}
+                    </Button>
+                  </Box>
+                </>
+              )}
           </Grid>
           <Grid item xs={12} sm={3} sx={{ order: { xs: 1, sm: 2 } }}>
             <Box sx={{ minWidth: "100px" }}>
