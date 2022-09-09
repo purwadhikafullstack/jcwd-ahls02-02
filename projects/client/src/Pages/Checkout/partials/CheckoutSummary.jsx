@@ -186,7 +186,7 @@ const CheckoutSummary = (props) => {
             toggle={() => setOpenModalAlert(false)}
             handleConfirm={() => {
               setOpenModalAlert(false);
-              navigate("order");
+              navigate("/order");
             }}
           >
             <Text>Checkout success!</Text>
