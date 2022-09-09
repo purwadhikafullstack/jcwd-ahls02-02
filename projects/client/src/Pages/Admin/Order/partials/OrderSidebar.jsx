@@ -14,7 +14,7 @@ const OrderSidebar = (props) => {
     { label: "Waiting for Confirmation", status: "Waiting for Confirmation" },
     { label: "Order Processed", status: "Processed" },
     { label: "Order in Delivery", status: "Sent" },
-    { label: "Order Confirmed", status: "Completed" },
+    { label: "Order Completed", status: "Completed" },
     { label: "Cancelled Order", status: "Cancelled" },
   ];
 

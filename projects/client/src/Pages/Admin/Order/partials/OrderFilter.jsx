@@ -3,6 +3,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Divider,
   Grid,
   TextField,
 } from "@mui/material";
@@ -25,14 +26,14 @@ const OrderFilter = (props) => {
   } = props;
 
   const convertDateToString = (fullDate) => {
-    const year = `${fullDate.$y}`
-    const month = `0${1+fullDate.$M}`.slice(-2)
-    const date = `0${fullDate.$D}`.slice(-2)
-    return `${year}-${month}-${date}`
-  }
+    const year = `${fullDate.$y}`;
+    const month = `0${1 + fullDate.$M}`.slice(-2);
+    const date = `0${fullDate.$D}`.slice(-2);
+    return `${year}-${month}-${date}`;
+  };
 
   const handleSubmit = () => {
-    setCurrentPage(0)
+    setCurrentPage(0);
     let tempStartDate = startDate && convertDateToString(startDate);
     let tempEndDate = endDate && convertDateToString(endDate);
     getOrderData(invoiceNumber, tempStartDate, tempEndDate);
@@ -53,6 +54,7 @@ const OrderFilter = (props) => {
             Filter
           </Text>
         </AccordionSummary>
+        <Divider />
         <AccordionDetails>
           <Box>
             <Grid container alignItems="center">

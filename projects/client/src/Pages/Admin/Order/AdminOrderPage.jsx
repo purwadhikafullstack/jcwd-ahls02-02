@@ -1,4 +1,4 @@
-import { Box, Container, Divider, Grid, IconButton } from "@mui/material";
+import { Box, Container, Divider, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../../../helper";
@@ -20,7 +20,9 @@ const AdminOrderPage = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState("");
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(5);
+
+  console.log(orderData)
 
   const { token } = useSelector((state) => {
     return { token: state.userReducer.token };

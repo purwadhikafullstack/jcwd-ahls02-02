@@ -101,7 +101,7 @@ module.exports = {
           orderIds = orderIds.substring(0, orderIds.length - 2);
 
           const orderContents = await dbQuery(
-            `select id, id_order, product_name, product_image, quantity, selling_price, unit from order_content where id_order IN (${orderIds})`
+            `select id, id_order, id_stock, product_name, product_image, quantity, selling_price, unit from order_content where id_order IN (${orderIds})`
           );
 
           orderList.forEach((orderListValue, index) => {
@@ -110,6 +110,7 @@ module.exports = {
               if (orderListValue.id === orderContentValue.id_order) {
                 content.push({
                   id_content: orderContentValue.id,
+                  id_stock: orderContentValue.id_stock,
                   product_name: orderContentValue.product_name,
                   image: orderContentValue.product_image,
                   quantity: orderContentValue.quantity,
