@@ -112,7 +112,7 @@ const ProductDetailPage = () => {
                                     sx={{ mb: 1 }}
                                 >{detailProduct.name.toUpperCase()}</Text>
                                 <Box display='flex' sx={{ alignItems: 'flex-end', mb: 3 }}>
-                                    <Text fontSize='h5' sx={{ mr: 1 }} >Rp. {detailProduct.selling_price.toLocaleString()}</Text>
+                                    <Text fontSize='h5' sx={{ mr: 1 }} >IDR{detailProduct.selling_price.toLocaleString()}</Text>
                                     <Text fontSize='subtitle2' >/ {detailProduct.unit} ({detailProduct.unit_conversion} {detailProduct.smallest_unit})</Text>
                                 </Box>
                                 <Text fontSize='subtitle2' color='grey.800' textAlign='justify'>{detailProduct.description}</Text>

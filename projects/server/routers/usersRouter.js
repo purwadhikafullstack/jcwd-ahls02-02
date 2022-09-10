@@ -28,8 +28,9 @@ route.delete("/cart/:user_id/:cart_id", readToken, usersController.deleteProduct
 
 route.get("/order/:user_id", readToken, usersController.getOrderList);
 route.post("/order/:user_id", readToken, usersController.addOrder);
-route.patch("/order/:user_id", readToken, usersController.updateOrder);
-route.delete("/order/:user_id", readToken, usersController.deleteOrder);
+route.patch("/order", readToken, usersController.updateOrder);
+// route.patch("/order/:user_id", readToken, usersController.updateOrder);
+// route.delete("/order/:user_id", readToken, usersController.cancelOrder);
 route.patch("/order/payment/:user_id", readToken, usersController.uploadPaymentReceipt);
 
 route.get("/prescription/:user_id", usersController.getPrescriptionList);

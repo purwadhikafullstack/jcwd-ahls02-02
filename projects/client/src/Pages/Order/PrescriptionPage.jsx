@@ -100,7 +100,7 @@ const PrescriptionPage = () => {
                         <Divider />
                         {newImage ?
                             <Box display="flex" sx={{ flexDirection: "column", alignItems: "center", py: 5 }}>
-                                <img src={newImage} alt={`prescription image`} style={{ width: '20%', minWidth: '150px', maxHeight: '500px' }} />
+                                <img src={newImage} alt={`prescription image`} style={{ width: '30%', minWidth: '200px', maxHeight: '300px' }} />
                                 <Button onClick={() => setNewImage()} color='error' variant='outlined' sx={{ mt: 2 }}>Remove</Button>
                             </Box>
                             :
