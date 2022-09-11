@@ -79,6 +79,13 @@ const Navbar = () => {
         navigate('/prescription')
     }
 
+    const handleNavigatePrescriptionAdmin = () => {
+        setAnchorElUserSmall(false)
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+        navigate('/admin/prescription')
+    }
+
     const handleNavigateCart = () => {
         setAnchorElUserSmall(false)
         setAnchorElNav(false)
@@ -333,6 +340,10 @@ const Navbar = () => {
                                 <MenuItem onClick={handleNavigateAdminCategory}>
                                     <Category sx={{ mr: 1 }} />
                                     <Typography textAlign="center">Category Settings</Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleNavigatePrescriptionAdmin}>
+                                    <MedicationIcon sx={{ mr: 1 }} />
+                                    <Typography textAlign="center">Prescription</Typography>
                                 </MenuItem>
                                 <MenuItem onClick={handleNavigateAdminOrder}>
                                     <ShoppingBagIcon sx={{ mr: 1 }} />
@@ -652,6 +663,10 @@ const Navbar = () => {
                                 <MenuItem onClick={handleNavigateAdminCategory}>
                                     <Category sx={{ mr: 1 }} />
                                     <Typography textAlign="center">Category Settings</Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleNavigatePrescriptionAdmin}>
+                                    <MedicationIcon sx={{ mr: 1 }} />
+                                    <Typography textAlign="center">Prescription</Typography>
                                 </MenuItem>
                                 <MenuItem onClick={handleNavigateAdminOrder}>
                                     <ShoppingBagIcon sx={{ mr: 1 }} />

@@ -3,10 +3,13 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import AdminOrderCard from "../../../../Components/AdminOrderCard";
-import Text from "../../../../Components/atoms/Text";
-import ModalConfirm from "../../../../Components/ModalConfirm";
-import { API_URL } from "../../../../helper";
+import UserOrderCard from "../../../Components/UserOrderCard";
+import Text from "../../../Components/atoms/Text";
+import { API_URL } from "../../../helper";
+// import Text from "../../../../Components/atoms/Text";
+import ModalConfirm from "../../../Components/ModalConfirm";
+import ModalUploadPayment from "./ModalUploadPayment";
+// import { API_URL } from "../../../helper";
 
 const OrderList = (props) => {
   const {
@@ -18,10 +21,15 @@ const OrderList = (props) => {
     totalPage,
     limit,
     setLimit,
+    userId,
+    refreshPage
   } = props;
 
   let [openConfirm, setOpenConfirm] = useState(false)
   let [orderId, setOrderId] = useState()
+  let [openModalUpload, setOpenModalUpload] = useState(false)
+  let [paymentProof, setPaymentProof] = useState()
+
 
   const handleChangeSort = (sortValue) => {
     setCurrentPage(0);
@@ -37,9 +45,14 @@ const OrderList = (props) => {
     setCurrentPage(value);
   };
 
-  const handleOpenModal = (order_id) => {
+  const handleOpenModalCancel = (order_id) => {
     setOrderId(order_id)
     setOpenConfirm(true)
+  }
+
+  const handleOpenModalUpload = (order_id) => {
+    setOrderId(order_id)
+    setOpenModalUpload(true)
   }
 
   const handleCancelOrder = async () => {
@@ -57,12 +70,41 @@ const OrderList = (props) => {
       })
       if (cancel.data.success) {
         toast.success('order cancelled')
-        // getData()
-        window.location.reload()
+        refreshPage()
         setOrderId()
       } else {
         toast.error('something went wrong, please try again')
       }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleUploadPayment = async () => {
+    // console.log(paymentProof)
+    // console.log(orderId)
+    try {
+      let token = Cookies.get("userToken")
+      let formData = new FormData();
+      let data = {
+        new_status: "Waiting for Confirmation",
+        order_id: orderId
+      }
+
+      formData.append('data', JSON.stringify(data))
+      formData.append('image', paymentProof)
+
+      let upload = await axios.patch(`${API_URL}/users/order/payment/${userId}`, formData, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+
+      if (upload.data.success) {
+        toast.success(`Payment proof uploaded`)
+        refreshPage();
+      }
+
     } catch (error) {
       console.log(error)
     }
@@ -144,9 +186,10 @@ const OrderList = (props) => {
             {orderData.map((value, index) => {
               return (
                 <Box sx={{ p: 2 }} key={`${value.name}-${index}`}>
-                  <AdminOrderCard
+                  <UserOrderCard
                     orderData={value}
-                    handleCancelOrder={handleOpenModal}
+                    handleCancelOrder={handleOpenModalCancel}
+                    handleUpload={handleOpenModalUpload}
                   />
                 </Box>
               );
@@ -172,6 +215,16 @@ const OrderList = (props) => {
         text='Are you sure you want to cancel this order?'
         type='warning'
         handleConfirm={() => handleCancelOrder(orderId)}
+      />
+      <ModalUploadPayment
+        isOpen={openModalUpload}
+        toggle={() => {
+          setOpenModalUpload(!openModalUpload)
+          setOrderId()
+        }}
+        handleSubmit={handleUploadPayment}
+        setPaymentProof={setPaymentProof}
+        paymentProof={paymentProof}
       />
     </Box>
   );
