@@ -16,7 +16,7 @@ import ProductPage from "./Pages/Products/ProductPage";
 import ProfilePage from "./Pages/User/ProfilePage";
 import DashboardPage from "./Pages/Admin/DashboardPage";
 import AdminOrderPage from "./Pages/Admin/Order/AdminOrderPage";
-import AdminPerscriptionPage from "./Pages/Admin/Order/AdminPerscriptionPage";
+import AdminPrescriptionPage from "./Pages/Admin/Order/AdminPrescriptionPage";
 import AdminProductPage from "./Pages/Admin/Product/AdminProductPage";
 import AdminCategoryPage from "./Pages/Admin/Product/CategoryPage";
 import ReportPage from "./Pages/Admin/Report/ReportPage";
@@ -72,7 +72,7 @@ function App() {
             <Route path='/admin' element={<DashboardPage />} />
             <Route path='/' element={<Navigate replace to='/admin' />} />
             <Route path='/admin/order' element={<AdminOrderPage />} />
-            <Route path='/admin/perscription' element={<AdminPerscriptionPage />} />
+            <Route path='/admin/prescription' element={<AdminPrescriptionPage />} />
             <Route path='/admin/product' element={<AdminProductPage />} />
             <Route path='/admin/product/category' element={<AdminCategoryPage />} />
             <Route path='/admin/report' element={<ReportPage />} />

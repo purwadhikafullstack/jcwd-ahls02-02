@@ -3,10 +3,13 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import AdminOrderCard from "../../../../Components/AdminOrderCard";
-import Text from "../../../../Components/atoms/Text";
-import ModalConfirm from "../../../../Components/ModalConfirm";
-import { API_URL } from "../../../../helper";
+import UserOrderCard from "../../../Components/UserOrderCard";
+import Text from "../../../Components/atoms/Text";
+import { API_URL } from "../../../helper";
+// import Text from "../../../../Components/atoms/Text";
+import ModalConfirm from "../../../Components/ModalConfirm";
+import ModalUploadPayment from "./ModalUploadPayment";
+// import { API_URL } from "../../../helper";
 
 const OrderList = (props) => {
   const {
@@ -18,16 +21,15 @@ const OrderList = (props) => {
     totalPage,
     limit,
     setLimit,
-    getOrderData,
+    userId,
+    refreshPage
   } = props;
 
-  const [openConfirm, setOpenConfirm] = useState(false);
-  const [orderId, setOrderId] = useState();
+  let [openConfirm, setOpenConfirm] = useState(false)
+  let [orderId, setOrderId] = useState()
+  let [openModalUpload, setOpenModalUpload] = useState(false)
+  let [paymentProof, setPaymentProof] = useState()
 
-  const [modalText, setModalText] = useState("");
-  const [modalType, setModalType] = useState("");
-
-  const [newOrderStatus, setNewOrderStatus] = useState("");
 
   const handleChangeSort = (sortValue) => {
     setCurrentPage(0);
@@ -43,42 +45,70 @@ const OrderList = (props) => {
     setCurrentPage(value);
   };
 
-  const handleOpenModal = (order_id, text, type, new_status) => {
-    setOrderId(order_id);
-    setModalText(text);
-    setModalType(type);
-    setNewOrderStatus(new_status);
-    setOpenConfirm(true);
-  };
+  const handleOpenModalCancel = (order_id) => {
+    setOrderId(order_id)
+    setOpenConfirm(true)
+  }
 
-  const handleProcessOrder = async () => {
+  const handleOpenModalUpload = (order_id) => {
+    setOrderId(order_id)
+    setOpenModalUpload(true)
+  }
+
+  const handleCancelOrder = async () => {
     try {
-      const token = Cookies.get("userToken");
+      let token = Cookies.get("userToken")
       let data = {
         order_id: orderId,
-        new_status: newOrderStatus,
-      };
+        new_status: "Cancelled"
+      }
 
-      const res = await axios.patch(`${API_URL}/users/order`, data, {
-        headers:{
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.success) {
-        toast.success("Order successfully updated");
-        setOrderId();
-        setModalText("");
-        setModalType("");
-        setNewOrderStatus("");
-        getOrderData();
-        setCurrentPage(0);
+      let cancel = await axios.patch(`${API_URL}/users/order`, data, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (cancel.data.success) {
+        toast.success('order cancelled')
+        refreshPage()
+        setOrderId()
       } else {
-        toast.error("something went wrong, please try again");
+        toast.error('something went wrong, please try again')
       }
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
+
+  const handleUploadPayment = async () => {
+    // console.log(paymentProof)
+    // console.log(orderId)
+    try {
+      let token = Cookies.get("userToken")
+      let formData = new FormData();
+      let data = {
+        new_status: "Waiting for Confirmation",
+        order_id: orderId
+      }
+
+      formData.append('data', JSON.stringify(data))
+      formData.append('image', paymentProof)
+
+      let upload = await axios.patch(`${API_URL}/users/order/payment/${userId}`, formData, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+
+      if (upload.data.success) {
+        toast.success(`Payment proof uploaded`)
+        refreshPage();
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <Box sx={{ pb: 2 }}>
@@ -156,10 +186,10 @@ const OrderList = (props) => {
             {orderData.map((value, index) => {
               return (
                 <Box sx={{ p: 2 }} key={`${value.name}-${index}`}>
-                  <AdminOrderCard
+                  <UserOrderCard
                     orderData={value}
-                    setModalText={setModalText}
-                    handleOpenModal={handleOpenModal}
+                    handleCancelOrder={handleOpenModalCancel}
+                    handleUpload={handleOpenModalUpload}
                   />
                 </Box>
               );
@@ -182,9 +212,19 @@ const OrderList = (props) => {
       <ModalConfirm
         isOpen={openConfirm}
         toggle={() => setOpenConfirm(!openConfirm)}
-        text={modalText}
-        type={modalType}
-        handleConfirm={() => handleProcessOrder(orderId)}
+        text='Are you sure you want to cancel this order?'
+        type='warning'
+        handleConfirm={() => handleCancelOrder(orderId)}
+      />
+      <ModalUploadPayment
+        isOpen={openModalUpload}
+        toggle={() => {
+          setOpenModalUpload(!openModalUpload)
+          setOrderId()
+        }}
+        handleSubmit={handleUploadPayment}
+        setPaymentProof={setPaymentProof}
+        paymentProof={paymentProof}
       />
     </Box>
   );
