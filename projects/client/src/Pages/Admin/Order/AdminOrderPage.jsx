@@ -22,8 +22,6 @@ const AdminOrderPage = () => {
   const [totalPage, setTotalPage] = useState("");
   const [limit, setLimit] = useState(5);
 
-  console.log(orderData)
-
   const { token } = useSelector((state) => {
     return { token: state.userReducer.token };
   });
@@ -35,7 +33,7 @@ const AdminOrderPage = () => {
     filterStatus = selectedStatus,
     querySort = sortBy,
     queryPage = currentPage,
-    queryLimit = limit,
+    queryLimit = limit
   ) => {
     try {
       let query = "";
@@ -110,7 +108,6 @@ const AdminOrderPage = () => {
   }, []);
 
   useEffect(() => {
-    console.log("hehe");
     getOrderData();
   }, [selectedStatus, sortBy, currentPage]);
 
@@ -146,6 +143,7 @@ const AdminOrderPage = () => {
               <Box>
                 <OrderList
                   orderData={orderData}
+                  getOrderData={getOrderData}
                   sortBy={sortBy}
                   setSortBy={setSortBy}
                   currentPage={currentPage}

@@ -18,10 +18,16 @@ const OrderList = (props) => {
     totalPage,
     limit,
     setLimit,
+    getOrderData,
   } = props;
 
-  let [openConfirm, setOpenConfirm] = useState(false)
-  let [orderId, setOrderId] = useState()
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [orderId, setOrderId] = useState();
+
+  const [modalText, setModalText] = useState("");
+  const [modalType, setModalType] = useState("");
+
+  const [newOrderStatus, setNewOrderStatus] = useState("");
 
   const handleChangeSort = (sortValue) => {
     setCurrentPage(0);
@@ -37,35 +43,42 @@ const OrderList = (props) => {
     setCurrentPage(value);
   };
 
-  const handleOpenModal = (order_id) => {
-    setOrderId(order_id)
-    setOpenConfirm(true)
-  }
+  const handleOpenModal = (order_id, text, type, new_status) => {
+    setOrderId(order_id);
+    setModalText(text);
+    setModalType(type);
+    setNewOrderStatus(new_status);
+    setOpenConfirm(true);
+  };
 
-  const handleCancelOrder = async () => {
+  const handleProcessOrder = async () => {
     try {
-      let token = Cookies.get("userToken")
+      const token = Cookies.get("userToken");
       let data = {
         order_id: orderId,
-        new_status: "Cancelled"
-      }
+        new_status: newOrderStatus,
+      };
 
-      let cancel = await axios.patch(`${API_URL}/users/order`, data, {
+      const res = await axios.patch(`${API_URL}/users/order`, data, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      if (cancel.data.success) {
-        toast.success('order cancelled')
-        // getData()
-        setOrderId()
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.data.success) {
+        toast.success("Order successfully updated");
+        setOrderId();
+        setModalText("");
+        setModalType("");
+        setNewOrderStatus("");
+        getOrderData();
+        setCurrentPage(0);
       } else {
-        toast.error('something went wrong, please try again')
+        toast.error("something went wrong, please try again");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   return (
     <Box sx={{ pb: 2 }}>
@@ -145,7 +158,8 @@ const OrderList = (props) => {
                 <Box sx={{ p: 2 }} key={`${value.name}-${index}`}>
                   <AdminOrderCard
                     orderData={value}
-                    handleCancelOrder={handleOpenModal}
+                    setModalText={setModalText}
+                    handleOpenModal={handleOpenModal}
                   />
                 </Box>
               );
@@ -168,9 +182,9 @@ const OrderList = (props) => {
       <ModalConfirm
         isOpen={openConfirm}
         toggle={() => setOpenConfirm(!openConfirm)}
-        text='Are you sure you want to cancel this order?'
-        type='warning'
-        handleConfirm={() => handleCancelOrder(orderId)}
+        text={modalText}
+        type={modalType}
+        handleConfirm={() => handleProcessOrder(orderId)}
       />
     </Box>
   );

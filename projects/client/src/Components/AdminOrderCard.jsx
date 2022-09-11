@@ -5,7 +5,7 @@ import Button from "./atoms/Button";
 import Text from "./atoms/Text";
 
 const AdminOrderCard = (props) => {
-  const { orderData, handleCancelOrder } = props;
+  const { orderData, handleOpenModal } = props;
   const { status } = orderData;
   let statusColor = "";
 
@@ -27,14 +27,30 @@ const AdminOrderCard = (props) => {
       statusColor = "black";
   }
 
-  // const handleCancelOrder = async () => {
-
-  // };
-
-  const handleConfirmOrder = () => {
-    if (status === "Waiting for Confirmation") {
-    } else if (status === "Processed") {
+  const handleProcessOrder = (action) => {
+    let text = "";
+    let type = "";
+    let new_status = "";
+    if (action === "cancel") {
+      type = "warning";
+      if (status === "Waiting for Confirmation") {
+        text = "Are you sure you want to reject this payment?";
+        new_status = "Waiting for Payment";
+      } else if (status === "Processed") {
+        text = "Are you sure you want to cancel this order?";
+        new_status = "Cancelled";
+      }
+    } else if (action === "process") {
+      type = "confirm";
+      if (status === "Waiting for Confirmation") {
+        text = "Are you sure you want to confirm this payment?";
+        new_status = "Processed";
+      } else if (status === "Processed") {
+        text = "Are you sure you want to send this order?";
+        new_status = "Sent";
+      }
     }
+    handleOpenModal(orderData.id, text, type, new_status);
   };
 
   return (
@@ -139,35 +155,38 @@ const AdminOrderCard = (props) => {
           >
             {(status === "Waiting for Confirmation" ||
               status === "Processed") && (
-                <>
-                  <Box sx={{ mr: 1 }}>
-                    <Button
-                      variant="text"
-                      color="error"
-                      size="small"
-                      // onClick={() => console.log(orderData)}
-                      onClick={() => handleCancelOrder(orderData.id)}
-                    >
-                      Cancel Order
-                    </Button>
-                  </Box>
-                  <Box sx={{ mr: 1 }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      width="130px"
-                      onClick={handleConfirmOrder}
-                    >
-                      {status === "Waiting for Confirmation" ? (
-                        <>Confirm Payment</>
-                      ) : status === "Processed" ? (
-                        <>Send Order</>
-                      ) : null}
-                    </Button>
-                  </Box>
-                </>
-              )}
+              <>
+                <Box sx={{ mr: 1 }}>
+                  <Button
+                    variant="text"
+                    color="error"
+                    size="small"
+                    onClick={() => handleProcessOrder("cancel")}
+                  >
+                    {status === "Waiting for Confirmation" ? (
+                      <>Reject Payment</>
+                    ) : status === "Processed" ? (
+                      <>Cancel Order</>
+                    ) : null}
+                  </Button>
+                </Box>
+                <Box sx={{ mr: 1 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    width="130px"
+                    onClick={() => handleProcessOrder("process")}
+                  >
+                    {status === "Waiting for Confirmation" ? (
+                      <>Confirm Payment</>
+                    ) : status === "Processed" ? (
+                      <>Send Order</>
+                    ) : null}
+                  </Button>
+                </Box>
+              </>
+            )}
           </Grid>
           <Grid item xs={12} sm={3} sx={{ order: { xs: 1, sm: 2 } }}>
             <Box sx={{ minWidth: "100px" }}>

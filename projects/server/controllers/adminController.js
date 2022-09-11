@@ -63,10 +63,10 @@ module.exports = {
         if (!filter.includes("ol.status")) {
           if (filter) {
             filter +=
-              " AND ol.status NOT IN ('Waiting for Prescription Validation')";
+              " AND ol.status NOT IN ('Waiting for Prescription Validation', 'Cancelled Prescription')";
           } else {
             filter +=
-              "WHERE ol.status NOT IN ('Waiting for Prescription Validation')";
+              "WHERE ol.status NOT IN ('Waiting for Prescription Validation', 'Cancelled Prescription')";
           }
         }
 
