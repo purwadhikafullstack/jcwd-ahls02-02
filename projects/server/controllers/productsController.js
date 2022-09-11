@@ -8,6 +8,19 @@ module.exports = {
   getAllProducts: async (req, res, next) => {
     try {
       let result = await dbQuery('Select * from products;')
+      let stock = await dbQuery('Select * from stock')
+
+      result.forEach((valueProduct, indexProduct) => {
+        let detailStock = []
+        stock.forEach((valueStock) => {
+          if (valueStock.id_product === valueProduct.id) {
+            detailStock.push({ quantity: valueStock.quantity, unit: valueStock.unit, default_unit: valueStock.default_unit })
+          }
+        })
+        console.log('detailStock', detailStock)
+        valueProduct.stock = detailStock
+      })
+
       return res.status(200).send(result)
     } catch (error) {
       return next(error);

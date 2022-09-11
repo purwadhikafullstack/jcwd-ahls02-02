@@ -149,6 +149,16 @@ module.exports = {
   // get prescription list to be handled
   getPrescriptionList: async (req, res, next) => {
     try {
+      let prescriptionList = await dbQuery(`Select p.id as id_prescription, u.name, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+      LEFT JOIN order_list o ON o.id = p.id_order 
+      LEFT JOIN users u ON u.id = p.id_user
+      order by p.updated_at desc`)
+
+      return res.status(200).send({
+        success: true,
+        message: "success",
+        data: prescriptionList
+      });
     } catch (error) {
       return next(error);
     }
