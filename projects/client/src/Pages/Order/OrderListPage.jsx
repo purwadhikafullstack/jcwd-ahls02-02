@@ -22,8 +22,6 @@ const OrderListPage = () => {
     const [totalPage, setTotalPage] = useState("");
     const [limit, setLimit] = useState(5);
 
-    console.log(orderData)
-
     const { token, userId } = useSelector((state) => {
         return {
             token: state.userReducer.token,
@@ -113,7 +111,6 @@ const OrderListPage = () => {
     }, []);
 
     useEffect(() => {
-        console.log("hehe");
         getOrderData();
     }, [selectedStatus, sortBy, currentPage]);
 
