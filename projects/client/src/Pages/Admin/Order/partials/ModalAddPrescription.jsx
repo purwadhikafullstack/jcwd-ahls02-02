@@ -85,6 +85,7 @@ const ModalAddPrescription = (props) => {
   const [tab, setTab] = useState(0);
   const [productData, setProductData] = useState();
   const [openModalConvert, setOpenModalConvert] = useState(false);
+  const [selectedProductConvert, setSelectedProductConvert] = useState();
 
   const [formStockGeneric, setFormStockGeneric] = useState([
     { name: "", quantity: "", unit: "" },
@@ -215,7 +216,7 @@ const ModalAddPrescription = (props) => {
                   setFormStockGeneric(temp);
                 }}
                 displayEmpty
-                // disabled
+                disabled
               >
                 <MenuItem value="">
                   <Typography color="grey.400">Choose One</Typography>
@@ -278,28 +279,22 @@ const ModalAddPrescription = (props) => {
     setFormStockPrescription(temp);
   };
 
+  const handleClickConvert = (valueIngredient) => {
+    let productToConvert = [];
+    productData.forEach((value) => {
+      if (value.id === valueIngredient.name) {
+        productToConvert.push(value);
+      }
+    });
+    setSelectedProductConvert(productToConvert[0]);
+    setOpenModalConvert(true);
+  };
+
   const printStockPrescription = () => {
     return formStockPrescription.map((value, index) => {
       return (
         <>
           <Grid container spacing={2}>
-            {/* {formStockPrescription.length > 1 && (
-            <Grid item container justifyContent="right" xs={12}>
-                <Button
-                  variant="contained"
-                  color="error"
-                  size="small"
-                  onClick={() => {
-                    let temp = [...formStockPrescription];
-                    temp.splice(index, 1);
-                    setFormStockPrescription(temp);
-                  }}
-                >
-                  Delete Product
-                </Button>
-            </Grid>
-              )} */}
-
             <Grid item xs={12}>
               <Typography
                 color="grey.600"
@@ -353,21 +348,23 @@ const ModalAddPrescription = (props) => {
                     <Typography fontSize="14px">
                       Ingredient {indexIngredient + 1}
                     </Typography>
-                    <IconButton
-                      color="error"
-                      aria-label="remove ingredient"
-                      component="label"
-                      size="small"
-                      onClick={() => {
-                        let temp = [...formStockPrescription];
-                        temp[index].ingredients.splice(indexIngredient, 1);
-                        setFormStockGeneric(temp);
-                      }}
-                    >
-                      <Tooltip title="Remove Ingredient">
-                        <RemoveCircleOutline fontSize="inherit" />
-                      </Tooltip>
-                    </IconButton>
+                    {formStockPrescription[index].ingredients.length > 1 && (
+                      <IconButton
+                        color="error"
+                        aria-label="remove ingredient"
+                        component="label"
+                        size="small"
+                        onClick={() => {
+                          let temp = [...formStockPrescription];
+                          temp[index].ingredients.splice(indexIngredient, 1);
+                          setFormStockGeneric(temp);
+                        }}
+                      >
+                        <Tooltip title="Remove Ingredient">
+                          <RemoveCircleOutline fontSize="inherit" />
+                        </Tooltip>
+                      </IconButton>
+                    )}
                   </Grid>
                   <Grid item xs={8} md={5}>
                     <Typography color="grey.600" fontSize="14px">
@@ -430,7 +427,7 @@ const ModalAddPrescription = (props) => {
                         color="secondary"
                         size="small"
                         onClick={() => {
-                          setOpenModalConvert(true);
+                          handleClickConvert(valueIngredient);
                         }}
                         sx={{ p: 0, m: 0 }}
                       >
@@ -631,6 +628,9 @@ const ModalAddPrescription = (props) => {
           <ModalConvertStock
             isOpen={openModalConvert}
             toggle={() => setOpenModalConvert(!openModalConvert)}
+            getAllProduct={getAllProduct}
+            selectedProduct={selectedProductConvert}
+            setSelectedProduct={setSelectedProductConvert}
           />
         </Box>
       </Modal>
