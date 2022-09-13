@@ -14,10 +14,9 @@ module.exports = {
         let detailStock = []
         stock.forEach((valueStock) => {
           if (valueStock.id_product === valueProduct.id) {
-            detailStock.push({ quantity: valueStock.quantity, unit: valueStock.unit, default_unit: valueStock.default_unit })
+            detailStock.push({ idStock: valueStock.id, quantity: valueStock.quantity, unit: valueStock.unit, default_unit: valueStock.default_unit })
           }
         })
-        console.log('detailStock', detailStock)
         valueProduct.stock = detailStock
       })
 
@@ -446,9 +445,6 @@ module.exports = {
         if (firstUpdate) {
           let initialQuantity = await dbQuery(`SELECT quantity FROM stock where id = ${firstId};`)
           let finalChange = initialQuantity[0].quantity - firstQuantityChange
-          console.log('initialQuantity', initialQuantity[0].quantity)
-          console.log('firstQuantityChange', firstQuantityChange)
-          console.log('finalChange', finalChange)
           await dbQuery(`INSERT INTO stock_history (id_stock, quantity, type) VALUE (${firstId}, ${finalChange}, 'Stock Update')`)
           await dbQuery(`UPDATE stock ${firstUpdate} WHERE id = ${firstId}`)
         }
