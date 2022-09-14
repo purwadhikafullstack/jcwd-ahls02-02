@@ -1,5 +1,5 @@
-import { ArrowRightAlt } from "@mui/icons-material";
-import { Modal, Backdrop, Fade, Box, Grid, TextField } from "@mui/material";
+import { ArrowDownward, ArrowRightAlt } from "@mui/icons-material";
+import { Modal, Backdrop, Fade, Box, Grid, TextField, Divider } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -15,6 +15,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
+  maxWidth: "70vw",
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -32,9 +33,10 @@ const ModalConvertStock = (props) => {
       userId: state.userReducer.id,
     };
   });
-  const [conversionInput, setConversionInput] = useState();
+  const [conversionInput, setConversionInput] = useState(0);
   const [conversionResult, setConversionResult] = useState();
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [disableConvert, setDisableConvert] = useState(true)
 
   const handleCloseModal = () => {
     setSelectedProduct();
@@ -100,26 +102,32 @@ const ModalConvertStock = (props) => {
                 </Text>
               </Box>
               <Grid container>
-                <Grid item xs={4}>
+                <Grid item xs={6} md={4}>
                   <Text>Product</Text>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={6} md={8}>
                   : {selectedProduct.name}
                 </Grid>
-                <Grid item xs={4}>
-                  <Text>Convert Unit</Text>
+
+                <Grid item xs={6} md={4}>
+                  <Text>Current Stock</Text>
                 </Grid>
-                <Grid item xs={8}>
-                  : {selectedProduct.unit_conversion}{" "}
-                  {selectedProduct.stock[1].unit} /{" "}
-                  {selectedProduct.stock[0].unit}
+                <Grid item xs={6} md={8}>
+                  : {selectedProduct.stock[0].quantity}{" "}
+                  {selectedProduct.stock[0].unit} {" & "}
+                  {selectedProduct.stock[1].quantity}
+                  {selectedProduct.stock[1].unit}
                 </Grid>
               </Grid>
-
-              <Box sx={{ py: 1 }}>
-                <Text sx={{ py: 1 }}>Input Conversion</Text>
+              <Divider sx={{py:1}}/>
+              <Box sx={{ pb: 1 }}>
+                <Text sx={{ py: 1 }}>
+                  Input Conversion ({selectedProduct.unit_conversion}{" "}
+                  {selectedProduct.stock[1].unit} /{" "}
+                  {selectedProduct.stock[0].unit})
+                </Text>
                 <Grid container>
-                  <Grid item xs={5}>
+                  <Grid item xs={12} md={5}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <TextField
                         type="number"
@@ -129,9 +137,10 @@ const ModalConvertStock = (props) => {
                         onChange={(e) =>
                           handleCalculateConversion(e.target.value)
                         }
+                        sx={{ maxWidth: "80%" }}
                         InputProps={{
                           inputProps: {
-                            min: 1,
+                            min: 0,
                             max: selectedProduct.stock[0].quantity,
                             style: { textAlign: "center" },
                           },
@@ -144,14 +153,22 @@ const ModalConvertStock = (props) => {
                   </Grid>
                   <Grid
                     item
-                    xs={1}
+                    xs={10}
+                    md={1}
                     container
                     justifyContent="center"
                     alignItems="center"
                   >
-                    <ArrowRightAlt color="primary" />
+                    <ArrowRightAlt
+                      color="primary"
+                      sx={{ display: { xs: "none", md: "block" } }}
+                    />
+                    <ArrowDownward
+                      color="primary"
+                      sx={{ py: 1, display: { xs: "block", md: "none" } }}
+                    />
                   </Grid>
-                  <Grid item xs={5}>
+                  <Grid item xs={12} md={5}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <TextField
                         type="number"
@@ -159,6 +176,7 @@ const ModalConvertStock = (props) => {
                         size="small"
                         value={conversionResult}
                         disabled
+                        sx={{ maxWidth: "80%" }}
                         InputProps={{
                           inputProps: {
                             style: { textAlign: "center" },
@@ -170,6 +188,14 @@ const ModalConvertStock = (props) => {
                       </Text>
                     </Box>
                   </Grid>
+                  {/* <Grid item xs={6} md={4}>
+                    <Text>Convert Unit</Text>
+                  </Grid>
+                  <Grid item xs={6} md={8}>
+                    : {selectedProduct.unit_conversion}{" "}
+                    {selectedProduct.stock[1].unit} /{" "}
+                    {selectedProduct.stock[0].unit}
+                  </Grid> */}
                 </Grid>
               </Box>
             </>

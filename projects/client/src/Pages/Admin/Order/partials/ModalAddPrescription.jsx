@@ -23,6 +23,8 @@ import {
   Remove,
   RemoveCircleOutline,
 } from "@mui/icons-material";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 const styleBig = {
   position: "absolute",
@@ -80,22 +82,33 @@ function TabPanel(props) {
 }
 
 const ModalAddPrescription = (props) => {
-  const { isOpen, toggle, image } = props;
+  const {
+    isOpen,
+    toggle,
+    image,
+    selectedOrder,
+    setSelectedOrder,
+    getPrescriptionData,
+  } = props;
 
   const [tab, setTab] = useState(0);
   const [productData, setProductData] = useState();
   const [openModalConvert, setOpenModalConvert] = useState(false);
   const [selectedProductConvert, setSelectedProductConvert] = useState();
 
-  const [formStockGeneric, setFormStockGeneric] = useState([
-    { name: "", quantity: "", unit: "" },
-  ]); // name = id_product, unit = id_stock
-  const [formStockPrescription, setFormStockPrescription] = useState([
-    {
-      prescriptionName: "",
-      ingredients: [{ name: "", quantity: "", unit: "" }],
-    },
-  ]); // name = id_product, unit = id_stock
+  const [formStockGeneric, setFormStockGeneric] = useState([]); // name = id_product, unit = id_stock
+  const [formStockPrescription, setFormStockPrescription] = useState([]); // name = id_product, unit = id_stock
+  // const [formStockGeneric, setFormStockGeneric] = useState([
+  //   { name: "", quantity: "", unit: "" },
+  // ]); // name = id_product, unit = id_stock
+  // const [formStockPrescription, setFormStockPrescription] = useState(
+  //   [
+  //   {
+  //     prescriptionName: "",
+  //     ingredients: [{ name: "", quantity: "", unit: "" }],
+  //   },
+  // ]
+  // ); // name = id_product, unit = id_stock
 
   const handleChange = (event, newTab) => {
     setTab(newTab);
@@ -117,12 +130,14 @@ const ModalAddPrescription = (props) => {
 
   const addGenericProduct = (genericIndex, value) => {
     let temp = [...formStockGeneric];
-    temp[genericIndex].name = value;
+    temp[genericIndex].id_product = value;
     productData.map((valueProduct) => {
       if (valueProduct.id === value)
         valueProduct.stock.map((valueStock) => {
-          if (valueStock.default_unit === "true")
-            temp[genericIndex].unit = valueStock.idStock;
+          if (valueStock.default_unit === "true") {
+            temp[genericIndex].id_stock = valueStock.idStock;
+            temp[genericIndex].unit = valueStock.unit;
+          }
         });
     });
     setFormStockGeneric(temp);
@@ -145,24 +160,24 @@ const ModalAddPrescription = (props) => {
                 }}
               >
                 Product Name
-                {formStockGeneric.length > 1 && (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    color="error"
-                    onClick={() => {
-                      let temp = [...formStockGeneric];
-                      temp.splice(index, 1);
-                      setFormStockGeneric(temp);
-                    }}
-                  >
-                    Delete Product
-                  </Button>
-                )}
+                {/* {formStockGeneric.length > 1 && ( */}
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="error"
+                  onClick={() => {
+                    let temp = [...formStockGeneric];
+                    temp.splice(index, 1);
+                    setFormStockGeneric(temp);
+                  }}
+                >
+                  Delete Product
+                </Button>
+                {/* )} */}
               </Typography>
               <Select
                 size="small"
-                value={value.name}
+                value={value.id_product}
                 fullWidth
                 onChange={(e) => {
                   addGenericProduct(index, e.target.value);
@@ -197,7 +212,7 @@ const ModalAddPrescription = (props) => {
                 variant="outlined"
                 onChange={(e) => {
                   let temp = [...formStockGeneric];
-                  temp.quantity = e.target.value;
+                  temp[index].quantity = e.target.value;
                   setFormStockGeneric(temp);
                 }}
               />
@@ -208,7 +223,7 @@ const ModalAddPrescription = (props) => {
               </Typography>
               <Select
                 size="small"
-                value={value.unit}
+                value={value.id_stock}
                 fullWidth
                 onChange={(e) => {
                   let temp = [...formStockGeneric];
@@ -221,9 +236,9 @@ const ModalAddPrescription = (props) => {
                 <MenuItem value="">
                   <Typography color="grey.400">Choose One</Typography>
                 </MenuItem>
-                {value.name
+                {value.id_product
                   ? productData.map((valueProduct) => {
-                      if (valueProduct.id === value.name)
+                      if (valueProduct.id === value.id_product)
                         return valueProduct.stock.map((valueStock) => {
                           return (
                             <MenuItem
@@ -265,12 +280,12 @@ const ModalAddPrescription = (props) => {
     value
   ) => {
     let temp = [...formStockPrescription];
-    temp[prescriptionIndex].ingredients[ingredientIndex].name = value;
+    temp[prescriptionIndex].ingredients[ingredientIndex].id_product = value;
     productData.map((valueProduct) => {
       if (valueProduct.id === value) {
         valueProduct.stock.map((valueStock) => {
           if (valueStock.default_unit === "false") {
-            temp[prescriptionIndex].ingredients[ingredientIndex].unit =
+            temp[prescriptionIndex].ingredients[ingredientIndex].id_stock =
               valueStock.idStock;
           }
         });
@@ -282,7 +297,7 @@ const ModalAddPrescription = (props) => {
   const handleClickConvert = (valueIngredient) => {
     let productToConvert = [];
     productData.forEach((value) => {
-      if (value.id === valueIngredient.name) {
+      if (value.id === valueIngredient.id_product) {
         productToConvert.push(value);
       }
     });
@@ -306,21 +321,21 @@ const ModalAddPrescription = (props) => {
                   pb: 1,
                 }}
               >
-                Prescription Name
-                {formStockPrescription.length > 1 && (
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    onClick={() => {
-                      let temp = [...formStockPrescription];
-                      temp.splice(index, 1);
-                      setFormStockPrescription(temp);
-                    }}
-                  >
-                    Delete Product
-                  </Button>
-                )}
+                Medicine Name
+                {/* {formStockPrescription.length > 1 && ( */}
+                <Button
+                  variant="contained"
+                  color="error"
+                  size="small"
+                  onClick={() => {
+                    let temp = [...formStockPrescription];
+                    temp.splice(index, 1);
+                    setFormStockPrescription(temp);
+                  }}
+                >
+                  Delete Product
+                </Button>
+                {/* )} */}
               </Typography>
               <TextField
                 fullWidth
@@ -329,7 +344,7 @@ const ModalAddPrescription = (props) => {
                 variant="outlined"
                 onChange={(e) => {
                   let temp = [...formStockPrescription];
-                  temp.name = e.target.value;
+                  temp.id_product = e.target.value;
                   setFormStockPrescription(temp);
                 }}
               />
@@ -373,7 +388,7 @@ const ModalAddPrescription = (props) => {
                     </Typography>
                     <Select
                       size="small"
-                      value={valueIngredient.name}
+                      value={valueIngredient.id_product}
                       fullWidth
                       onChange={(e) => {
                         addPrescriptionIngredient(
@@ -424,11 +439,12 @@ const ModalAddPrescription = (props) => {
                       Unit(Stock)
                       <Button
                         variant="text"
-                        color="secondary"
+                        color="primary"
                         size="small"
                         onClick={() => {
                           handleClickConvert(valueIngredient);
                         }}
+                        disabled={!valueIngredient.id_product}
                         sx={{ p: 0, m: 0 }}
                       >
                         <Typography
@@ -441,11 +457,11 @@ const ModalAddPrescription = (props) => {
                     </Typography>
                     <Select
                       size="small"
-                      value={valueIngredient.unit}
+                      value={valueIngredient.id_stock}
                       fullWidth
                       onChange={(e) => {
                         let temp = [...formStockPrescription];
-                        temp[index].ingredients[indexIngredient].unit =
+                        temp[index].ingredients[indexIngredient].id_stock =
                           e.target.value;
                         setFormStockPrescription(temp);
                       }}
@@ -455,9 +471,9 @@ const ModalAddPrescription = (props) => {
                       <MenuItem value="">
                         <Typography color="grey.400">Choose One</Typography>
                       </MenuItem>
-                      {valueIngredient.name
+                      {valueIngredient.id_product
                         ? productData.map((valueProduct) => {
-                            if (valueProduct.id === valueIngredient.name)
+                            if (valueProduct.id === valueIngredient.id_product)
                               return valueProduct.stock.map((valueStock) => {
                                 return (
                                   <MenuItem
@@ -502,7 +518,7 @@ const ModalAddPrescription = (props) => {
               <Button
                 variant="contained"
                 size="small"
-                color="primary"
+                color="secondary"
                 // sx={{ mr: 2 }}
                 onClick={() => handleAddIngredient(index)}
               >
@@ -531,7 +547,7 @@ const ModalAddPrescription = (props) => {
 
   const handleAddMoreGeneric = () => {
     let temp = [...formStockGeneric];
-    temp.push({ name: "", quantity: "", unit: "" });
+    temp.push({ id_product: "", quantity: "", id_stock: "" });
     setFormStockGeneric(temp);
   };
 
@@ -539,35 +555,61 @@ const ModalAddPrescription = (props) => {
     let temp = [...formStockPrescription];
     temp.push({
       prescriptionName: "",
-      ingredients: [{ name: "", quantity: "", unit: "" }],
+      ingredients: [{ id_product: "", quantity: "", id_stock: "" }],
     });
     setFormStockPrescription(temp);
   };
 
   const handleAddIngredient = (index) => {
     let temp = [...formStockPrescription];
-    temp[index].ingredients.push({ name: "", quantity: "", unit: "" });
+    temp[index].ingredients.push({
+      id_product: "",
+      quantity: "",
+      id_stock: "",
+    });
     setFormStockPrescription(temp);
   };
 
   const handleSubmit = async () => {
     try {
-      console.log(formStockGeneric);
-      console.log(formStockPrescription);
+      const token = Cookies.get("userToken");
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const data = {
+        id_order: selectedOrder.id_order,
+        id_prescription: selectedOrder.id_prescription,
+        id_user: selectedOrder.id_user,
+        formStockGeneric,
+        formStockPrescription,
+        productData,
+      };
+      const res = await axios.post(
+        `${API_URL}/admin/order/prescription`,
+        data,
+        { headers }
+      );
+      if (res.data.success) {
+        toast.success("Prescription processed!");
+        getPrescriptionData();
+        handleClose();
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleCancel = () => {
+  const handleClose = () => {
     toggle();
-    let tempGeneric = [{ name: "", quantity: "", unit: "" }];
-    let tempPrescription = [
-      {
-        prescriptionName: "",
-        ingredients: [{ name: "", quantity: "", unit: "" }],
-      },
-    ];
+    // let tempGeneric = [{ id_product: "", quantity: "", id_stock: "" }];
+    // let tempPrescription = [
+    //   {
+    //     prescriptionName: "",
+    //     ingredients: [{ id_product: "", quantity: "", id_stock: "" }],
+    //   },
+    // ];
+    let tempGeneric = [];
+    let tempPrescription = [];
     setFormStockGeneric(tempGeneric);
     setFormStockPrescription(tempPrescription);
   };
@@ -585,7 +627,13 @@ const ModalAddPrescription = (props) => {
             Submit Prescription Product
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
+            <Grid
+              item
+              xs={12}
+              md={4}
+              container
+              sx={{ display: "flex", justifyContent: "center" }}
+            >
               <Box
                 sx={{
                   display: { xs: "flex", md: "block" },
@@ -602,23 +650,38 @@ const ModalAddPrescription = (props) => {
               <Box display="flex" sx={{ justifyContent: "center" }}>
                 <Tabs value={tab} onChange={handleChange}>
                   <Tab label="generic" {...a11yProps(0)} />
-                  <Tab label="prescription" {...a11yProps(0)} />
+                  <Tab label="concoction" {...a11yProps(0)} />
                 </Tabs>
               </Box>
+              <Divider sx={{ mx: 3 }} />
               <TabPanel value={tab} index={0} sx={{ p: 0 }}>
-                {printStockGeneric()}
-                <Button onClick={handleAddMoreGeneric}>Add More Product</Button>
+                {formStockGeneric && <>{printStockGeneric()}</>}
+                <Box textAlign="center">
+                  <Button variant="contained" onClick={handleAddMoreGeneric}>
+                    Add Product
+                  </Button>
+                </Box>
               </TabPanel>
               <TabPanel value={tab} index={1}>
-                {printStockPrescription()}
-                <Button onClick={handleAddMorePrescription}>
-                  Add More Product
-                </Button>
+                {formStockPrescription && <>{printStockPrescription()}</>}
+                <Box textAlign="center">
+                  <Button
+                    variant="contained"
+                    onClick={handleAddMorePrescription}
+                  >
+                    Add Product
+                  </Button>
+                </Box>
               </TabPanel>
             </Grid>
           </Grid>
           <Box display="flex" sx={{ justifyContent: "flex-end" }}>
-            <Button color="error" sx={{ mr: 2 }} onClick={handleCancel}>
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{ mr: 2 }}
+              onClick={handleClose}
+            >
               Cancel
             </Button>
             <Button variant="contained" onClick={handleSubmit}>

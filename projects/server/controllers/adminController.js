@@ -149,15 +149,16 @@ module.exports = {
   // get prescription list to be handled
   getPrescriptionList: async (req, res, next) => {
     try {
-      let prescriptionList = await dbQuery(`Select p.id as id_prescription, u.name, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+      let prescriptionList =
+        await dbQuery(`Select p.id as id_prescription, u.name, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
       LEFT JOIN order_list o ON o.id = p.id_order 
       LEFT JOIN users u ON u.id = p.id_user
-      order by p.updated_at desc`)
+      order by p.updated_at desc`);
 
       return res.status(200).send({
         success: true,
         message: "success",
-        data: prescriptionList
+        data: prescriptionList,
       });
     } catch (error) {
       return next(error);
@@ -166,6 +167,103 @@ module.exports = {
   // add user order from prescription
   addPrescriptionOrder: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        console.log("hello");
+        const {
+          id_order,
+          id_prescription,
+          id_user,
+          formStockGeneric,
+          formStockPrescription,
+          productData,
+        } = req.body;
+
+        // console.log("formStockGeneric",formStockGeneric);
+        // console.log("productData[1].stock",productData[1].stock);
+        let insertGenericOrderQuery = ``;
+        let updateStockHistoryQuery = ``;
+        let updateStockQuery = ``;
+
+        if (formStockGeneric.length) {
+          formStockGeneric.forEach((value, index) => {
+            productData.forEach((valueProduct) => {
+              if (valueProduct.id === value.id_product) {
+                insertGenericOrderQuery += `(${id_order}, ${
+                  value.id_stock
+                }, ${null}, '${valueProduct.name}', '${
+                  valueProduct.description
+                }', '${valueProduct.image}', '${valueProduct.category_name}', ${
+                  value.quantity
+                }, ${valueProduct.selling_price}, ${
+                  valueProduct.buying_price
+                }, '${value.unit}' , ${valueProduct.unit_conversion} )`;
+
+                valueProduct.stock.forEach((valueStock) => {
+                  if (valueStock.idStock === value.id_stock) {
+                    if (index === 0) {
+                      updateStockQuery += `SELECT ${value.id_stock} as id, ${
+                        valueStock.quantity - value.quantity
+                      } as new_quantity`;
+                    } else {
+                      updateStockQuery += `SELECT ${value.id_stock}, ${
+                        valueStock.quantity - value.quantity
+                      }`;
+                    }
+                  }
+                });
+              }
+            });
+
+            updateStockHistoryQuery += `(${value.id_stock}, ${
+              value.quantity * -1
+            }, 'Sales')`;
+
+            if (index < formStockGeneric.length - 1) {
+              insertGenericOrderQuery += ", ";
+              updateStockHistoryQuery += ", ";
+              updateStockQuery += ` UNION ALL `;
+            }
+          });
+        }
+        console.log(updateStockQuery);
+
+        // add order content
+        const addOrderContent = await dbQuery(
+          `INSERT INTO order_content (id_order, id_stock, id_prescription_content, product_name, product_description, product_image, product_category, quantity, selling_price, buying_price, unit, unit_conversion) VALUES ${insertGenericOrderQuery}`
+        );
+
+        // add prescription content jika ada racikan
+
+        // update status prescription table
+        const updateStatusPrescription = await dbQuery(
+          `UPDATE prescription SET processed_status=${true} WHERE id=${id_prescription}`
+        );
+
+        // updaate status order list
+        const updateStatus = await dbQuery(
+          `UPDATE order_list SET status = 'Waiting for Payment' WHERE id = ${id_order}`
+        );
+
+        // update stock table
+        const updateStockTable = await dbQuery(
+          `UPDATE stock s JOIN (${updateStockQuery}) vals ON s.id = vals.id SET s.quantity = vals.new_quantity `
+        );
+
+        // update stock history
+        const updateStockHistory = await dbQuery(
+          `INSERT INTO stock_history (id_stock, quantity, type) VALUES ${updateStockHistoryQuery}`
+        );
+
+        return res.status(200).send({
+          success: true,
+          message: "Order created",
+        });
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }

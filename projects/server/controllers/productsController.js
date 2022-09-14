@@ -7,7 +7,9 @@ module.exports = {
   // get all products
   getAllProducts: async (req, res, next) => {
     try {
-      let result = await dbQuery("Select * from products;");
+      let result = await dbQuery(
+        "Select p.*, c.category_name from products p JOIN category c ON c.id = p.id_category;"
+      );
       let stock = await dbQuery("Select * from stock");
 
       result.forEach((valueProduct, indexProduct) => {
