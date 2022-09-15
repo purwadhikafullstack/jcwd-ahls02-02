@@ -15,8 +15,9 @@ route.patch("/categories", readToken, productsController.editCategories);
 route.delete("/categories", readToken, productsController.deleteCategories);
 
 route.get("/:product_id", productsController.getDetailProduct);
+route.get("/similarProduct/:product_id", productsController.getSimilarProducts);
 
 route.patch("/stock", productsController.updateStock);
-route.patch("/conversion/:product_id", productsController.unitConversion);
+route.patch("/conversion/:product_id",readToken, productsController.unitConversion);
 
 module.exports = route

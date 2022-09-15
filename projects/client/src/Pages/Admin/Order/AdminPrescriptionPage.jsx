@@ -20,6 +20,7 @@ const AdminPrescriptionPage = () => {
     let [orderId, setOrderId] = useState()
     let [openModalAdd, setOpenModalAdd] = useState(false)
     let [prescriptionImage, setPrescriptionImage] = useState()
+    let [selectedOrder, setSelectedOrder] = useState()
 
     useEffect(() => {
         getData();
@@ -108,6 +109,8 @@ const AdminPrescriptionPage = () => {
                                     <Button variant="contained" color="primary" onClick={() => {
                                         setOpenModalAdd(true)
                                         setPrescriptionImage(value.prescription_image)
+                                        console.log(value)
+                                        setSelectedOrder(value)
                                     }}>
                                         Submit Order</Button>
                                 </Box>
@@ -161,6 +164,9 @@ const AdminPrescriptionPage = () => {
             isOpen={openModalAdd}
             toggle={() => setOpenModalAdd(!openModalAdd)}
             image={prescriptionImage}
+            selectedOrder={selectedOrder}
+            setSelectedOrder={setSelectedOrder}
+            getPrescriptionData={getData}
         />
     </Container>
 }
