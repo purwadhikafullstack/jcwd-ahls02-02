@@ -151,14 +151,15 @@ module.exports = {
     try {
 
       let prescriptionList = await dbQuery(`Select p.id as id_prescription, u.name, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+
       LEFT JOIN order_list o ON o.id = p.id_order 
       LEFT JOIN users u ON u.id = p.id_user
-      order by p.updated_at desc`)
+      order by p.updated_at desc`);
 
       return res.status(200).send({
         success: true,
         message: "success",
-        data: prescriptionList
+        data: prescriptionList,
       });
     } catch (error) {
       return next(error);
@@ -167,6 +168,215 @@ module.exports = {
   // add user order from prescription
   addPrescriptionOrder: async (req, res, next) => {
     try {
+      if (req.dataUser.id) {
+        const {
+          id_order,
+          id_prescription,
+          id_user,
+          formStockGeneric,
+          formStockPrescription,
+          productData,
+        } = req.body;
+
+        let insertPrescriptionContentQuery = ``; // untuk tabel prescription_content
+        let insertGenericOrderQuery = ``; // untuk tabel order content
+        let insertPrescriptionOrder = [];
+        let insertPrescriptionOrderQuery = ``; // untuk tabel order_content
+
+        let updateStockHistoryQuery = ``;
+        let updateStockPrescriptionHistoryQuery = ``;
+
+        let updateStockQuery = ``;
+        let updateStockPrescriptionQuery = ``;
+
+        let prescriptionContentInsertIds;
+
+        // UPDATE OBAT RACIKAN / PRESCRIPTION
+        if (formStockPrescription.length) {
+          formStockPrescription.forEach((value, index) => {
+            insertPrescriptionContentQuery += `(${id_order}, ${id_prescription}, '${value.prescriptionName}')`;
+            if (index < formStockPrescription.length - 1) {
+              insertPrescriptionContentQuery += `, `;
+            }
+          });
+
+          // add prescription content jika ada racikan
+          const addPrescriptionContent = await dbQuery(
+            `INSERT INTO prescription_content (id_order, id_prescription, medicine_name) VALUES ${insertPrescriptionContentQuery}`
+          );
+
+          // let addPrescriptionContent = { affectedRows: 2 };
+          if (addPrescriptionContent.affectedRows) {
+            // get prescription id to be used for updating order_content
+            prescriptionContentInsertIds = await dbQuery(
+              `SELECT id FROM prescription_content ORDER BY id desc limit ${formStockPrescription.length};`
+            );
+
+            prescriptionContentInsertIds.reverse();
+
+            formStockPrescription.forEach(async (value, index) => {
+              let subtotal_selling_price = 0;
+              let subtotal_buying_price = 0;
+              value.ingredients.forEach((valueIngredient, indexIngredient) => {
+                productData.forEach((valueProduct) => {
+                  if (valueProduct.id === valueIngredient.id_product) {
+                    subtotal_selling_price +=
+                      (valueProduct.selling_price /
+                        valueProduct.unit_conversion) *
+                      valueIngredient.quantity;
+
+                    subtotal_buying_price +=
+                      (valueProduct.buying_price /
+                        valueProduct.unit_conversion) *
+                      valueIngredient.quantity;
+
+                    insertPrescriptionOrderQuery += `(${id_order}, ${
+                      valueIngredient.id_stock
+                    }, ${prescriptionContentInsertIds[index].id}, '${
+                      valueProduct.name
+                    }', '${valueProduct.description}', '${
+                      valueProduct.image
+                    }', '${valueProduct.category_name}', ${
+                      valueIngredient.quantity
+                    }, ${
+                      valueProduct.selling_price / valueProduct.unit_conversion
+                    }, ${
+                      valueProduct.buying_price / valueProduct.unit_conversion
+                    }, '${valueIngredient.unit}' , ${
+                      valueProduct.unit_conversion
+                    })`;
+
+                    valueProduct.stock.forEach((valueStock) => {
+                      if (valueStock.idStock === valueIngredient.id_stock) {
+                        if (index === 0 && indexIngredient === 0) {
+                          updateStockPrescriptionQuery += ` SELECT ${
+                            valueIngredient.id_stock
+                          } as id, ${
+                            valueStock.quantity - valueIngredient.quantity
+                          } as new_quantity `;
+                        } else {
+                          updateStockPrescriptionQuery += `SELECT ${
+                            valueIngredient.id_stock
+                          }, ${
+                            valueStock.quantity - valueIngredient.quantity
+                          } `;
+                        }
+                      }
+                    });
+                  }
+                });
+                updateStockPrescriptionHistoryQuery += `(${
+                  valueIngredient.id_stock
+                }, ${valueIngredient.quantity * -1}, 'Sales')`;
+
+                if (index < formStockPrescription.length - 1) {
+                  insertPrescriptionOrderQuery += `, `;
+                  updateStockPrescriptionHistoryQuery += ", ";
+                  updateStockPrescriptionQuery += ` UNION ALL `;
+                }
+              });
+
+              // Update kolom subtotal pada prescription
+              const updatePrescriptionContentSubtotal = await dbQuery(
+                `UPDATE prescription_content SET subtotal_selling_price = ${subtotal_selling_price}, subtotal_buying_price = ${subtotal_buying_price} WHERE id = ${prescriptionContentInsertIds[index].id}`
+              );
+            });
+          }
+
+          // add order content
+          const addOrderContent = await dbQuery(
+            `INSERT INTO order_content (id_order, id_stock, id_prescription_content, product_name, product_description, product_image, product_category, quantity, selling_price, buying_price, unit, unit_conversion) VALUES ${insertPrescriptionOrderQuery}`
+          );
+
+          // update stock table
+          const updateStockTable = await dbQuery(
+            `UPDATE stock s JOIN (${updateStockPrescriptionQuery}) vals ON s.id = vals.id SET s.quantity = vals.new_quantity `
+          );
+
+          // update stock history
+          const updateStockHistory = await dbQuery(
+            `INSERT INTO stock_history (id_stock, quantity, type) VALUES ${updateStockPrescriptionHistoryQuery}`
+          );
+        }
+
+        // UPDATE STOCK GENERIC
+        if (formStockGeneric.length) {
+          formStockGeneric.forEach((value, index) => {
+            productData.forEach((valueProduct) => {
+              if (valueProduct.id === value.id_product) {
+                insertGenericOrderQuery += `(${id_order}, ${
+                  value.id_stock
+                }, ${null}, '${valueProduct.name}', '${
+                  valueProduct.description
+                }', '${valueProduct.image}', '${valueProduct.category_name}', ${
+                  value.quantity
+                }, ${valueProduct.selling_price}, ${
+                  valueProduct.buying_price
+                }, '${value.unit}' , ${valueProduct.unit_conversion} )`;
+
+                valueProduct.stock.forEach((valueStock) => {
+                  if (valueStock.idStock === value.id_stock) {
+                    if (index === 0) {
+                      updateStockQuery += `SELECT ${value.id_stock} as id, ${
+                        valueStock.quantity - value.quantity
+                      } as new_quantity`;
+                    } else {
+                      updateStockQuery += ` SELECT ${value.id_stock}, ${
+                        valueStock.quantity - value.quantity
+                      }`;
+                    }
+                  }
+                });
+              }
+            });
+
+            updateStockHistoryQuery += `(${value.id_stock}, ${
+              value.quantity * -1
+            }, 'Sales')`;
+
+            if (index < formStockGeneric.length - 1) {
+              insertGenericOrderQuery += ", ";
+              updateStockHistoryQuery += ", ";
+              updateStockQuery += ` UNION ALL `;
+            }
+          });
+
+          // add order content
+          const addOrderContent = await dbQuery(
+            `INSERT INTO order_content (id_order, id_stock, id_prescription_content, product_name, product_description, product_image, product_category, quantity, selling_price, buying_price, unit, unit_conversion) VALUES ${insertGenericOrderQuery}`
+          );
+
+          // update stock table
+          const updateStockTable = await dbQuery(
+            `UPDATE stock s JOIN (${updateStockQuery}) vals ON s.id = vals.id SET s.quantity = vals.new_quantity `
+          );
+
+          // update stock history
+          const updateStockHistory = await dbQuery(
+            `INSERT INTO stock_history (id_stock, quantity, type) VALUES ${updateStockHistoryQuery}`
+          );
+        }
+
+        // update status prescription table
+        const updateStatusPrescription = await dbQuery(
+          `UPDATE prescription SET processed_status=${true} WHERE id=${id_prescription}`
+        );
+
+        // update status order list
+        const updateStatus = await dbQuery(
+          `UPDATE order_list SET status = 'Waiting for Payment' WHERE id = ${id_order}`
+        );
+
+        return res.status(200).send({
+          success: true,
+          message: "Order created",
+        });
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "Please login to continue",
+        });
+      }
     } catch (error) {
       return next(error);
     }
