@@ -2,6 +2,7 @@ import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import Banner from "./Partials/Banner";
 import CategoryShop from "./Partials/CategoryShop";
 import ProductCard from "../../Components/ProductCard2";
+import { useSelector } from 'react-redux'
 
 let dataProduct = [
     {
@@ -31,9 +32,19 @@ let dataProduct = [
 ]
 
 const Homepage = () => {
+    const { idUser, status, cart } = useSelector((state) => {
+        return {
+            idUser: state.userReducer.id,
+            status: state.userReducer.verified_status,
+            cart: state.userReducer.cart
+        }
+    })
+
     return <div>
         <Box sx={{ mb: 3 }}>
-            <Banner />
+            <Banner
+                idUser={idUser}
+            />
         </Box>
         <CategoryShop />
         <Container sx={{ display: { xs: 'flex', md: 'none' }, justifyContent: 'center', mt: 5 }}>

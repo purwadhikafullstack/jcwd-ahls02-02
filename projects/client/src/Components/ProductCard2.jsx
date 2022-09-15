@@ -53,10 +53,19 @@ const ProductCard = (props) => {
             <Text fontSize="body2" color="grey.600" sx={{ textAlign: "left" }}>
               IDR {price.toLocaleString()}
             </Text>
-            <Text fontSize="subtitle2" color="grey.600" sx={{ textAlign: "left" }}>
+            {quantity > 0 ?
+              <Text fontSize="subtitle2" color="grey.600" sx={{ textAlign: "left" }}>
+                Stock: {quantity}
+              </Text>
+              :
+              <Text fontSize="subtitle2" color="error" sx={{ textAlign: "left", fontStyle: "italic" }}>
+                Out of stock
+              </Text>
+            }
+            {/* <Text fontSize="subtitle2" color="grey.600" sx={{ textAlign: "left" }}>
               Stock: {quantity}
-            </Text>
-            
+            </Text> */}
+
             <Button
               variant="contained"
               sx={{ width: "100%", mt: 1 }}

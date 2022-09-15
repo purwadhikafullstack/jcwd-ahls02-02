@@ -8,7 +8,6 @@ import Button from "../../Components/atoms/Button";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import ModalConfirm from "../../Components/ModalConfirm";
-import PrescriptionSidebar from "./partials/PrescriptionSidebar";
 
 const PrescriptionListPage = () => {
     const userData = useSelector((state) => {
@@ -22,40 +21,19 @@ const PrescriptionListPage = () => {
     let [limit, setLimit] = useState(5)
     let [totalPage, setTotalPage] = useState()
 
-    let [selectedTab, setSelectedTab] = useState()
-    let [selectedStatus, setSelectedStatus] = useState("")
-
     useEffect(() => {
         getData();
-    }, [selectedStatus])
+    }, [])
 
-    const getData = async (currentPage = page, currentLimit = limit, currentStatus = selectedStatus) => {
+    const getData = async (currentPage = page, currentLimit = limit) => {
         try {
-            if (currentStatus) {
-                let query = ``
-                if (currentStatus === 'Validated') {
-                    query += `status=Waiting for Payment&status=Processed&status=Sent&status=Completed`
-                } else {
-                    query += `status=${currentStatus}`
-                }
-                const data = await axios.get(`${API_URL}/users/prescription/${userData.id}?page=${currentPage}&limit=${currentLimit}&${query}`)
-                if (data.data.data.length > 0) {
-                    setPrescriptionList(data.data.data)
-                    setTotalPage(data.data.totalPage)
-                } else {
-                    setPrescriptionList()
-                }
+            const data = await axios.get(`${API_URL}/users/prescription/${userData.id}?page=${currentPage}&limit=${currentLimit}`)
+            if (data.data.data.length > 0) {
+                setPrescriptionList(data.data.data)
+                setTotalPage(data.data.totalPage)
             } else {
-                const data = await axios.get(`${API_URL}/users/prescription/${userData.id}?page=${currentPage}&limit=${currentLimit}`)
-                if (data.data.data.length > 0) {
-                    setPrescriptionList(data.data.data)
-                    setTotalPage(data.data.totalPage)
-                } else {
-                    setPrescriptionList()
-                }
-
+                setPrescriptionList()
             }
-
         } catch (error) {
             console.log(error)
         }
@@ -123,9 +101,7 @@ const PrescriptionListPage = () => {
                 </Card>
             })
         } else {
-            return <Typography sx={{ mt: 5 }}>
-                No data found
-            </Typography>
+            return null
         }
     }
 
@@ -163,22 +139,10 @@ const PrescriptionListPage = () => {
     }
 
     return <Container>
-        <Grid container>
-            <Grid item xs={12} md={3}>
-                <PrescriptionSidebar
-                    selectedTab={selectedTab}
-                    setSelectedTab={setSelectedTab}
-                    setSelectedStatus={setSelectedStatus}
-                    setCurrentPage={setPage}
-                />
-            </Grid>
-            <Grid item xs={12} md={9}>
-                {printCard()}
-                {prescriptionList ?
-                    <Pagination count={totalPage} color='primary' onChange={clickPage} />
-                    : null}
-            </Grid>
-        </Grid>
+        {printCard()}
+        {totalPage ?
+            <Pagination count={totalPage} color='primary' onChange={clickPage} />
+            : null}
         <ModalConfirm
             isOpen={openConfirm}
             toggle={() => setOpenConfirm(!openConfirm)}
