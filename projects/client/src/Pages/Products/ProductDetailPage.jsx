@@ -14,19 +14,6 @@ import { editCartAction } from '../../Redux/Actions/userAction'
 import SimilarProducts from './partials/ProductDetailPage/SimilarProducts'
 import BasicBreadcrumbs from '../../Components/atoms/Breadcrumb'
 
-// const link = [
-//     {
-//         id: 1,
-//         link: 'Home',
-//         href: '/'
-//     },
-//     {
-//         id: 2,
-//         link: 'Product',
-//         href: '/product'
-//     }
-// ]
-
 const ProductDetailPage = () => {
     let { id } = useParams();
     const dispatch = useDispatch()
@@ -66,7 +53,8 @@ const ProductDetailPage = () => {
             let productData = await axios.get(`${API_URL}/products/${id}`)
 
             if (productData.data.data) {
-                let similar = await axios.get(`${API_URL}/products?id_category=${productData.data.data.id_category}&limit=8`)
+                // let similar = await axios.get(`${API_URL}/products?id_category=${productData.data.data.id_category}&limit=8`)
+                let similar = await axios.get(`${API_URL}/products/similarProduct/${id}?id_category=${productData.data.data.id_category}`)
                 setDetailProduct(productData.data.data)
                 if (similar.data.product) {
                     let temp = []
@@ -131,7 +119,7 @@ const ProductDetailPage = () => {
                                                     size='small'
                                                     onChange={handleQuantity}
                                                     value={quantity}
-                                                    type='number'
+                                                    type='tel'
                                                     sx={{ maxWidth: '50px' }}
                                                     inputProps={{ min: 0, style: { textAlign: 'center' } }}
                                                 />

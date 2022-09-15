@@ -52,13 +52,12 @@ const LoginPage = () => {
         } catch (error) {
             if (error.response.data.message === "User not found") {
                 setSubmitData(false)
-                console.log('Email is not registered')
-                setEmailValidity(false)
-                setEmailInfo("This email is not registered")
+                // setEmailValidity(false)
+                // setEmailInfo("Email or password is incorret")
+                setPasswordInfo("Email or password is incorrect")
             } else if (error.response.data.message === "Password Incorrect") {
                 setSubmitData(false)
-                console.log('Password is incorrect')
-                setPasswordInfo('Incorrect password')
+                setPasswordInfo("Email or password is incorrect")
             } else {
                 setSubmitData(false)
                 console.log(error)
