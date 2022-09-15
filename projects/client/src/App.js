@@ -19,7 +19,7 @@ import AdminOrderPage from "./Pages/Admin/Order/AdminOrderPage";
 import AdminPrescriptionPage from "./Pages/Admin/Order/AdminPrescriptionPage";
 import AdminProductPage from "./Pages/Admin/Product/AdminProductPage";
 import AdminCategoryPage from "./Pages/Admin/Product/CategoryPage";
-import ReportPage from "./Pages/Admin/Report/ReportPage";
+import HistoryReportPage from "./Pages/Admin/Report/HistoryReportPage";
 import Cookies from "js-cookie";
 import { API_URL } from "./helper";
 import { useDispatch, useSelector } from "react-redux";
@@ -75,7 +75,7 @@ function App() {
             <Route path='/admin/prescription' element={<AdminPrescriptionPage />} />
             <Route path='/admin/product' element={<AdminProductPage />} />
             <Route path='/admin/product/category' element={<AdminCategoryPage />} />
-            <Route path='/admin/report' element={<ReportPage />} />
+            <Route path='/admin/report' element={<HistoryReportPage />} />
           </>
           :
           <>
