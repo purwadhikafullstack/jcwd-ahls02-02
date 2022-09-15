@@ -287,6 +287,8 @@ const ModalAddPrescription = (props) => {
           if (valueStock.default_unit === "false") {
             temp[prescriptionIndex].ingredients[ingredientIndex].id_stock =
               valueStock.idStock;
+            temp[prescriptionIndex].ingredients[ingredientIndex].unit =
+              valueStock.unit;
           }
         });
       }
@@ -344,7 +346,7 @@ const ModalAddPrescription = (props) => {
                 variant="outlined"
                 onChange={(e) => {
                   let temp = [...formStockPrescription];
-                  temp.id_product = e.target.value;
+                  temp[index].prescriptionName = e.target.value;
                   setFormStockPrescription(temp);
                 }}
               />
