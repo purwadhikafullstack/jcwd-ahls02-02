@@ -21,18 +21,19 @@ route.patch("/profile/address/:user_id", readToken, usersController.editAddress)
 route.patch("/profile/default-address/:user_id", readToken, usersController.editDefaultAddress);
 route.delete("/profile/address/:user_id", readToken, usersController.deleteAddress);
 
-route.get("/cart/:user_id", usersController.getUserCart);
+route.get("/cart/:user_id", readToken, usersController.getUserCart);
 route.post("/cart/:user_id", readToken, usersController.addProductToCart);
-route.patch("/cart/:user_id", usersController.editProductInCart);
-route.delete("/cart/:user_id", usersController.deleteProductInCart);
+route.patch("/cart/:user_id", readToken, usersController.editProductInCart);
+route.delete("/cart/:user_id/:cart_id", readToken, usersController.deleteProductInCart);
 
-route.get("/order/:user_id", usersController.getOrderList);
-route.post("/order/:user_id", usersController.addOrder);
-route.patch("/order/:user_id", usersController.updateOrder);
-route.delete("/order/:user_id", usersController.deleteOrder);
-route.patch("/order/payment/:user_id", usersController.uploadPaymentReceipt);
+route.get("/order/:user_id", readToken, usersController.getOrderList);
+route.post("/order/:user_id", readToken, usersController.addOrder);
+route.patch("/order", readToken, usersController.updateOrder);
+// route.patch("/order/:user_id", readToken, usersController.updateOrder);
+// route.delete("/order/:user_id", readToken, usersController.cancelOrder);
+route.patch("/order/payment/:user_id", readToken, usersController.uploadPaymentReceipt);
 
 route.get("/prescription/:user_id", usersController.getPrescriptionList);
-route.post("/prescription/:user_id", usersController.uploadPrescription);
+route.post("/prescription/:user_id", readToken, usersController.uploadPrescription);
 
 module.exports = route

@@ -1,9 +1,12 @@
 import { Box, Pagination, Grid } from "@mui/material";
 import ProductCard from "../../../../Components/ProductCard2";
-import { API_URL } from "../../../../helper";
+import { API_IMAGE_URL } from "../../../../helper";
+import { useNavigate } from "react-router-dom";
 
 const ProductCards = (props) => {
   const { productData, totalPage, changePage, page } = props;
+  const navigate = useNavigate();
+
   const clickPage = (event, value) => {
     changePage(value);
   };
@@ -19,7 +22,9 @@ const ProductCards = (props) => {
                   id={value.id}
                   name={value.name}
                   price={value.price}
-                  image={`${API_URL}${value.image}`}
+                  image={`${API_IMAGE_URL}${value.image}`}
+                  quantity={value.quantity}
+                  handleDetail={() => navigate(`/product/${value.id}`)}
                 />
               </Box>
             </Grid>

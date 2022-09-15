@@ -8,6 +8,19 @@ module.exports = {
   getAllProducts: async (req, res, next) => {
     try {
       let result = await dbQuery('Select * from products;')
+      let stock = await dbQuery('Select * from stock')
+
+      result.forEach((valueProduct, indexProduct) => {
+        let detailStock = []
+        stock.forEach((valueStock) => {
+          if (valueStock.id_product === valueProduct.id) {
+            detailStock.push({ quantity: valueStock.quantity, unit: valueStock.unit, default_unit: valueStock.default_unit })
+          }
+        })
+        console.log('detailStock', detailStock)
+        valueProduct.stock = detailStock
+      })
+
       return res.status(200).send(result)
     } catch (error) {
       return next(error);
@@ -381,14 +394,17 @@ module.exports = {
       } else if (productType.length === 2) {
         let firstUpdate = ''
         let firstId = ''
+        let firstQuantityChange = 0
         let secondUpdate = ''
         let secondId = ''
+        let SecondQuantityChange = 0
 
 
         productType.forEach(val => {
           if (req.body.stock[0].default_unit === val.default_unit) {
             firstId = val.id
             if (req.body.stock[0].quantity) {
+              firstQuantityChange += req.body.stock[0].quantity
               if (firstUpdate) {
                 firstUpdate += `, quantity = ${req.body.stock[0].quantity}`
               } else {
@@ -409,6 +425,7 @@ module.exports = {
           if (req.body.stock[1].default_unit === val.default_unit) {
             secondId = val.id
             if (req.body.stock[1].quantity) {
+              SecondQuantityChange += req.body.stock[1].quantity
               if (secondUpdate) {
                 secondUpdate += `, quantity = ${req.body.stock[1].quantity}`
               } else {
@@ -427,9 +444,19 @@ module.exports = {
 
 
         if (firstUpdate) {
+          let initialQuantity = await dbQuery(`SELECT quantity FROM stock where id = ${firstId};`)
+          let finalChange = initialQuantity[0].quantity - firstQuantityChange
+          console.log('initialQuantity', initialQuantity[0].quantity)
+          console.log('firstQuantityChange', firstQuantityChange)
+          console.log('finalChange', finalChange)
+          await dbQuery(`INSERT INTO stock_history (id_stock, quantity, type) VALUE (${firstId}, ${finalChange}, 'Stock Update')`)
           await dbQuery(`UPDATE stock ${firstUpdate} WHERE id = ${firstId}`)
         }
         if (secondUpdate) {
+          let initialQuantity = await dbQuery(`SELECT quantity FROM stock where id = ${secondId};`)
+          let finalChange = initialQuantity[0].quantity - SecondQuantityChange
+          console.log('finalChange', finalChange)
+          await dbQuery(`INSERT INTO stock_history (id_stock, quantity, type) VALUE (${secondId}, ${finalChange}, 'Stock Update')`)
           await dbQuery(`UPDATE stock ${secondUpdate} WHERE id = ${secondId}`)
         }
       }

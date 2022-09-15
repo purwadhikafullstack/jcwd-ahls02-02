@@ -43,10 +43,6 @@ const AdminProductPage = () => {
         getCategory();
     }, [])
 
-    // useEffect(() => {
-    //     getCategory();
-    // }, [])
-
     const getCategory = () => {
         axios.get(`${API_URL}/products/categories`)
             .then((response) => {
@@ -149,9 +145,10 @@ const AdminProductPage = () => {
                             </IconButton>
                         </>
                     })
-                    setProductData(temp)
-                    setTotalPage(response.data.totalPage)
                 })
+                setProductData(temp)
+                setTotalPage(response.data.totalPage)
+                console.log('temp', temp)
             }).catch((error) => {
                 console.log(error)
             })
@@ -211,7 +208,7 @@ const AdminProductPage = () => {
     return <div>
         <Container>
             <Grid container>
-                <Grid xs={12} md={3} sx={{ p: 1 }}>
+                <Grid item xs={12} md={3} sx={{ p: 1 }}>
                     <Filter
                         getDataFilter={getDataFilter}
                         name={name}
@@ -222,7 +219,7 @@ const AdminProductPage = () => {
                         category={category}
                     />
                 </Grid>
-                <Grid xs={12} md={9} sx={{ pt: 4 }}>
+                <Grid item xs={12} md={9} sx={{ pt: 4 }}>
                     <Box textAlign='right'>
                         <Button variant='contained' onClick={() => setOpenAddProduct(true)}>Add New product</Button>
                     </Box>
