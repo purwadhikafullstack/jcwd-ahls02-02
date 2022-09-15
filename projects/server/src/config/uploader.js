@@ -3,7 +3,7 @@ const fs = require("fs");
 
 module.exports = {
   uploader: (directory, fileNamePrefix) => {
-    let defaultDir = "./public";
+    let defaultDir = "./src/public";
 
     const storageUploader = multer.diskStorage({
       destination: (req, file, cb) => {
