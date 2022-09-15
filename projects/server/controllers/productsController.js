@@ -140,6 +140,20 @@ module.exports = {
       return next(error);
     }
   },
+  getSimilarProducts: async (req, res, next) => {
+    try {
+      // let {id_category, id} = req.query
+      let data = await dbQuery(`Select p.id, p.name, p.description, p.id_category, c.category_name, s.quantity, s.unit, s.default_unit, p.selling_price, p.buying_price, p.unit_conversion, p.needs_receipt, p.image, s.id as id_stock, p.is_active from products p
+      LEFT JOIN stock s ON s.id_product = p.id
+      LEFT JOIN category c ON c.id = p.id_category
+      WHERE p.id_category=${req.query.id_category} and p.id not in (${req.params.product_id})
+      LIMIT 8`)
+
+      return res.status(200).send({ product: data });
+    } catch (error) {
+      return next(error)
+    }
+  },
   getDetailProduct: async (req, res, next) => {
     try {
       if (req.params) {

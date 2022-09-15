@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { API_URL } from "../../../helper";
 import Button from "../../../Components/atoms/Button";
 import Text from "../../../Components/atoms/Text";
+import { useNavigate } from "react-router-dom";
 
 
 const CategoryShop = () => {
     const [category, setCategory] = useState()
+    const navigate = useNavigate();
 
     useEffect(() => {
         getCategory();
@@ -24,6 +26,13 @@ const CategoryShop = () => {
             })
     }
 
+    const handleNavigate = (id_category) => {
+        navigate({
+            pathname: '/product',
+            search: `?id_category=${id_category}`
+        })
+    }
+
     return <div>
         {category ?
             <Container>
@@ -34,7 +43,7 @@ const CategoryShop = () => {
                     <Grid container>
                         {category.map((value, index) => {
                             return <Grid item xs={12} sx={{ pt: 1 }}>
-                                <Button size='small' variant='outlined' sx={{ width: '100%' }}>
+                                <Button size='small' variant='outlined' sx={{ width: '100%' }} onClick={() => handleNavigate(value.id)}>
                                     <Text sx={{ textAlign: 'center' }}>
                                         {value.category_name.toUpperCase()}
                                     </Text>
@@ -51,7 +60,7 @@ const CategoryShop = () => {
                         {category.map((value, index) => {
                             if (index < 4) {
                                 return <Grid item md={3} sx={{ pt: 1, pr: 1 }}>
-                                    <Button variant='outlined' sx={{ height: 80, width: '100%' }}>
+                                    <Button variant='outlined' sx={{ height: 80, width: '100%' }} onClick={() => handleNavigate(value.id)}>
                                         <Text sx={{ textAlign: 'center' }}>
                                             {value.category_name.toUpperCase()}
                                         </Text>

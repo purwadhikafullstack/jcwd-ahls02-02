@@ -2,8 +2,17 @@ import { Box, Button, Grid, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 
-const Banner = () => {
+const Banner = (props) => {
+    const { idUser } = props
     const navigate = useNavigate();
+
+    const handleGetPrescription = () => {
+        if (idUser) {
+            navigate('/prescription/upload')
+        } else {
+            navigate('/auth/login')
+        }
+    }
 
     return <Container sx={{ mt: 5 }}>
         <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column' }}>
@@ -28,7 +37,7 @@ const Banner = () => {
                         Order now and get a free bottle of vitamin D3
                     </Typography>
                 </Box>
-                <Button variant='contained' onClick={() => navigate('/prescription')}>
+                <Button variant='contained' onClick={handleGetPrescription}>
                     <Typography fontSize='12px'>
                         Get Your Prescription Now
                     </Typography>

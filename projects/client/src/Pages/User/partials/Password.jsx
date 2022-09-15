@@ -5,6 +5,7 @@ import {
   Grid,
   IconButton,
   InputAdornment,
+  OutlinedInput,
   TextField,
   Tooltip,
 } from "@mui/material";
@@ -22,7 +23,8 @@ const Password = () => {
   const [password, setPassword] = useState(null);
   const [newPassword, setNewPassword] = useState(null);
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [passwordValidity, setPasswordValidity] = useState("null");
   const [passwordInfo, setPasswordInfo] = useState("");
   const [passwordConf, setPasswordConf] = useState("");
@@ -182,7 +184,26 @@ const Password = () => {
               alignItems="center"
               justifyContent="flex-start"
             >
-              <TextField
+              <OutlinedInput
+                id="user-old-password"
+                placeholder="Old Password"
+                type={showOldPassword ? 'text' : 'password'}
+                defaultValue={password}
+                fullWidth
+                onChange={(e) => setPassword(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowOldPassword(!showOldPassword)}
+                      edge="end"
+                    >
+                      {showOldPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+              {/* <TextField
                 id="user-old-password"
                 placeholder="Old Password"
                 type="password"
@@ -190,7 +211,7 @@ const Password = () => {
                 defaultValue={password}
                 fullWidth
                 onChange={(e) => setPassword(e.target.value)}
-              />
+              /> */}
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
@@ -223,7 +244,28 @@ const Password = () => {
               alignItems="center"
               justifyContent="flex-start"
             >
-              <TextField
+              <OutlinedInput
+                id="user-new-password"
+                placeholder="New Password"
+                type={showNewPassword ? 'text' : 'password'}
+                defaultValue={password}
+                fullWidth
+                onChange={(e) => handleCheckPassword(e.target.value)}
+                error={passwordValidity === "null" ? null : !passwordValidity}
+                color={passwordInfo ? "success" : null}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      edge="end"
+                    >
+                      {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+              {/* <TextField
                 id="user-new-password"
                 placeholder="New Password"
                 type={showPassword ? "text" : "password"}
@@ -244,7 +286,7 @@ const Password = () => {
                     </IconButton>
                   </InputAdornment>
                 }
-              />
+              /> */}
               <FormHelperText>{passwordInfo}</FormHelperText>
             </Grid>
 

@@ -43,6 +43,11 @@ const Filter = (props) => {
         setSort(event.target.value);
     };
 
+    const handleChangeCategory = (id) => {
+        setIdCategory(id)
+        getDataFilter(name, id, minPrice, maxPrice, sort)
+    }
+
     return <div>
         <Box sx={{ mt: 3 }}>
             <FormControl sx={{ mx: 1 }} fullWidth variant="outlined">
@@ -63,7 +68,8 @@ const Filter = (props) => {
             <Typography fontSize='18px' textAlign='left' sx={{ p: 1, mt: 2, fontWeight: 'bold' }}>Category</Typography>
             {category ? category.map(item => {
                 return <Box textAlign='left' key={item.id}>
-                    <Button onClick={() => setIdCategory(item.id)}>
+                    <Button onClick={() => handleChangeCategory(item.id)}>
+                        {/* <Button onClick={() => setIdCategory(item.id)}> */}
                         <Typography fontSize='14px' textAlign='left' sx={{ pl: 1 }} color={idCategory === item.id ? 'primary' : 'black'}>{item.category_name}</Typography>
                     </Button>
                 </Box>

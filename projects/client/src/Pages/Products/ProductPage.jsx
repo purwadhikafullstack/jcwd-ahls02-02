@@ -1,15 +1,25 @@
 import { Container, Grid } from "@mui/material";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { API_URL } from "../../helper";
 import { getProductsDataAction } from "../../Redux/Actions/userProductsAction";
 import FilterProducts from "./partials/ProductPage/Filter";
 import ProductCards from "./partials/ProductPage/ProductCards";
+import { useLocation } from "react-router-dom";
+
+function useQuery() {
+    const { search } = useLocation();
+
+    return useMemo(() => new URLSearchParams(search), [search]);
+}
 
 const ProductPage = () => {
+
+    let query = useQuery();
+
     const [name, setName] = useState();
-    const [idCategory, setIdCategory] = useState();
+    const [idCategory, setIdCategory] = useState(query.get("id_category"));
     const [needsReceipt, setNeedsReceipt] = useState();
     const [minPrice, setMinPrice] = useState();
     const [maxPrice, setMaxPrice] = useState();
@@ -24,10 +34,13 @@ const ProductPage = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     const dispatch = useDispatch()
+    const { search } = useLocation()
 
     useEffect(() => {
         getData();
         getCategory();
+        // console.log('query.get("id_category")', query.get("id_category"))
+        // setIdCategory(query.get("id_category"))
     }, []);
 
     const getCategory = async () => {

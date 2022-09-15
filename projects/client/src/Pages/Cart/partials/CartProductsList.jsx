@@ -210,9 +210,13 @@ const CartProductsList = (props) => {
                         </Box>
                       </Grid>
                       <Grid item xs={7} sm={6}>
-                        <Text fontWeight="medium">{value.name}</Text>
+                        <Text fontWeight="medium" sx={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}>{value.name}</Text>
                         <Text fontSize="body2">
-                          IDR {value.selling_price.toLocaleString()}
+                          IDR{value.selling_price.toLocaleString()}
                         </Text>
                         <Text fontSize="body2">
                           Current Stock : {value.current_stock} {value.unit}
@@ -226,7 +230,7 @@ const CartProductsList = (props) => {
                             textAlign: "right",
                           }}
                         >
-                          IDR{" "}
+                          IDR
                           {(
                             value.selling_price * value.quantity
                           ).toLocaleString()}
@@ -285,11 +289,11 @@ const CartProductsList = (props) => {
         </>
       ) : (
         <>
-          <Box sx={{px:1, py:2}}>
-            <Box sx={{pb:1}}>
+          <Box sx={{ px: 1, py: 2 }}>
+            <Box sx={{ pb: 1 }}>
               <Text textAlign="center">You don't have any item in your cart yet</Text>
             </Box>
-            <Box sx={{pt:1}}>
+            <Box sx={{ pt: 1 }}>
               <Button
                 variant="contained"
                 color="primary"

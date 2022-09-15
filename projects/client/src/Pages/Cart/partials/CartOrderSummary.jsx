@@ -31,7 +31,7 @@ const CartOrderSummary = (props) => {
                   </Grid>
                   <Grid item xs={5}>
                     <Text fontSize="subtitle2" textAlign="right">
-                      {(value.quantity * value.selling_price).toLocaleString()}
+                      IDR{(value.quantity * value.selling_price).toLocaleString()}
                     </Text>
                   </Grid>
                 </>
@@ -81,7 +81,7 @@ const CartOrderSummary = (props) => {
       <Divider />
       <Box sx={{ p: 1, display: "flex", justifyContent: "space-between" }}>
         <Text fontWeight="medium">Total</Text>
-        <Text>IDR {totalPrice.toLocaleString()}</Text>
+        <Text>IDR{totalPrice.toLocaleString()}</Text>
       </Box>
       <Box sx={{ p: 1 }}>
         <Button
