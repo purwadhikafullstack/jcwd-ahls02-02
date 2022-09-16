@@ -8,30 +8,93 @@ import Text from "../../../Components/atoms/Text";
 import { API_URL } from "../../../helper";
 import HistoryFilter from "./Partials/HistoryFilter";
 import HistoryTable from "./Partials/HistoryTable";
+import Cookies from "js-cookie";
 
 const HistoryReportPage = () => {
   const [historyData, setHistoryData] = useState();
   const [productData, setProductData] = useState();
 
   const [selectedProduct, setSelectedProduct] = useState("");
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortBy, setSortBy] = useState();
+  const [sortBy, setSortBy] = useState(`sort=created_at&order=asc`);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState("");
   const [limit, setLimit] = useState(10);
 
-  const getStockHistoryData = (
+  const getStockHistoryData = async (
     filterProduct = selectedProduct,
     filterStartDate = startDate,
     filterEndDate = endDate,
     querySort = sortBy,
     queryPage = currentPage,
     queryLimit = limit
-  ) => {};
+  ) => {
+    try {
+      let query = "";
+      if (filterProduct) {
+        if (query) {
+          query += `&product_id=${filterProduct}`;
+        } else {
+          query += `?product_id=${filterProduct}`;
+        }
+      }
+      if (filterStartDate) {
+        if (query) {
+          query += `&start_date=${filterStartDate}`;
+        } else {
+          query += `?start_date=${filterStartDate}`;
+        }
+      }
+      if (filterEndDate) {
+        if (query) {
+          query += `&end_date=${filterEndDate}`;
+        } else {
+          query += `?end_date=${filterEndDate}`;
+        }
+      }
+      if (querySort) {
+        if (query) {
+          query += `&${querySort}`;
+        } else {
+          query += `?${querySort}`;
+        }
+      }
+      if (queryPage) {
+        if (query) {
+          query += `&page=${queryPage}`;
+        } else {
+          query += `?page=${queryPage}`;
+        }
+      }
 
+      if (queryLimit) {
+        if (query) {
+          query += `&limit=${queryLimit}`;
+        } else {
+          query += `?limit=${queryLimit}`;
+        }
+      }
+
+      const token = Cookies.get("userToken");
+      const res = await axios.get(`${API_URL}/admin/stock${query}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.data.success) {
+        setHistoryData(res.data.data);
+        setTotalPage(res.data.totalPage);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // data for filter selection
   const getProductData = async () => {
     try {
       const res = await axios.get(`${API_URL}/products/all`);
@@ -47,14 +110,13 @@ const HistoryReportPage = () => {
     }
   };
 
-  const getInitialData = async () => {
-    await getProductData();
-  };
-
   useEffect(() => {
     getProductData();
-    // getInitialData();
+    getStockHistoryData();
   }, []);
+  useEffect(() => {
+    getStockHistoryData();
+  }, [limit, sortBy, currentPage]);
 
   return (
     <Container>
@@ -80,7 +142,17 @@ const HistoryReportPage = () => {
                   Stock History Report
                 </Text>
               </Box>
-              <HistoryTable productData={productData} />
+              <HistoryTable
+                historyData={historyData}
+                getStockHistoryData={getStockHistoryData}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                limit={limit}
+                setLimit={setLimit}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                totalPage={totalPage}
+              />
             </Grid>
           </Grid>
         </Box>

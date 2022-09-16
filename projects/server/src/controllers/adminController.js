@@ -4,6 +4,10 @@ module.exports = {
   // get sales report by product, transaction, user
   getSalesReports: async (req, res, next) => {
     try {
+      return res.status(200).send({
+        success: true,
+        message: "Sales report successfully fetched",
+      });
     } catch (error) {
       return next(error);
     }
@@ -11,6 +15,75 @@ module.exports = {
   // get stock history
   getStockReport: async (req, res, next) => {
     try {
+      if (req.dataUser.role === "admin") {
+        let filter = "";
+        let sort = "";
+        const filterChecklist = ["product_id", "start_date", "end_date"];
+
+        for (const key in req.query) {
+          filterChecklist.forEach((val) => {
+            if (key == val) {
+              if (key === "product_id") {
+                if (req.query[key]) {
+                  if (filter) {
+                    filter += ` and p.id = '${req.query[key]}'`;
+                  } else {
+                    filter += `where p.id = '${req.query[key]}'`;
+                  }
+                }
+              } else if (key === "start_date") {
+                if (filter) {
+                  filter += ` and sh.created_at >= '${req.query[key]}'`;
+                } else {
+                  filter += `where sh.created_at >= '${req.query[key]}'`;
+                }
+              } else if (key === "end_date") {
+                if (filter) {
+                  filter += ` and sh.created_at <= '${req.query[key]}'`;
+                } else {
+                  filter += `where sh.created_at <= '${req.query[key]}'`;
+                }
+              }
+            }
+          });
+        }
+
+        const offSet =
+          (req.query.page - 1) * req.query.limit
+            ? ` offset ${(req.query.page - 1) * req.query.limit}`
+            : ``;
+
+        if (req.query.sort) {
+          if (req.query.order) {
+            sort += `order by ${req.query.sort} ${req.query.order} limit ${req.query.limit}${offSet}`;
+          } else {
+            sort += `order by ${req.query.sort} asc limit ${req.query.limit}${offSet}`;
+          }
+        }
+        if (!sort) {
+          sort = `order by id desc limit ${req.query.limit}${offSet}`;
+        }
+
+        const stockHistoryData = await dbQuery(
+          `SELECT sh.id, sh.created_at, p.name, sh.quantity, s.unit, sh.type from stock_history sh JOIN stock s ON s.id = sh.id_stock JOIN products p ON s.id_product = p.id ${filter} ${sort}`
+        );
+
+        const allData = await dbQuery(`select sh.id from stock_history sh JOIN stock s ON s.id = sh.id_stock JOIN products p ON s.id_product = p.id ${filter}`)
+
+        const totalPage = Math.ceil(allData.length / req.query.limit);
+
+        return res.status(200).send({
+          success: true,
+          message: "Stock history report successfully fetched",
+          data: stockHistoryData,
+          totalPage
+        });
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "You don't have permission to acces this",
+        });
+      }
     } catch (error) {
       return next(error);
     }
@@ -72,7 +145,7 @@ module.exports = {
 
         const offSet =
           (req.query.page - 1) * req.query.limit
-            ? `, ${(req.query.page - 1) * req.query.limit}`
+            ? ` offset ${(req.query.page - 1) * req.query.limit}`
             : ``;
 
         if (req.query.sort) {
@@ -149,8 +222,8 @@ module.exports = {
   // get prescription list to be handled
   getPrescriptionList: async (req, res, next) => {
     try {
-
-      let prescriptionList = await dbQuery(`Select p.id as id_prescription, u.name, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+      let prescriptionList =
+        await dbQuery(`Select p.id as id_prescription, u.name, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
 
       LEFT JOIN order_list o ON o.id = p.id_order 
       LEFT JOIN users u ON u.id = p.id_user
