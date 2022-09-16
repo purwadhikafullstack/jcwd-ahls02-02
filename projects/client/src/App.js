@@ -29,6 +29,7 @@ import NotFoundPage from "./Pages/404";
 import Navbar from "./Components/Navbar";
 import CustomizedMenus from "./Pages/Test";
 import PrescriptionListPage from "./Pages/Order/PrescriptionListPage";
+import SalesReportPage from "./Pages/Admin/Report/SalesReportPage";
 
 function App() {
 
@@ -76,6 +77,7 @@ function App() {
             <Route path='/admin/product' element={<AdminProductPage />} />
             <Route path='/admin/product/category' element={<AdminCategoryPage />} />
             <Route path='/admin/report' element={<HistoryReportPage />} />
+            <Route path='/admin/sales' element={<SalesReportPage />} />
           </>
           :
           <>
