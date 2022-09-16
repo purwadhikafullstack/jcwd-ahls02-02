@@ -109,7 +109,7 @@ const AdminOrderPage = () => {
 
   useEffect(() => {
     getOrderData();
-  }, [selectedStatus, sortBy, currentPage]);
+  }, [selectedStatus, sortBy, currentPage, limit]);
 
   return (
     <div>
