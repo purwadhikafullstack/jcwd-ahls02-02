@@ -42,7 +42,7 @@ const AdminCategoryPage = () => {
         if (category) {
             return category.map((val, id) => {
                 if (editCategory !== val.id) {
-                    return <Box sx={{ display: 'flex', mb: 2 }}>
+                    return <Box key={val.id} sx={{ display: 'flex', mb: 2 }}>
                         <TextField fullWidth defaultValue={val.category_name} sx={{ mr: 1 }} disabled={editCategory === val.id ? false : true} />
                         <Button variant='contained' color='secondary' sx={{ mr: 1 }} onClick={() => setEditCategory(val.id)}>EDIT</Button>
                         <Button variant='contained' color='error' sx={{ mr: 1 }} onClick={() => {

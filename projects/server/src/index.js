@@ -1,7 +1,7 @@
-require("dotenv/config");
+const { join } = require("path");
+require('dotenv').config({ path: join(__dirname, '../.env') });
 const express = require("express");
 const cors = require("cors");
-const { join } = require("path");
 const bearerToken = require('express-bearer-token')
 
 const PORT = process.env.PORT || 8000;
@@ -18,7 +18,7 @@ app.use(cors());
 
 app.use(express.json());
 app.use(bearerToken());
-app.use(express.static("public"));
+app.use(express.static("src/public"));
 
 //#region API ROUTES
 
@@ -37,7 +37,7 @@ app.get("/api/greetings", (req, res, next) => {
 
 // ===========================
 
-const { dbConf } = require('../config/database')
+const { dbConf } = require('./config/database')
 
 dbConf.getConnection((error, connection) => {
   if (error) {
@@ -48,7 +48,7 @@ dbConf.getConnection((error, connection) => {
 })
 
 
-const configRouter = require("../routers");
+const configRouter = require("./routers");
 app.use("/api", configRouter);
 
 // not found

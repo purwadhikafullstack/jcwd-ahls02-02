@@ -27,3 +27,17 @@ export const editProfileAction = (data) => {
         payload: data
     }
 }
+
+export const getCartAction = (data) => {
+    return {
+        type: "GET_CART",
+        payload: data
+    }
+}
+
+export const editCartAction = (data) => {
+    return {
+        type: "EDIT_CART",
+        payload: data
+    }
+}

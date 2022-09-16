@@ -16,7 +16,7 @@ import ProductPage from "./Pages/Products/ProductPage";
 import ProfilePage from "./Pages/User/ProfilePage";
 import DashboardPage from "./Pages/Admin/DashboardPage";
 import AdminOrderPage from "./Pages/Admin/Order/AdminOrderPage";
-import AdminPerscriptionPage from "./Pages/Admin/Order/AdminPerscriptionPage";
+import AdminPrescriptionPage from "./Pages/Admin/Order/AdminPrescriptionPage";
 import AdminProductPage from "./Pages/Admin/Product/AdminProductPage";
 import AdminCategoryPage from "./Pages/Admin/Product/CategoryPage";
 import ReportPage from "./Pages/Admin/Report/ReportPage";
@@ -27,6 +27,8 @@ import { loginAction } from "./Redux/Actions/userAction";
 import ForgotPasswordPage from "./Pages/Auth/ForgotPasswordPage";
 import NotFoundPage from "./Pages/404";
 import Navbar from "./Components/Navbar";
+import CustomizedMenus from "./Pages/Test";
+import PrescriptionListPage from "./Pages/Order/PrescriptionListPage";
 
 function App() {
 
@@ -70,7 +72,7 @@ function App() {
             <Route path='/admin' element={<DashboardPage />} />
             <Route path='/' element={<Navigate replace to='/admin' />} />
             <Route path='/admin/order' element={<AdminOrderPage />} />
-            <Route path='/admin/perscription' element={<AdminPerscriptionPage />} />
+            <Route path='/admin/prescription' element={<AdminPrescriptionPage />} />
             <Route path='/admin/product' element={<AdminProductPage />} />
             <Route path='/admin/product/category' element={<AdminCategoryPage />} />
             <Route path='/admin/report' element={<ReportPage />} />
@@ -84,7 +86,8 @@ function App() {
             <Route path='/checkout' element={<CheckoutPage />} />
             <Route path='/payment' element={<PaymentPage />} />
             <Route path='/order' element={<OrderListPage />} />
-            <Route path='/prescription' element={<PrescriptionPage />} />
+            <Route path='/prescription/upload' element={<PrescriptionPage />} />
+            <Route path='/prescription' element={<PrescriptionListPage />} />
             <Route path='/product' element={<ProductPage />} />
             <Route path='/product/:id' element={<ProductDetailPage />} />
             <Route path='/profile' element={<ProfilePage />} />
@@ -96,11 +99,12 @@ function App() {
             <Route path='/' element={<Homepage />} />
             <Route path='/auth/reset/:token' element={<ForgotPasswordPage />} />
             <Route path='/product' element={<ProductPage />} />
-            <Route path='/product/detail' element={<ProductDetailPage />} />
+            <Route path='/product/:id' element={<ProductDetailPage />} />
           </>
         }
         <Route path='/auth/verification/:token' element={<VerificationPage />} />
         <Route path='*' element={<NotFoundPage />} />
+        <Route path='/test' element={<CustomizedMenus />} />
       </Routes>
 
     </div>

@@ -41,12 +41,7 @@ const AdminProductPage = () => {
     useEffect(() => {
         getData()
         getCategory();
-        console.log('page lagi: ', page)
     }, [])
-
-    // useEffect(() => {
-    //     getCategory();
-    // }, [])
 
     const getCategory = () => {
         axios.get(`${API_URL}/products/categories`)
@@ -150,9 +145,10 @@ const AdminProductPage = () => {
                             </IconButton>
                         </>
                     })
-                    setProductData(temp)
-                    setTotalPage(response.data.totalPage)
                 })
+                setProductData(temp)
+                setTotalPage(response.data.totalPage)
+                console.log('temp', temp)
             }).catch((error) => {
                 console.log(error)
             })
@@ -164,13 +160,9 @@ const AdminProductPage = () => {
         setMinPrice(newMinPrice)
         setMaxPrice(newMaxPrice)
         setSort(newSort)
-        // if (page !== 1) {
-        getData(newName, newIdCategory, needsReceipt, newMinPrice, newMaxPrice, newSort, page, limit);
-        // } else {
-        //     setPage(1)
 
-        //     getData(newName, newIdCategory, needsReceipt, newMinPrice, newMaxPrice, newSort, 1, limit);
-        // }
+        getData(newName, newIdCategory, needsReceipt, newMinPrice, newMaxPrice, newSort, page, limit);
+
     }
 
     const handlePage = (newPage) => {
@@ -193,8 +185,8 @@ const AdminProductPage = () => {
 
     const closeEditModal = () => {
         setOpenEditProduct(false)
-        console.log(page)
         console.log(`getDataFilter(${name}, ${idCategory}, ${minPrice}, ${maxPrice}, ${sort}, ${page})`)
+        // setPage(1)
         getDataFilter(name, idCategory, minPrice, maxPrice, sort, page)
     }
 
@@ -216,7 +208,7 @@ const AdminProductPage = () => {
     return <div>
         <Container>
             <Grid container>
-                <Grid xs={12} md={3} sx={{ p: 1 }}>
+                <Grid item xs={12} md={3} sx={{ p: 1 }}>
                     <Filter
                         getDataFilter={getDataFilter}
                         name={name}
@@ -227,7 +219,7 @@ const AdminProductPage = () => {
                         category={category}
                     />
                 </Grid>
-                <Grid xs={12} md={9} sx={{ pt: 4 }}>
+                <Grid item xs={12} md={9} sx={{ pt: 4 }}>
                     <Box textAlign='right'>
                         <Button variant='contained' onClick={() => setOpenAddProduct(true)}>Add New product</Button>
                     </Box>
@@ -236,6 +228,7 @@ const AdminProductPage = () => {
                         totalPage={totalPage}
                         changePage={handlePage}
                         page={page}
+                        setPage={setPage}
                         handleOpenEdit={openEditModal}
                     />
                 </Grid>

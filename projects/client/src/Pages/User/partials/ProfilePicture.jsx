@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../Components/atoms/Button";
 import Text from "../../../Components/atoms/Text";
 import { ToastNotification } from "../../../Components/Toast";
-import { API_URL } from "../../../helper";
+import { API_IMAGE_URL, API_URL } from "../../../helper";
 import { editProfileAction } from "../../../Redux/Actions/userAction";
 
 const ProfilePicture = () => {
@@ -21,10 +21,10 @@ const ProfilePicture = () => {
   // Image yang akan dikirim
   // selectedFile untuk ditampilkan di FE
   const [image, setImage] = useState(
-    user.profile_picture && `${API_URL}${user.profile_picture}`
+    user.profile_picture && `${API_IMAGE_URL}${user.profile_picture}`
   );
   const [selectedFile, setSelectedFile] = useState(
-    user.profile_picture && `${API_URL}${user.profile_picture}`
+    user.profile_picture && `${API_IMAGE_URL}${user.profile_picture}`
   );
 
   const [inputKey, setInputKey] = useState(null);
