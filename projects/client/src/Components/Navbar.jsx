@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { logoutAction } from '../Redux/Actions/userAction';
 import Cookies from 'js-cookie';
 import VerifiedIcon from '@mui/icons-material/Verified';
-import { Category, History, HowToReg, LoginRounded, Medication, Send } from '@mui/icons-material';
+import { Category, History, HowToReg, LoginRounded, Medication, MonetizationOn, Send } from '@mui/icons-material';
 import axios from 'axios'
 import { API_URL, API_IMAGE_URL } from '../helper';
 import { toast } from "react-hot-toast"
@@ -123,6 +123,13 @@ const Navbar = () => {
 
     const handleNavigateAdminHistory = () => {
         navigate('/admin/report')
+        setAnchorElUserSmall(false)
+        setAnchorElNav(false)
+        setAnchorElUser(false)
+    }
+
+    const handleNavigateAdminSalesHistory = () => {
+        navigate('/admin/sales')
         setAnchorElUserSmall(false)
         setAnchorElNav(false)
         setAnchorElUser(false)
@@ -351,7 +358,11 @@ const Navbar = () => {
                                 </MenuItem>
                                 <MenuItem onClick={handleNavigateAdminHistory}>
                                     <History sx={{ mr: 1 }} />
-                                    <Typography textAlign="center">History</Typography>
+                                    <Typography textAlign="center">Stock History</Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleNavigateAdminSalesHistory}>
+                                    <MonetizationOn sx={{ mr: 1 }} />
+                                    <Typography textAlign="center">Sales History</Typography>
                                 </MenuItem>
                                 <Divider />
                                 <MenuItem onClick={handleLogout}>
@@ -675,6 +686,10 @@ const Navbar = () => {
                                 <MenuItem onClick={handleNavigateAdminHistory}>
                                     <History sx={{ mr: 1 }} />
                                     <Typography textAlign="center">History</Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleNavigateAdminSalesHistory}>
+                                    <MonetizationOn sx={{ mr: 1 }} />
+                                    <Typography textAlign="center">Sales History</Typography>
                                 </MenuItem>
                                 <Divider />
                                 <MenuItem onClick={handleLogout}>
