@@ -1,6 +1,10 @@
+import { Box } from "@mui/material";
+
 const NotFoundPage = () => {
     return <div>
-        Not Found
+        <Box sx={{ height: '100%' }}>
+            Not Found
+        </Box>
     </div>
 }
 
