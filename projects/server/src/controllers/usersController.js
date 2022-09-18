@@ -59,7 +59,7 @@ module.exports = {
         );
 
         let verificationEmail = fs
-          .readFileSync("./mail/verification.html")
+          .readFileSync("./src/mail/verification.html")
           .toString();
 
         verificationEmail = verificationEmail.replace("#name", name);
@@ -205,7 +205,7 @@ module.exports = {
         );
 
         let verificationEmail = fs
-          .readFileSync("./mail/verification.html")
+          .readFileSync("./src/mail/verification.html")
           .toString();
 
         verificationEmail = verificationEmail.replace("#name", name);
@@ -250,7 +250,7 @@ module.exports = {
       );
 
       let resetPassword = fs
-        .readFileSync("./mail/resetPassword.html")
+        .readFileSync("./src/mail/resetPassword.html")
         .toString();
 
       resetPassword = resetPassword.replace("#fullname", name);

@@ -139,7 +139,6 @@ const AdminProductPage = () => {
                                 setOpenDeleteProduct(true)
                                 setTextDelete(`If you delete this, all unit with the same name will also be deleted. Are you sure you want to delete ${val.name}?`)
                                 setIdDelete(val.id)
-                                console.log('delete id', val.id)
                             }}>
                                 <Delete color='error' />
                             </IconButton>
@@ -148,7 +147,6 @@ const AdminProductPage = () => {
                 })
                 setProductData(temp)
                 setTotalPage(response.data.totalPage)
-                console.log('temp', temp)
             }).catch((error) => {
                 console.log(error)
             })
@@ -176,7 +174,6 @@ const AdminProductPage = () => {
                 let temp = [...response.data.product]
                 setDataEdit(temp)
                 setIdProduct(id)
-                console.log(temp)
                 setOpenEditProduct(true)
             }).catch((error) => {
                 console.log(error)
@@ -185,8 +182,6 @@ const AdminProductPage = () => {
 
     const closeEditModal = () => {
         setOpenEditProduct(false)
-        console.log(`getDataFilter(${name}, ${idCategory}, ${minPrice}, ${maxPrice}, ${sort}, ${page})`)
-        // setPage(1)
         getDataFilter(name, idCategory, minPrice, maxPrice, sort, page)
     }
 
@@ -206,7 +201,7 @@ const AdminProductPage = () => {
     }
 
     return <div>
-        <Container>
+        <Container sx={{ py: 2 }}>
             <Grid container>
                 <Grid item xs={12} md={3} sx={{ p: 1 }}>
                     <Filter

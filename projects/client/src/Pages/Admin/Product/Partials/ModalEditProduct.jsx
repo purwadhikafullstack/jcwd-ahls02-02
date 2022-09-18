@@ -88,7 +88,6 @@ const ModalEditProduct = (props) => {
 
     const handleUpload = (e) => {
         setNewDataImage(e.target.files[0])
-        console.log(e.target.files[0])
         let files = e.target.files;
         let reader = new FileReader();
         reader.readAsDataURL(files[0])
@@ -99,15 +98,10 @@ const ModalEditProduct = (props) => {
 
     const handleAddUnit = () => {
         setMoreUnit(true)
-        console.log('add unit')
-        console.log('default unit', data[0].default_unit)
-
         if (data[0].default_unit === 'false') {
-            console.log(' default unit: ', data[0].unit)
             let temp = data[0].unit
             setSmallUnit(temp)
         } else {
-            console.log('unit: ', data[0].unit)
             let temp = data[0].unit
             setDefaultUnit(temp)
         }
@@ -146,15 +140,6 @@ const ModalEditProduct = (props) => {
                                             let temp = [...defaultStock]
                                             temp[0].quantity = e.target.value
                                             setDefaultStock(temp)
-                                            // let temp = [...formStock]
-                                            // if (temp[id]) {
-                                            //     temp[id].quantity = e.target.value
-                                            // } else {
-                                            //     temp.push({ quantity: '', unit: '', default_unit: true })
-                                            //     temp[id].quantity = e.target.value
-                                            // }
-                                            // setFormStock(temp)
-                                            // checkAvailability(temp)
                                         }}
                                     />
                                 </form>
@@ -172,16 +157,6 @@ const ModalEditProduct = (props) => {
                                                 let temp = [...defaultStock]
                                                 temp[0].unit = e.target.value
                                                 setDefaultStock(temp)
-
-                                                // let temp = [...formStock]
-                                                // if (temp[id]) {
-                                                //     temp[id].unit = e.target.value
-                                                // } else {
-                                                //     temp.push({ quantity: '', unit: '', default_unit: true })
-                                                //     temp[id].unit = e.target.value
-                                                // }
-                                                // setFormStock(temp)
-                                                // checkAvailability(temp)
                                             }}
                                             displayEmpty
                                         >
@@ -421,7 +396,6 @@ const ModalEditProduct = (props) => {
             } else {
                 if (data[0].default_unit === 'true') {
                     if (smallUnit) {
-                        // console.log("small unit", smallUnit)
                         return <form>
                             <Typography color='grey.600' fontSize='14px'>How many {smallUnit} per {defaultUnit ? defaultUnit : data[0].unit}</Typography>
                             <TextField
@@ -507,14 +481,11 @@ const ModalEditProduct = (props) => {
             unit_conversion: unitConversion
         }
 
-        console.log(data)
-
         axios.patch(`${API_URL}/products/editData?id=${index}`, newData, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         }).then((response) => {
-            console.log(response.data)
             if (newImage) {
                 formData.append('image', newDataImage)
 
@@ -524,7 +495,6 @@ const ModalEditProduct = (props) => {
                     }
                 }).then((response) => {
                     handleClose();
-                    console.log(response.data)
                     toast.success(`Product successfully updated`)
 
                 }).catch((error) => {
@@ -551,7 +521,7 @@ const ModalEditProduct = (props) => {
                 <Box sx={style}>
                     <Box sx={{ mb: 2 }}>
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                            New Product
+                            Edit Product
                         </Typography>
                     </Box>
                     {page === 1 ?
