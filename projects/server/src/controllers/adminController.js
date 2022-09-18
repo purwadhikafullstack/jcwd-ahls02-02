@@ -4,10 +4,101 @@ module.exports = {
   // get sales report by product, transaction, user
   getSalesReports: async (req, res, next) => {
     try {
-      return res.status(200).send({
-        success: true,
-        message: "Sales report successfully fetched",
-      });
+      if (req.dataUser.role === "admin") {
+        let filter = "";
+        let sort = "";
+        let salesReportData;
+        const filterChecklist = ["start_date", "end_date"];
+
+        for (const key in req.query) {
+          filterChecklist.forEach((val) => {
+            if (key == val) {
+              if (key === "start_date") {
+                filter += ` and ol.created_at >= '${req.query[key]}'`;
+              } else if (key === "end_date") {
+                filter += ` and ol.created_at <= '${req.query[key]}'`;
+              }
+            }
+          });
+        }
+
+        const offSet =
+          (req.query.page - 1) * req.query.limit
+            ? ` offset ${(req.query.page - 1) * req.query.limit}`
+            : ``;
+
+        if (req.query.sort) {
+          if (req.query.order) {
+            sort += `order by ${req.query.sort} ${req.query.order} limit ${req.query.limit}${offSet}`;
+          } else {
+            sort += `order by ${req.query.sort} asc limit ${req.query.limit}${offSet}`;
+          }
+        }
+        if (!sort) {
+          sort = `order by ol.id desc limit ${req.query.limit}${offSet}`;
+        }
+
+        let allData = "";
+
+        if (req.query.type === "Transaction") {
+          salesReportData = await dbQuery(
+            `SELECT u.name, ol.created_at, ol.invoice_number, ol.subtotal, ol.shipping_address 
+            FROM order_list ol 
+            JOIN users u ON u.id = ol.id_user 
+            WHERE ol.status IN ('Completed','Processed','Sent') 
+            ${filter} ${sort}`
+          );
+
+          allData = await dbQuery(
+            `SELECT ol.id
+            FROM order_list ol 
+            JOIN users u ON u.id = ol.id_user 
+            WHERE ol.status IN ('Completed','Processed','Sent') 
+            ${filter}`
+          );
+        } else if (req.query.type === "Product") {
+          salesReportData = await dbQuery(
+            `SELECT oc.id_stock, oc.product_name, oc.unit, ol.created_at, oc.id_order, SUM(oc.quantity) as quantity, SUM(oc.selling_price * oc.quantity) as subtotal FROM order_list ol 
+            JOIN order_content oc ON oc.id_order = ol.id 
+            WHERE ol.status IN ('Completed','Processed','Sent') 
+            ${filter} 
+            GROUP BY 1,2,3,4,5
+            ${sort}`
+          );
+
+          allData = await dbQuery(
+            `SELECT oc.id_stock, SUM(oc.quantity) as quantity
+            FROM order_list ol 
+            JOIN order_content oc ON oc.id_order = ol.id 
+            WHERE ol.status IN ('Completed','Processed','Sent') 
+            ${filter}
+            GROUP BY 1`
+          );
+        } else if (req.query.type === "User") {
+          salesReportData =
+            await dbQuery(`SELECT ol.id_user, u.name, ol.created_at, SUM(ol.subtotal) as subtotal
+          FROM order_list ol
+          JOIN users u ON u.id = ol.id_user
+          WHERE status IN ('Completed','Processed','Sent') 
+          ${filter} 
+          GROUP BY 1,2,3
+          ${sort}`);
+        }
+
+        const totalPage = Math.ceil(allData.length / req.query.limit);
+
+        return res.status(200).send({
+          success: true,
+          message: "Sales report successfully fetched",
+          data: salesReportData,
+          totalPage,
+        });
+      } else {
+        return res.status(200).send({
+          success: false,
+          message: "You don't have permission to access this",
+        });
+      }
     } catch (error) {
       return next(error);
     }
@@ -68,7 +159,9 @@ module.exports = {
           `SELECT sh.id, sh.created_at, p.name, sh.quantity, s.unit, sh.type from stock_history sh JOIN stock s ON s.id = sh.id_stock JOIN products p ON s.id_product = p.id ${filter} ${sort}`
         );
 
-        const allData = await dbQuery(`select sh.id from stock_history sh JOIN stock s ON s.id = sh.id_stock JOIN products p ON s.id_product = p.id ${filter}`)
+        const allData = await dbQuery(
+          `select sh.id from stock_history sh JOIN stock s ON s.id = sh.id_stock JOIN products p ON s.id_product = p.id ${filter}`
+        );
 
         const totalPage = Math.ceil(allData.length / req.query.limit);
 
@@ -76,7 +169,7 @@ module.exports = {
           success: true,
           message: "Stock history report successfully fetched",
           data: stockHistoryData,
-          totalPage
+          totalPage,
         });
       } else {
         return res.status(200).send({
