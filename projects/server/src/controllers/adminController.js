@@ -816,5 +816,59 @@ module.exports = {
     } catch (error) {
       return next(error)
     }
+  },
+  getReportData: async (req, res, next) => {
+    try {
+      if (req.dataUser.role === "admin") {
+        let { start_date, end_date } = req.query
+
+        let sales = await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
+          where created_at >= '${start_date}' and created_at <= '${end_date}'
+          group by DATE_FORMAT(created_at,'%Y-%m-%d')`)
+
+        const start = new Date(start_date)
+        const end = new Date(end_date)
+
+        const numberOfDays = Math.abs((start - end) / (1000 * 60 * 60 * 24));
+
+        const dates = []
+
+        for (let index = 0; index <= numberOfDays; index++) {
+          let currentDate = new Date(start_date);
+          currentDate = currentDate.setDate(currentDate.getDate() + index);
+          currentDate = new Intl.DateTimeFormat("en-GB").format(currentDate);
+          const [day, month, year] = currentDate.split("/");
+          currentDate = `${year}-${month}-${day}`;
+
+          dates.push(currentDate);
+        }
+
+        let data = dates.reduce((accumulator, currentDate) => {
+          const selectedData = sales?.find(({ date }) => date === currentDate);
+
+          if (selectedData) {
+            accumulator.push(selectedData);
+          } else {
+            accumulator.push({ date: currentDate, total_sales: 0 });
+          }
+
+          return accumulator;
+        }, []);
+
+        return res.status(200).send({
+          success: true,
+          message: "Data fetched successfully",
+          data
+        });
+
+      } else {
+        return res.status(400).send({
+          success: false,
+          message: "User unauthorized",
+        });
+      }
+    } catch (error) {
+      return next(error)
+    }
   }
 };

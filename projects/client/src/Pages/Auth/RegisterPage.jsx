@@ -1,13 +1,14 @@
-import { Box, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
+import { Box, Container, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { VisibilityOff, Visibility } from '@mui/icons-material';
+import { VisibilityOff, Visibility, HelpOutline } from '@mui/icons-material';
 import axios from "axios";
 import { API_URL } from "../../helper";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { loginAction } from "../../Redux/Actions/userAction";
 import Button from "../../Components/atoms/Button";
+import Text from "../../Components/atoms/Text";
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -33,13 +34,13 @@ const RegisterPage = () => {
     const [disableSignUp, setDisableSignUp] = useState(false)
     const [submitData, setSubmitData] = useState(false)
 
-    const handleButtonAvailability = (email) => {
+    const handleCheckEmail = (email) => {
         if (email === "") {
             setEmailValidity("null")
             setEmailInfo()
             setDisableAvailability(true)
         } else if (email.includes("@") && email.includes(".com")) {
-            setEmailValidity("null")
+            setEmailValidity(true)
             setDisableAvailability(false)
             setEmailInfo()
         } else {
@@ -49,25 +50,41 @@ const RegisterPage = () => {
         }
     }
 
-    const handleCheckEmail = async (email) => {
-        try {
-            let dataEmail = await axios.get(`${API_URL}/users/userData`)
-            let index = dataEmail.data.findIndex(val => val.email === email)
-            if (index > 0) {
-                setDisableAvailability(true)
-                setEmailAvailability(false)
-                setEmailValidity(false)
-                setEmailInfo("This email is already registered")
-            } else {
-                setDisableAvailability(true)
-                setEmailAvailability(true)
-                setEmailValidity("null")
-                setEmailInfo("Nice! This email is available")
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    // const handleButtonAvailability = (email) => {
+    //     if (email === "") {
+    //         setEmailValidity("null")
+    //         setEmailInfo()
+    //         setDisableAvailability(true)
+    //     } else if (email.includes("@") && email.includes(".com")) {
+    //         setEmailValidity("null")
+    //         setDisableAvailability(false)
+    //         setEmailInfo()
+    //     } else {
+    //         setEmailInfo("Please fill in with a proper email address")
+    //         setEmailValidity(false)
+    //         setDisableAvailability(true)
+    //     }
+    // }
+
+    // const handleCheckEmail = async (email) => {
+    //     try {
+    //         let dataEmail = await axios.get(`${API_URL}/users/userData`)
+    //         let index = dataEmail.data.findIndex(val => val.email === email)
+    //         if (index > 0) {
+    //             setDisableAvailability(true)
+    //             setEmailAvailability(false)
+    //             setEmailValidity(false)
+    //             setEmailInfo("This email is already registered")
+    //         } else {
+    //             setDisableAvailability(true)
+    //             setEmailAvailability(true)
+    //             setEmailValidity("null")
+    //             setEmailInfo("Nice! This email is available")
+    //         }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     const handleCheckPassword = (password) => {
         let temp = password.split("")
@@ -158,23 +175,27 @@ const RegisterPage = () => {
 
     const handleRegister = async (name, email, phone_number, password) => {
         try {
-            if (name && emailAvailability && passwordValidity && PasswordConfValidity) {
-                // setDisableSignUp(true)
-                setSubmitData(true)
-                let signup = await axios.post(`${API_URL}/users/register`, {
-                    name,
-                    email,
-                    phone_number,
-                    password
-                })
-                navigate('/')
-                dispatch(loginAction(signup.data))
+            setSubmitData(true)
+            let signup = await axios.post(`${API_URL}/users/register`, {
+                name,
+                email,
+                phone_number,
+                password
+            })
 
-                Cookies.set('userToken', signup.data.token, { expires: 1, secure: true })
-            }
+            console.log('signup', signup)
+
+            navigate('/')
+            dispatch(loginAction(signup.data))
+
+            Cookies.set('userToken', signup.data.token, { expires: 1, secure: true })
+
         } catch (error) {
+            if (error.response.data.message === "Email already registered") {
+                setEmailValidity(false)
+                setEmailInfo("Email is already registered. Please fill in a different one")
+            }
             setSubmitData(false)
-            // setDisableSignUp(false)
             console.log(error)
         }
     }
@@ -197,30 +218,26 @@ const RegisterPage = () => {
                             autoComplete="fullName"
                             onChange={(e) => setName(e.target.value)}
                         />
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Box sx={{ flexGrow: 1, mr: 1 }}>
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    id="email"
-                                    label="Enter your email"
-                                    name="email"
-                                    autoComplete="email"
-                                    onChange={(e) => {
-                                        setEmail(e.target.value);
-                                        handleButtonAvailability(e.target.value)
-                                        setEmailAvailability(false)
-                                    }}
-                                    helperText={emailInfo}
-                                    color={emailAvailability ? "success" : null}
-                                    error={emailValidity === "null" ? null : !emailValidity}
-                                />
-                            </Box>
-                            <Box>
-                                <Button variant='contained' disabled={disableAvailability} onClick={() => handleCheckEmail(email)}>CHECK AVAILABILITY</Button>
-                            </Box>
-                        </Box>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Enter your email"
+                            name="email"
+                            autoComplete="email"
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                handleCheckEmail(e.target.value)
+                                // handleButtonAvailability(e.target.value)
+                                // setEmailAvailability(false)
+                            }}
+                            helperText={emailInfo}
+                            color={emailAvailability ? "success" : null}
+                            error={emailValidity === "null" ? null : !emailValidity}
+                        />
+                        {/* </Box>
+                        </Box> */}
                         <TextField
                             margin="normal"
                             required
@@ -278,7 +295,8 @@ const RegisterPage = () => {
                             width='100%'
                             variant="contained"
                             color="primary"
-                            disabled={name && emailAvailability && phone && passwordValidity === true && PasswordConfValidity === true ? disableSignUp : true}
+                            disabled={name && emailValidity && phone && passwordValidity === true && PasswordConfValidity === true ? disableSignUp : true}
+                            // disabled={name && emailAvailability && phone && passwordValidity === true && PasswordConfValidity === true ? disableSignUp : true}
                             onClick={() => handleRegister(name, email, phone, password)}
                             isSubmitting={submitData}
                         >

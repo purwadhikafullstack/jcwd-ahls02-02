@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem, Divider } from '@mui/material'
+import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem, Divider, Badge } from '@mui/material'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { logoutAction } from '../Redux/Actions/userAction';
 import Cookies from 'js-cookie';
 import VerifiedIcon from '@mui/icons-material/Verified';
-import { Category, History, HowToReg, LoginRounded, Medication, MonetizationOn, Send } from '@mui/icons-material';
+import { Category, History, HowToReg, LoginRounded, Medication, MonetizationOn, Send, ShoppingCart, ShoppingCartOutlined } from '@mui/icons-material';
 import axios from 'axios'
 import { API_URL, API_IMAGE_URL } from '../helper';
 import { toast } from "react-hot-toast"
@@ -23,12 +23,13 @@ const Navbar = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
-    const { name, verified_status, role, profile_picture } = useSelector((state) => {
+    const { name, verified_status, role, profile_picture, cart } = useSelector((state) => {
         return {
             name: state.userReducer.name,
             verified_status: state.userReducer.verified_status,
             role: state.userReducer.role,
-            profile_picture: state.userReducer.profile_picture
+            profile_picture: state.userReducer.profile_picture,
+            cart: state.userReducer.cart,
         }
     })
 
@@ -196,7 +197,14 @@ const Navbar = () => {
                         <Box sx={{ flexGrow: 1, mr: 2 }}>
                             <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                                 {verified_status === 'verified' ?
-                                    <VerifiedIcon sx={{ mr: 1 }} color='primary' />
+                                    <>
+                                        <IconButton onClick={handleNavigateCart}>
+                                            <Badge color="primary" badgeContent={cart.length}>
+                                                <ShoppingCartOutlined color='grey.900' />
+                                            </Badge>
+                                        </IconButton>
+                                        <VerifiedIcon sx={{ mr: 1, ml: 2 }} color='primary' />
+                                    </>
                                     :
                                     null
                                 }
