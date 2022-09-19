@@ -267,22 +267,45 @@ module.exports = {
           orderIds = orderIds.substring(0, orderIds.length - 2);
 
           const orderContents = await dbQuery(
-            `select id, id_order, id_stock, product_name, product_image, quantity, selling_price, unit from order_content where id_order IN (${orderIds})`
+            `select id, id_order, id_stock, id_prescription_content, product_name, product_image, quantity, selling_price, unit from order_content where id_order IN (${orderIds})`
+          );
+          const prescriptionContents = await dbQuery(
+            `SELECT * from prescription_content where id_order IN (${orderIds})`
           );
 
-          orderList.forEach((orderListValue, index) => {
+          const tempOrderList = orderList.map((val) => {
+            return { ...val };
+          });
+
+          tempOrderList.forEach((orderListValue) => {
             let content = [];
             orderContents.forEach((orderContentValue) => {
               if (orderListValue.id === orderContentValue.id_order) {
-                content.push({
-                  id_content: orderContentValue.id,
-                  id_stock: orderContentValue.id_stock,
-                  product_name: orderContentValue.product_name,
-                  image: orderContentValue.product_image,
-                  quantity: orderContentValue.quantity,
-                  selling_price: orderContentValue.selling_price,
-                  unit: orderContentValue.unit,
-                });
+                if (orderContentValue.id_prescription_content === null) {
+                  content.push(orderContentValue);
+                } else {
+                  if (
+                    content.length < 1 ||
+                    !content[content.length - 1].hasOwnProperty("ingredients") ||
+                    content[content.length-1].ingredients[0].id_prescription_content !== orderContentValue.id_prescription_content
+                  ) {
+                    prescriptionContents.forEach((prescriptionContentValue) => {
+                      if (
+                        prescriptionContentValue.id ===
+                        orderContentValue.id_prescription_content
+                      ) {
+                        content.push({
+                          ...prescriptionContentValue,
+                          ingredients: [orderContentValue],
+                        });
+                      }
+                    });
+                  } else {
+                    content[content.length - 1].ingredients.push(
+                      orderContentValue
+                    );
+                  }
+                }
               }
             });
             orderListValue.content = content;
@@ -291,8 +314,8 @@ module.exports = {
           return res.status(200).send({
             success: true,
             message: "Order list successfully fetched",
-            data: orderList,
-            totalPage,
+            data: tempOrderList,
+            totalPage
           });
         } else {
           return res.status(200).send({
@@ -315,17 +338,20 @@ module.exports = {
   // get prescription list to be handled
   getPrescriptionList: async (req, res, next) => {
     try {
-
-      let { page, limit } = req.query
+      let { page, limit } = req.query;
 
       if (req.query.status) {
-        if (req.query.status === 'Cancelled' || req.query.status === 'Waiting for Prescription Validation') {
-          let allData = await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-            LEFT JOIN order_list o ON o.id = p.id_order where o.status = '${req.query.status}' order by p.updated_at desc`)
+        if (
+          req.query.status === "Cancelled" ||
+          req.query.status === "Waiting for Prescription Validation"
+        ) {
+          let allData =
+            await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+            LEFT JOIN order_list o ON o.id = p.id_order where o.status = '${req.query.status}' order by p.updated_at desc`);
 
-          let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`
+          let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`;
 
-          let totalPage = Math.ceil(allData.length / limit)
+          let totalPage = Math.ceil(allData.length / limit);
 
           let prescriptionList =
             await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
@@ -335,63 +361,61 @@ module.exports = {
             success: true,
             message: "success",
             data: prescriptionList,
-            totalPage
+            totalPage,
           });
-
         } else {
-          let filterStatus = ``
+          let filterStatus = ``;
           req.query.status.forEach((value, index) => {
             if (filterStatus) {
-              filterStatus += ` or o.status = '${value}'`
+              filterStatus += ` or o.status = '${value}'`;
             } else {
-              filterStatus += `o.status = '${value}'`
+              filterStatus += `o.status = '${value}'`;
             }
-          })
+          });
 
-          let allData = await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-          LEFT JOIN order_list o ON o.id = p.id_order where ${filterStatus} order by p.updated_at desc`)
+          let allData =
+            await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+          LEFT JOIN order_list o ON o.id = p.id_order where ${filterStatus} order by p.updated_at desc`);
 
-          let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`
+          let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`;
 
-          let totalPage = Math.ceil(allData.length / limit)
+          let totalPage = Math.ceil(allData.length / limit);
 
           let prescriptionList =
             await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
           LEFT JOIN order_list o ON o.id = p.id_order where ${filterStatus} order by p.updated_at desc ${filterLimit}`);
 
-
           return res.status(200).send({
             success: true,
             message: "success",
             data: prescriptionList,
-            totalPage
+            totalPage,
           });
         }
       } else {
-        let allData = await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-        LEFT JOIN order_list o ON o.id = p.id_order order by p.updated_at desc`)
+        let allData =
+          await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+        LEFT JOIN order_list o ON o.id = p.id_order order by p.updated_at desc`);
 
-        let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`
+        let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`;
 
-        let totalPage = Math.ceil(allData.length / limit)
+        let totalPage = Math.ceil(allData.length / limit);
 
         let prescriptionList =
           await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
         LEFT JOIN order_list o ON o.id = p.id_order order by p.updated_at desc ${filterLimit}`);
 
-
         return res.status(200).send({
           success: true,
           message: "success",
           data: prescriptionList,
-          totalPage
+          totalPage,
         });
-
       }
       // let prescriptionList =
       //   await dbQuery(`Select p.id as id_prescription, u.name, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
 
-      // LEFT JOIN order_list o ON o.id = p.id_order 
+      // LEFT JOIN order_list o ON o.id = p.id_order
       // LEFT JOIN users u ON u.id = p.id_user
       // order by p.updated_at desc`);
 
@@ -469,32 +493,44 @@ module.exports = {
                         valueProduct.unit_conversion) *
                       valueIngredient.quantity;
 
-                    insertPrescriptionOrderQuery += `(${id_order}, ${valueIngredient.id_stock
-                      }, ${prescriptionContentInsertIds[index].id}, '${valueProduct.name
-                      }', '${valueProduct.description}', '${valueProduct.image
-                      }', '${valueProduct.category_name}', ${valueIngredient.quantity
-                      }, ${valueProduct.selling_price / valueProduct.unit_conversion
-                      }, ${valueProduct.buying_price / valueProduct.unit_conversion
-                      }, '${valueIngredient.unit}' , ${valueProduct.unit_conversion
-                      })`;
+                    insertPrescriptionOrderQuery += `(${id_order}, ${
+                      valueIngredient.id_stock
+                    }, ${prescriptionContentInsertIds[index].id}, '${
+                      valueProduct.name
+                    }', '${valueProduct.description}', '${
+                      valueProduct.image
+                    }', '${valueProduct.category_name}', ${
+                      valueIngredient.quantity
+                    }, ${
+                      valueProduct.selling_price / valueProduct.unit_conversion
+                    }, ${
+                      valueProduct.buying_price / valueProduct.unit_conversion
+                    }, '${valueIngredient.unit}' , ${
+                      valueProduct.unit_conversion
+                    })`;
 
                     valueProduct.stock.forEach((valueStock) => {
                       if (valueStock.idStock === valueIngredient.id_stock) {
                         if (index === 0 && indexIngredient === 0) {
-                          updateStockPrescriptionQuery += ` SELECT ${valueIngredient.id_stock
-                            } as id, ${valueStock.quantity - valueIngredient.quantity
-                            } as new_quantity `;
+                          updateStockPrescriptionQuery += ` SELECT ${
+                            valueIngredient.id_stock
+                          } as id, ${
+                            valueStock.quantity - valueIngredient.quantity
+                          } as new_quantity `;
                         } else {
-                          updateStockPrescriptionQuery += `SELECT ${valueIngredient.id_stock
-                            }, ${valueStock.quantity - valueIngredient.quantity
-                            } `;
+                          updateStockPrescriptionQuery += `SELECT ${
+                            valueIngredient.id_stock
+                          }, ${
+                            valueStock.quantity - valueIngredient.quantity
+                          } `;
                         }
                       }
                     });
                   }
                 });
-                updateStockPrescriptionHistoryQuery += `(${valueIngredient.id_stock
-                  }, ${valueIngredient.quantity * -1}, 'Sales')`;
+                updateStockPrescriptionHistoryQuery += `(${
+                  valueIngredient.id_stock
+                }, ${valueIngredient.quantity * -1}, 'Sales')`;
 
                 if (index < formStockPrescription.length - 1) {
                   insertPrescriptionOrderQuery += `, `;
@@ -531,28 +567,35 @@ module.exports = {
           formStockGeneric.forEach((value, index) => {
             productData.forEach((valueProduct) => {
               if (valueProduct.id === value.id_product) {
-                insertGenericOrderQuery += `(${id_order}, ${value.id_stock
-                  }, ${null}, '${valueProduct.name}', '${valueProduct.description
-                  }', '${valueProduct.image}', '${valueProduct.category_name}', ${value.quantity
-                  }, ${valueProduct.selling_price}, ${valueProduct.buying_price
-                  }, '${value.unit}' , ${valueProduct.unit_conversion} )`;
+                insertGenericOrderQuery += `(${id_order}, ${
+                  value.id_stock
+                }, ${null}, '${valueProduct.name}', '${
+                  valueProduct.description
+                }', '${valueProduct.image}', '${valueProduct.category_name}', ${
+                  value.quantity
+                }, ${valueProduct.selling_price}, ${
+                  valueProduct.buying_price
+                }, '${value.unit}' , ${valueProduct.unit_conversion} )`;
 
                 valueProduct.stock.forEach((valueStock) => {
                   if (valueStock.idStock === value.id_stock) {
                     if (index === 0) {
-                      updateStockQuery += `SELECT ${value.id_stock} as id, ${valueStock.quantity - value.quantity
-                        } as new_quantity`;
+                      updateStockQuery += `SELECT ${value.id_stock} as id, ${
+                        valueStock.quantity - value.quantity
+                      } as new_quantity`;
                     } else {
-                      updateStockQuery += ` SELECT ${value.id_stock}, ${valueStock.quantity - value.quantity
-                        }`;
+                      updateStockQuery += ` SELECT ${value.id_stock}, ${
+                        valueStock.quantity - value.quantity
+                      }`;
                     }
                   }
                 });
               }
             });
 
-            updateStockHistoryQuery += `(${value.id_stock}, ${value.quantity * -1
-              }, 'Sales')`;
+            updateStockHistoryQuery += `(${value.id_stock}, ${
+              value.quantity * -1
+            }, 'Sales')`;
 
             if (index < formStockGeneric.length - 1) {
               insertGenericOrderQuery += ", ";
@@ -611,32 +654,46 @@ module.exports = {
   getHighlightReport: async (req, res, next) => {
     try {
       if (req.dataUser.role === "admin") {
-        let todaysProfit = await dbQuery(`select sum(subtotal) as profit from order_list where created_at >= CURDATE() && created_at < (CURDATE() + INTERVAL 1 DAY)`)
-        let yesterdaysProfit = await dbQuery(`select sum(subtotal) as profit from order_list where created_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY) && created_at < (DATE_SUB(CURDATE(), INTERVAL 1 DAY) + INTERVAL 1 DAY)`)
-        let profitGrowth = 0
+        let todaysProfit = await dbQuery(
+          `select sum(subtotal) as profit from order_list where created_at >= CURDATE() && created_at < (CURDATE() + INTERVAL 1 DAY)`
+        );
+        let yesterdaysProfit = await dbQuery(
+          `select sum(subtotal) as profit from order_list where created_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY) && created_at < (DATE_SUB(CURDATE(), INTERVAL 1 DAY) + INTERVAL 1 DAY)`
+        );
+        let profitGrowth = 0;
 
         if (todaysProfit && yesterdaysProfit) {
-          profitGrowth += (todaysProfit[0].profit - yesterdaysProfit[0].profit) / yesterdaysProfit[0].profit
+          profitGrowth +=
+            (todaysProfit[0].profit - yesterdaysProfit[0].profit) /
+            yesterdaysProfit[0].profit;
         } else if (todaysProfit && !yesterdaysProfit) {
-          profitGrowth += 1
+          profitGrowth += 1;
         } else if (!todaysProfit && yesterdaysProfit) {
-          profitGrowth -= 1
+          profitGrowth -= 1;
         }
 
-        let todaysOrder = await dbQuery(`select count(invoice_number) as orders from order_list where created_at >= CURDATE() && created_at < (CURDATE() + INTERVAL 1 DAY) and status not in('cancelled', 'cancelled prescription')`)
-        let yesterdaysOrder = await dbQuery(`select count(invoice_number) as orders from order_list where created_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY) && created_at < (DATE_SUB(CURDATE(), INTERVAL 1 DAY) + INTERVAL 1 DAY) and status not in('cancelled', 'cancelled prescription')`)
+        let todaysOrder = await dbQuery(
+          `select count(invoice_number) as orders from order_list where created_at >= CURDATE() && created_at < (CURDATE() + INTERVAL 1 DAY) and status not in('cancelled', 'cancelled prescription')`
+        );
+        let yesterdaysOrder = await dbQuery(
+          `select count(invoice_number) as orders from order_list where created_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY) && created_at < (DATE_SUB(CURDATE(), INTERVAL 1 DAY) + INTERVAL 1 DAY) and status not in('cancelled', 'cancelled prescription')`
+        );
 
-        let orderGrowth = 0
+        let orderGrowth = 0;
 
         if (todaysOrder[0] && yesterdaysOrder) {
-          orderGrowth += (todaysOrder[0].orders - yesterdaysOrder[0].orders) / yesterdaysOrder[0].orders
+          orderGrowth +=
+            (todaysOrder[0].orders - yesterdaysOrder[0].orders) /
+            yesterdaysOrder[0].orders;
         } else if (todaysOrder && !yesterdaysOrder) {
-          orderGrowth += 1
+          orderGrowth += 1;
         } else if (!todaysOrder && yesterdaysOrder) {
-          orderGrowth -= 1
+          orderGrowth -= 1;
         }
 
-        let awaitingConfirmation = await dbQuery(`select count(id) as orders from order_list where created_at >= CURDATE() && created_at < (CURDATE() + INTERVAL 1 DAY) and status='waiting for confirmation' or status='waiting for prescription validation'`)
+        let awaitingConfirmation = await dbQuery(
+          `select count(id) as orders from order_list where created_at >= CURDATE() && created_at < (CURDATE() + INTERVAL 1 DAY) and status='waiting for confirmation' or status='waiting for prescription validation'`
+        );
 
         return res.status(200).send({
           success: true,
@@ -646,8 +703,8 @@ module.exports = {
             profitGrowth,
             todaysOrder: todaysOrder[0].orders,
             orderGrowth,
-            awaitingConfirmation: awaitingConfirmation[0].orders
-          }
+            awaitingConfirmation: awaitingConfirmation[0].orders,
+          },
         });
       } else {
         return res.status(400).send({
@@ -656,234 +713,243 @@ module.exports = {
         });
       }
     } catch (error) {
-      return next(error)
+      return next(error);
     }
   },
   getDailyProfit: async (req, res, next) => {
     try {
       if (req.dataUser.role === "admin") {
         // let { start_date, end_date } = req.query
-        let { range, month } = req.query
+        let { range, month } = req.query;
         const d = new Date();
-        var todayDate = String(d.getDate()).padStart(2, '0');
-        var todayMonth = String(d.getMonth() + 1).padStart(2, '0');
+        var todayDate = String(d.getDate()).padStart(2, "0");
+        var todayMonth = String(d.getMonth() + 1).padStart(2, "0");
         var todayYear = d.getFullYear();
 
-        let data = []
+        let data = [];
 
         if (range === "Now") {
-          let sales = await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list  where month(created_at)='${todayMonth}' group by DATE_FORMAT(created_at,'%Y-%m-%d')`)
+          let sales = await dbQuery(
+            `select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list  where month(created_at)='${todayMonth}' group by DATE_FORMAT(created_at,'%Y-%m-%d')`
+          );
 
           const sales_data = [];
 
-          sales.forEach(value => {
-            sales_data[`${value.date}`] = value.total_sales
-          })
+          sales.forEach((value) => {
+            sales_data[`${value.date}`] = value.total_sales;
+          });
 
-          let totalDay = 0
+          let totalDay = 0;
 
-          if (todayMonth === '04' || todayMonth === '06' || todayMonth === '09' || todayMonth === '11') {
-            totalDay += 30
-          } else if (todayMonth === '02') {
-            totalDay += 28
+          if (
+            todayMonth === "04" ||
+            todayMonth === "06" ||
+            todayMonth === "09" ||
+            todayMonth === "11"
+          ) {
+            totalDay += 30;
+          } else if (todayMonth === "02") {
+            totalDay += 28;
           } else {
-            totalDay += 31
+            totalDay += 31;
           }
 
           for (let i = 0; i < totalDay; i++) {
             if (i < 9) {
-              let tempDate = `2022-${todayMonth}-0${i + 1}`
-              let tempSales = 0
+              let tempDate = `2022-${todayMonth}-0${i + 1}`;
+              let tempSales = 0;
               if (sales_data[`2022-${todayMonth}-0${i + 1}`]) {
-                tempSales += sales_data[`2022-${todayMonth}-0${i + 1}`]
+                tempSales += sales_data[`2022-${todayMonth}-0${i + 1}`];
               }
-              data.push({ date: tempDate, total_sales: tempSales })
+              data.push({ date: tempDate, total_sales: tempSales });
             } else {
-              let tempDate = `2022-${todayMonth}-${i + 1}`
-              let tempSales = 0
+              let tempDate = `2022-${todayMonth}-${i + 1}`;
+              let tempSales = 0;
               if (sales_data[`2022-${todayMonth}-${i + 1}`]) {
-                tempSales += sales_data[`2022-${todayMonth}-${i + 1}`]
+                tempSales += sales_data[`2022-${todayMonth}-${i + 1}`];
               }
-              data.push({ date: tempDate, total_sales: tempSales })
+              data.push({ date: tempDate, total_sales: tempSales });
             }
           }
-        } else if (range === '7 Days') {
-          let sales = await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
+        } else if (range === "7 Days") {
+          let sales =
+            await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
           where created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) and created_at <= CURDATE()
-          group by DATE_FORMAT(created_at,'%Y-%m-%d')`)
+          group by DATE_FORMAT(created_at,'%Y-%m-%d')`);
 
           const sales_data = [];
 
-          sales.forEach(value => {
-            sales_data[`${value.date}`] = value.total_sales
-          })
+          sales.forEach((value) => {
+            sales_data[`${value.date}`] = value.total_sales;
+          });
 
           if (parseInt(todayDate) > 7) {
-            let startDate = parseInt(todayDate) - 7
+            let startDate = parseInt(todayDate) - 7;
 
             for (let i = startDate; i < todayDate; i++) {
               if (i < 9) {
-                let tempDate = `2022-${todayMonth}-0${i + 1}`
-                let tempSales = 0
+                let tempDate = `2022-${todayMonth}-0${i + 1}`;
+                let tempSales = 0;
                 if (sales_data[`2022-${todayMonth}-0${i + 1}`]) {
-                  tempSales += sales_data[`2022-${todayMonth}-0${i + 1}`]
+                  tempSales += sales_data[`2022-${todayMonth}-0${i + 1}`];
                 }
-                data.push({ date: tempDate, total_sales: tempSales })
+                data.push({ date: tempDate, total_sales: tempSales });
               } else {
-                let tempDate = `2022-${todayMonth}-${i + 1}`
-                let tempSales = 0
+                let tempDate = `2022-${todayMonth}-${i + 1}`;
+                let tempSales = 0;
                 if (sales_data[`2022-${todayMonth}-${i + 1}`]) {
-                  tempSales += sales_data[`2022-${todayMonth}-${i + 1}`]
+                  tempSales += sales_data[`2022-${todayMonth}-${i + 1}`];
                 }
-                data.push({ date: tempDate, total_sales: tempSales })
+                data.push({ date: tempDate, total_sales: tempSales });
               }
             }
           } else {
-
           }
-        } else if (range === '30 Days') {
-          let sales = await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
+        } else if (range === "30 Days") {
+          let sales =
+            await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
           where created_at >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) and created_at <= CURDATE()
-          group by DATE_FORMAT(created_at,'%Y-%m-%d')`)
+          group by DATE_FORMAT(created_at,'%Y-%m-%d')`);
 
           const sales_data = [];
 
-          sales.forEach(value => {
-            sales_data[`${value.date}`] = value.total_sales
-          })
+          sales.forEach((value) => {
+            sales_data[`${value.date}`] = value.total_sales;
+          });
 
           if (parseInt(todayDate) > 30) {
-
-            let startDate = parseInt(todayDate) - 30
+            let startDate = parseInt(todayDate) - 30;
 
             for (let i = startDate; i < todayDate; i++) {
               if (i < 10) {
-                let tempDate = `2022-${todayMonth}-0${i}`
-                let tempSales = 0
+                let tempDate = `2022-${todayMonth}-0${i}`;
+                let tempSales = 0;
                 if (sales_data[`2022-${todayMonth}-0${i}`]) {
-                  tempSales += sales_data[`2022-${todayMonth}-0${i}`]
+                  tempSales += sales_data[`2022-${todayMonth}-0${i}`];
                 }
-                data.push({ date: tempDate, total_sales: tempSales })
+                data.push({ date: tempDate, total_sales: tempSales });
               } else {
-                let tempDate = `2022-${todayMonth}-${i}`
-                let tempSales = 0
+                let tempDate = `2022-${todayMonth}-${i}`;
+                let tempSales = 0;
                 if (sales_data[`2022-${todayMonth}-${i}`]) {
-                  tempSales += sales_data[`2022-${todayMonth}-${i}`]
+                  tempSales += sales_data[`2022-${todayMonth}-${i}`];
                 }
-                data.push({ date: tempDate, total_sales: tempSales })
+                data.push({ date: tempDate, total_sales: tempSales });
               }
             }
-
           } else {
-            let daysLeft = 30 - parseInt(todayDate)
-            let totalDate = 0
-            let lastMonthDate = 0
+            let daysLeft = 30 - parseInt(todayDate);
+            let totalDate = 0;
+            let lastMonthDate = 0;
 
-            if (todayMonth === '05' || todayMonth === '07' || todayMonth === '10') {
-              totalDate += 30
-              lastMonthDate += 30 - daysLeft
-            } else if (todayMonth === '03') {
-              totalDate += 28
-              lastMonthDate += 28 - daysLeft
+            if (
+              todayMonth === "05" ||
+              todayMonth === "07" ||
+              todayMonth === "10"
+            ) {
+              totalDate += 30;
+              lastMonthDate += 30 - daysLeft;
+            } else if (todayMonth === "03") {
+              totalDate += 28;
+              lastMonthDate += 28 - daysLeft;
             } else {
-              totalDate += 31
-              lastMonthDate += 31 - daysLeft
+              totalDate += 31;
+              lastMonthDate += 31 - daysLeft;
             }
 
             for (let i = lastMonthDate; i < totalDate; i++) {
-              let tempMonth = ""
-              if ((parseInt(todayMonth) - 1) < 10) {
-                tempMonth = `0${parseInt(todayMonth) - 1}`
+              let tempMonth = "";
+              if (parseInt(todayMonth) - 1 < 10) {
+                tempMonth = `0${parseInt(todayMonth) - 1}`;
               } else {
-                tempMonth = `${parseInt(todayMonth) - 1}`
+                tempMonth = `${parseInt(todayMonth) - 1}`;
               }
               if (i < 10) {
-                let tempDate = `2022-${tempMonth}-0${i}`
-                let tempSales = 0
+                let tempDate = `2022-${tempMonth}-0${i}`;
+                let tempSales = 0;
                 if (sales_data[`2022-${tempMonth}-0${i}`]) {
-                  tempSales += sales_data[`2022-${tempMonth}-0${i}`]
+                  tempSales += sales_data[`2022-${tempMonth}-0${i}`];
                 }
-                data.push({ date: tempDate, total_sales: tempSales })
+                data.push({ date: tempDate, total_sales: tempSales });
               } else {
-                let tempDate = `2022-${tempMonth}-${i}`
-                let tempSales = 0
+                let tempDate = `2022-${tempMonth}-${i}`;
+                let tempSales = 0;
                 if (sales_data[`2022-${tempMonth}-${i}`]) {
-                  tempSales += sales_data[`2022-${tempMonth}-${i}`]
+                  tempSales += sales_data[`2022-${tempMonth}-${i}`];
                 }
-                data.push({ date: tempDate, total_sales: tempSales })
+                data.push({ date: tempDate, total_sales: tempSales });
               }
             }
 
             for (let i = 0; i < todayDate; i++) {
               if (i < 9) {
-                let tempDate = `2022-${todayMonth}-0${i + 1}`
-                let tempSales = 0
+                let tempDate = `2022-${todayMonth}-0${i + 1}`;
+                let tempSales = 0;
                 if (sales_data[`2022-${todayMonth}-0${i + 1}`]) {
-                  tempSales += sales_data[`2022-${todayMonth}-0${i + 1}`]
+                  tempSales += sales_data[`2022-${todayMonth}-0${i + 1}`];
                 }
-                data.push({ date: tempDate, total_sales: tempSales })
+                data.push({ date: tempDate, total_sales: tempSales });
               } else {
-                let tempDate = `2022-${todayMonth}-${i + 1}`
-                let tempSales = 0
+                let tempDate = `2022-${todayMonth}-${i + 1}`;
+                let tempSales = 0;
                 if (sales_data[`2022-${todayMonth}-${i + 1}`]) {
-                  tempSales += sales_data[`2022-${todayMonth}-${i + 1}`]
+                  tempSales += sales_data[`2022-${todayMonth}-${i + 1}`];
                 }
-                data.push({ date: tempDate, total_sales: tempSales })
+                data.push({ date: tempDate, total_sales: tempSales });
               }
             }
-
           }
-        } else if (range === 'Specific Month') {
-          let sales = await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list  where month(created_at)='${month}' group by DATE_FORMAT(created_at,'%Y-%m-%d')`)
+        } else if (range === "Specific Month") {
+          let sales = await dbQuery(
+            `select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list  where month(created_at)='${month}' group by DATE_FORMAT(created_at,'%Y-%m-%d')`
+          );
 
           const sales_data = [];
 
-          sales.forEach(value => {
-            sales_data[`${value.date}`] = value.total_sales
-          })
+          sales.forEach((value) => {
+            sales_data[`${value.date}`] = value.total_sales;
+          });
 
-          let totalDay = 0
+          let totalDay = 0;
 
-          if (month === '04' || month === '06' || month === '09' || month === '11') {
-            totalDay += 30
-          } else if (month === '02') {
-            totalDay += 28
+          if (
+            month === "04" ||
+            month === "06" ||
+            month === "09" ||
+            month === "11"
+          ) {
+            totalDay += 30;
+          } else if (month === "02") {
+            totalDay += 28;
           } else {
-            totalDay += 31
+            totalDay += 31;
           }
 
           for (let i = 0; i < totalDay; i++) {
             if (i < 9) {
-              let tempDate = `2022-${month}-0${i + 1}`
-              let tempSales = 0
+              let tempDate = `2022-${month}-0${i + 1}`;
+              let tempSales = 0;
               if (sales_data[`2022-${month}-0${i + 1}`]) {
-                tempSales += sales_data[`2022-${month}-0${i + 1}`]
+                tempSales += sales_data[`2022-${month}-0${i + 1}`];
               }
-              data.push({ date: tempDate, total_sales: tempSales })
+              data.push({ date: tempDate, total_sales: tempSales });
             } else {
-              let tempDate = `2022-${month}-${i + 1}`
-              let tempSales = 0
+              let tempDate = `2022-${month}-${i + 1}`;
+              let tempSales = 0;
               if (sales_data[`2022-${month}-${i + 1}`]) {
-                tempSales += sales_data[`2022-${month}-${i + 1}`]
+                tempSales += sales_data[`2022-${month}-${i + 1}`];
               }
-              data.push({ date: tempDate, total_sales: tempSales })
+              data.push({ date: tempDate, total_sales: tempSales });
             }
           }
         }
         // let sales = await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list  where created_at >= '${start_date}' and created_at <= '${end_date}' group by DATE_FORMAT(created_at,'%Y-%m-%d')`)
 
-
-
-
-
         // const year = d.getFullYear();
         // const month = d.getMonth() + 1
         // const day = d.getDate();
 
-
-
         // const today = todayYear + '-' + todayMonth + '-' + todayDate;
-
 
         // let newData = []
 
@@ -891,14 +957,10 @@ module.exports = {
         // const end_date_array = start_date.split("-")
 
 
-        // console.log('start_date_array', start_date_array)
-        // console.log('end_date_array', end_date_array)
-        // console.log('today', today)
-        console.log('data', data)
         return res.status(200).send({
           success: true,
           message: "Data fetched successfully",
-          data
+          data,
         });
       } else {
         return res.status(400).send({
@@ -907,7 +969,7 @@ module.exports = {
         });
       }
     } catch (error) {
-      return next(error)
+      return next(error);
     }
-  }
+  },
 };
