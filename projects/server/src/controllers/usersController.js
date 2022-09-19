@@ -79,9 +79,12 @@ module.exports = {
           );
 
           await transporter.sendMail({
-            from: "LifeServe Admin",
+            from: {
+              name: 'LifeServe Admin',
+              address: 'help@LifeServe.com'
+            },
             to: email,
-            subject: "Email Verification",
+            subject: "Email Verification - LifeServe Account",
             html: `${verificationEmail}`,
           });
 
@@ -226,9 +229,12 @@ module.exports = {
         );
 
         await transporter.sendMail({
-          from: "LifeServe Admin",
+          from: {
+            name: 'LifeServe Admin',
+            address: 'help@LifeServe.com'
+          },
           to: email,
-          subject: "Email Verification",
+          subject: "Email Verification - LifeServe Account",
           html: `${verificationEmail}`,
         });
 
@@ -271,9 +277,12 @@ module.exports = {
       );
 
       await transporter.sendMail({
-        from: "Lifeserve Admin",
+        from: {
+          name: 'LifeServe Admin',
+          address: 'help@LifeServe.com'
+        },
         to: email,
-        subject: "Reset Password",
+        subject: "Reset Password - LifeServe Account",
         html: `${resetPassword}`,
       });
       return res.status(200).send({ ...finalResult[0], token });
@@ -1029,6 +1038,7 @@ module.exports = {
   updateOrder: async (req, res, next) => {
     try {
       const { order_id, new_status } = req.body;
+
       let currentStatus = await dbQuery(
         `select status from order_list where id=${order_id}`
       );
@@ -1052,6 +1062,58 @@ module.exports = {
                   status_after: new_status,
                 },
               });
+            } else if (new_status === "Cancelled") {
+              let updateStatus = await dbQuery(
+                `update order_list set status = '${new_status}' WHERE id=${order_id}`
+              );
+
+              // get quantity and current stock
+              const orderContent = await dbQuery(
+                `select oc.id, oc.id_stock, oc.quantity, s.quantity as current_stock from order_content oc JOIN stock s ON oc.id_stock = s.id WHERE oc.id_order = ${order_id}`
+              );
+
+              let stockUpdateQuery = "";
+              let stockHistoryUpdate = "";
+
+              orderContent.forEach((value, index) => {
+                if (index === 0) {
+                  // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
+                  stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock + value.quantity
+                    } as new_quantity`;
+                } else {
+                  // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
+                  stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock + value.quantity
+                    }`;
+                }
+
+                stockHistoryUpdate += `(${value.id_stock}, ${value.quantity
+                  }, 'Returned Order')`;
+
+                if (index < orderContent.length - 1) {
+                  stockHistoryUpdate += ",";
+                  stockUpdateQuery += ` UNION ALL `;
+                }
+              });
+
+              // update stock table
+              const updateStockTable = await dbQuery(
+                `UPDATE stock s JOIN (${stockUpdateQuery}) vals ON s.id = vals.id SET s.quantity = vals.new_quantity `
+              );
+
+              // add to stock_history
+              const addStockHistory = await dbQuery(
+                `INSERT INTO stock_history (id_stock, quantity, type) VALUES ${stockHistoryUpdate}`
+              );
+
+              return res.status(200).send({
+                success: true,
+                message: "Status successfully updated",
+                data: {
+                  status_before: currentStatus[0].status,
+                  status_after: new_status,
+                },
+              });
+
             } else {
               let updateStatus = await dbQuery(
                 `update order_list set status = '${new_status}' WHERE id=${order_id}`

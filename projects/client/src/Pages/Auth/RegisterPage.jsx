@@ -248,33 +248,49 @@ const RegisterPage = () => {
                             autoComplete="phoneNumber"
                             onChange={(e) => setPhone(e.target.value)}
                         />
-                        <FormControl fullWidth variant="outlined" margin="normal">
-                            <InputLabel
-                                htmlFor="outlined-adornment-password"
-                                required
-                            >Enter your password</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                onChange={(e) => handleCheckPassword(e.target.value)}
-                                type={showPassword ? 'text' : 'password'}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            aria-label="toggle password visibility"
-                                            // onMouseDown={handleMouseDownPassword}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                                label="Password"
-                                error={passwordValidity === "null" ? null : !passwordValidity}
-                                color={passwordInfo ? "success" : null}
-                            />
-                            <FormHelperText>{passwordInfo}</FormHelperText>
-                        </FormControl>
+                        <Tooltip title={
+                            <>
+                                <Text>
+                                    Password rules:
+                                    <ul>
+                                        <li>At least has 8 characters</li>
+                                        <li>Includes lowercase character</li>
+                                        <li>Includes uppercase character</li>
+                                        <li>Includes number</li>
+                                        <li>Includes symbol</li>
+                                    </ul>
+                                </Text>
+                            </>
+                        }
+                            placement="right">
+                            <FormControl fullWidth variant="outlined" margin="normal">
+                                <InputLabel
+                                    htmlFor="outlined-adornment-password"
+                                    required
+                                >Enter your password</InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-password"
+                                    onChange={(e) => handleCheckPassword(e.target.value)}
+                                    type={showPassword ? 'text' : 'password'}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                aria-label="toggle password visibility"
+                                                // onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    label="Password"
+                                    error={passwordValidity === "null" ? null : !passwordValidity}
+                                    color={passwordInfo ? "success" : null}
+                                />
+                                <FormHelperText>{passwordInfo}</FormHelperText>
+                            </FormControl>
+                        </Tooltip>
                         <TextField
                             margin="normal"
                             required

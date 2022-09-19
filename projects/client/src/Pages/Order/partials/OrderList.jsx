@@ -25,6 +25,7 @@ const OrderList = (props) => {
     refreshPage
   } = props;
 
+  let [openComplete, setOpenComplete] = useState(false)
   let [openConfirm, setOpenConfirm] = useState(false)
   let [orderId, setOrderId] = useState()
   let [openModalUpload, setOpenModalUpload] = useState(false)
@@ -53,6 +54,11 @@ const OrderList = (props) => {
   const handleOpenModalUpload = (order_id) => {
     setOrderId(order_id)
     setOpenModalUpload(true)
+  }
+
+  const handleOpenModalComplete = (order_id) => {
+    setOrderId(order_id)
+    setOpenComplete(true)
   }
 
   const handleCancelOrder = async () => {
@@ -102,6 +108,32 @@ const OrderList = (props) => {
 
       if (upload.data.success) {
         toast.success(`Payment proof uploaded`)
+        refreshPage();
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleReceiveOrder = async () => {
+    try {
+      // console.log('userId', userId)
+      // console.log('order_id', orderId)
+      let token = Cookies.get("userToken")
+      let data = {
+        new_status: "Completed",
+        order_id: orderId
+      }
+
+      let confirm = await axios.patch(`${API_URL}/users/order`, data, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+
+      if (confirm.data.success) {
+        toast.success(`Order complete`)
         refreshPage();
       }
 
@@ -190,6 +222,7 @@ const OrderList = (props) => {
                     orderData={value}
                     handleCancelOrder={handleOpenModalCancel}
                     handleUpload={handleOpenModalUpload}
+                    handleReceiveOrder={handleOpenModalComplete}
                   />
                 </Box>
               );
@@ -215,6 +248,13 @@ const OrderList = (props) => {
         text='Are you sure you want to cancel this order?'
         type='warning'
         handleConfirm={() => handleCancelOrder(orderId)}
+      />
+      <ModalConfirm
+        isOpen={openComplete}
+        toggle={() => setOpenComplete(!openComplete)}
+        text='Are you sure you have received the product?'
+        type='confirm'
+        handleConfirm={() => handleReceiveOrder(orderId)}
       />
       <ModalUploadPayment
         isOpen={openModalUpload}

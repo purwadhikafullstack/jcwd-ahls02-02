@@ -2,36 +2,18 @@ import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import Banner from "./Partials/Banner";
 import CategoryShop from "./Partials/CategoryShop";
 import ProductCard from "../../Components/ProductCard2";
-import { useSelector } from 'react-redux'
-
-let dataProduct = [
-    {
-        id: 1,
-        name: "Obat A",
-        image: "https://d2qjkwm11akmwu.cloudfront.net/products/737180_22-9-2021_10-30-30.png",
-        price: 12000
-    },
-    {
-        id: 2,
-        name: "Obat B",
-        image: "https://d2qjkwm11akmwu.cloudfront.net/products/679394_24-3-2019_23-22-7.jpg",
-        price: 13000
-    },
-    {
-        id: 3,
-        name: "Obat C",
-        image: "https://d2qjkwm11akmwu.cloudfront.net/products/317428_22-9-2021_10-57-22.png",
-        price: 14000
-    },
-    {
-        id: 4,
-        name: "Obat D",
-        image: "https://cdn-cas.orami.co.id/parenting/images/tremenza.width-800.jpg",
-        price: 15000
-    }
-]
+import { useDispatch, useSelector } from 'react-redux'
+import Cookies from "js-cookie";
+import axios from "axios";
+import { API_IMAGE_URL, API_URL } from "../../helper";
+import { getCartAction } from "../../Redux/Actions/userAction";
+import { useEffect } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
+    const navigate = useNavigate();
+
     const { idUser, status, cart } = useSelector((state) => {
         return {
             idUser: state.userReducer.id,
@@ -40,7 +22,49 @@ const Homepage = () => {
         }
     })
 
-    return <div>
+    const [dataProduct, setDataProduct] = useState()
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        getCartData();
+        getPopularProduct();
+    }, [])
+
+    const getCartData = async () => {
+        try {
+            const token = Cookies.get("userToken");
+            const res = await axios.get(`${API_URL}/users/cart/${idUser}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (res.data.success && res.data.data) {
+                const resDataData = res.data.data;
+                dispatch(getCartAction(resDataData));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getPopularProduct = async () => {
+        try {
+            const res = await axios.get(`${API_URL}/products/popular`);
+            if (res.data.success && res.data.data) {
+                setDataProduct(res.data.data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleDetail = (idProduct) => {
+        navigate(`/product/${idProduct}`)
+    }
+
+    return <div style={{ paddingBottom: '2.5rem' }}>
         <Box sx={{ mb: 3 }}>
             <Banner
                 idUser={idUser}
@@ -74,7 +98,7 @@ const Homepage = () => {
         </Container>
         <Container>
             <Grid container spacing={2}>
-                {dataProduct.map((value) => {
+                {dataProduct ? dataProduct.map((value) => {
                     return (
                         <Grid item xs={12} sm={3} key={value.id}>
                             <Box>
@@ -82,12 +106,14 @@ const Homepage = () => {
                                     id={value.id}
                                     name={value.name}
                                     price={value.price}
-                                    image={value.image}
+                                    image={`${API_IMAGE_URL}${value.image}`}
+                                    quantity={value.quantity}
+                                    handleDetail={handleDetail}
                                 />
                             </Box>
                         </Grid>
                     )
-                })}
+                }) : null}
             </Grid>
         </Container>
         <Container sx={{ mt: 2 }}>
