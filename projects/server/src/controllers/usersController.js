@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { join } = require("path");
 const { dbConf, dbQuery } = require("../config/database");
 const { hashPassword, createToken } = require("../config/encription");
 const { uploader } = require("../config/uploader");
@@ -260,7 +261,7 @@ module.exports = {
       );
 
       let resetPassword = fs
-        .readFileSync("../src/mail/resetPassword.html")
+        .readFileSync(join(__dirname, "../mail/resetPassword.html"))
         .toString();
 
       resetPassword = resetPassword.replace("#fullname", name);
