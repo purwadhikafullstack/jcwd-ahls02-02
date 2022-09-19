@@ -69,7 +69,7 @@ module.exports = {
           );
 
           let verificationEmail = fs
-            .readFileSync("./src/mail/verification.html")
+            .readFileSync(join(__dirname, "../mail/verification.html"))
             .toString();
 
           verificationEmail = verificationEmail.replace("#name", name);
@@ -216,7 +216,7 @@ module.exports = {
         );
 
         let verificationEmail = fs
-          .readFileSync("./src/mail/verification.html")
+          .readFileSync(join(__dirname, "../mail/verification.html"))
           .toString();
 
         verificationEmail = verificationEmail.replace("#name", name);
