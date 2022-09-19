@@ -20,12 +20,25 @@ import {
     ResponsiveContainer
 } from "recharts";
 
+const today = new Date();
+let array = today.setDate(today.getDate());
+array = new Intl.DateTimeFormat("en-GB").format(array);
+const [currentDay, currentMonth, currentYear] = array.split("/");
+
+
 const Charts = () => {
 
-    const [startDate, setStartDate] = useState()
-    const [endDate, setEndDate] = useState()
+    const [startDate, setStartDate] = useState(`${currentYear}-${currentMonth}-01`)
+    const [endDate, setEndDate] = useState(`${currentYear}-${currentMonth}-${currentDay}`)
     const [range, setRange] = useState("Now")
     const [month, setMonth] = useState("")
+
+    const [rangeStartDate, setRangeStartDate] = useState()
+    const [rangeEndDate, setRangeEndDate] = useState()
+
+    const [isLoading, setIsLoading] = useState(false)
+
+    const [showRange, setShowRange] = useState(false)
 
     const [data, setData] = useState()
 
@@ -35,31 +48,112 @@ const Charts = () => {
 
     const getChartData = async () => {
         try {
+            setIsLoading(true)
             let token = Cookies.get("userToken")
-            // let submit = await axios.get(`${API_URL}/admin/dailyProfit?start_date=${start}&end_date=${end}`, {
-            let submit = await axios.get(`${API_URL}/admin/dailyProfit?range=${range}&month=${month}`, {
+            let submit = await axios.get(`${API_URL}/admin/dailyReport?start_date=${startDate}&end_date=${endDate}`, {
+                // let submit = await axios.get(`${API_URL}/admin/dailyProfit?range=${range}&month=${month}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             })
 
-            console.log('submit.data.data', submit.data.data)
-            setData(submit.data.data)
+            if (submit.data.success) {
+                console.log('submit.data', submit.data)
+                setData(submit.data.data)
+                setIsLoading(false)
+            }
         } catch (error) {
             console.log(error)
         }
     }
 
-    const handleSubmit = () => {
+    // const getChartData = async () => {
+    //     try {
+    //         let token = Cookies.get("userToken")
+    //         // let submit = await axios.get(`${API_URL}/admin/dailyProfit?start_date=${start}&end_date=${end}`, {
+    //         let submit = await axios.get(`${API_URL}/admin/dailyProfit?range=${range}&month=${month}`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`
+    //             }
+    //         })
+
+    //         console.log('submit.data.data', submit.data.data)
+    //         setData(submit.data.data)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+
+    const handleSubmit = (start_date = startDate, end_date = endDate) => {
+        // if (rangeStartDate && rangeEndDate) {
+        //     let tempStartDate = rangeStartDate && convertDateToString(rangeStartDate);
+        //     let tempEndDate = rangeEndDate && convertDateToString(rangeEndDate);
+        //     getChartData(tempStartDate, tempEndDate)
+        // } else {
         getChartData()
+        // }
     }
 
-    // const convertDateToString = (fullDate) => {
-    //     const year = `${fullDate.$y}`;
-    //     const month = `0${1 + fullDate.$M}`.slice(-2);
-    //     const date = `0${fullDate.$D}`.slice(-2);
-    //     return `${year}-${month}-${date}`;
-    // };
+    const handleSetDate = (type) => {
+        let start = ''
+        let end = ''
+
+        setShowRange(false)
+
+        if (type === 'Now') {
+            start += `${currentYear}-${currentMonth}-01`
+            end += `${currentYear}-${currentMonth}-${currentDay}`
+        } else if (type === '7 Days') {
+            let array = today.setDate(today.getDate() - 6);
+            array = new Intl.DateTimeFormat("en-GB").format(array);
+            const [startDay, startMonth, startYear] = array.split("/");
+
+            start += `${startYear}-${startMonth}-${startDay}`
+            end += `${currentYear}-${currentMonth}-${currentDay}`
+        } else if (type === '30 Days') {
+            let array = today.setDate(today.getDate() - 29);
+            array = new Intl.DateTimeFormat("en-GB").format(array);
+            const [startDay, startMonth, startYear] = array.split("/");
+
+            start += `${startYear}-${startMonth}-${startDay}`
+            end += `${currentYear}-${currentMonth}-${currentDay}`
+        } else if (type === 'Custom') {
+            setShowRange(true)
+        }
+
+        setStartDate(start)
+        setEndDate(end)
+    }
+
+    const handleSetMonth = (month) => {
+        let start = ''
+        let end = ''
+
+        // const today = new Date();
+        // let array = await today.setDate(today.getDate());
+        // array = await new Intl.DateTimeFormat("en-GB").format(array);
+        // const [currentDay, currentMonth, currentYear] = array.split("/");
+
+        start = `${currentYear}-${month}-01`
+
+        if (month === '04' || month === '06' || month === '10' || month === '12') {
+            end = `${currentYear}-${month}-30`
+        } else if (month === '02') {
+            end = `${currentYear}-${month}-28`
+        } else {
+            end = `${currentYear}-${month}-31`
+        }
+
+        setStartDate(start)
+        setEndDate(end)
+    }
+
+    const convertDateToString = (fullDate) => {
+        const year = `${fullDate.$y}`;
+        const month = `0${1 + fullDate.$M}`.slice(-2);
+        const date = `0${fullDate.$D}`.slice(-2);
+        return `${year}-${month}-${date}`;
+    };
 
     // const handleSubmit = () => {
     //     let tempStartDate = startDate && convertDateToString(startDate);
@@ -80,9 +174,11 @@ const Charts = () => {
                 <form>
                     <Select
                         value={range}
-                        onChange={(e) => { setRange(e.target.value) }}
+                        onChange={(e) => {
+                            setRange(e.target.value)
+                            handleSetDate(e.target.value)
+                        }}
                         displayEmpty
-                        size="small"
                         sx={{ mr: 2, width: 200 }}
                     >
                         <MenuItem value="">
@@ -91,37 +187,42 @@ const Charts = () => {
                         <MenuItem value={`Now`}>Current Month</MenuItem>
                         <MenuItem value={`7 Days`}>Last 7 Days</MenuItem>
                         <MenuItem value={`30 Days`}>Last 30 Days</MenuItem>
-                        <MenuItem value={`Specific Month`}>Specific Month</MenuItem>
+                        <MenuItem value={`Custom`}>Custom Range</MenuItem>
                     </Select>
-                    {range === "Specific Month" ?
-                        <Select
-                            value={month}
-                            onChange={(e) => { setMonth(e.target.value) }}
-                            displayEmpty
-                            size="small"
-                            sx={{ width: 200, mr: 2 }}
-                        >
-                            <MenuItem value="">
-                                <Typography color='grey.400'>Choose Month</Typography>
-                            </MenuItem>
-                            <MenuItem value={`01`}>January</MenuItem>
-                            <MenuItem value={`02`}>February</MenuItem>
-                            <MenuItem value={`03`}>March</MenuItem>
-                            <MenuItem value={`04`}>April</MenuItem>
-                            <MenuItem value={`05`}>May</MenuItem>
-                            <MenuItem value={`06`}>June</MenuItem>
-                            <MenuItem value={`07`}>July</MenuItem>
-                            <MenuItem value={`08`}>August</MenuItem>
-                            <MenuItem value={`09`}>September</MenuItem>
-                            <MenuItem value={`10`}>October</MenuItem>
-                            <MenuItem value={`11`}>November</MenuItem>
-                            <MenuItem value={`12`}>December</MenuItem>
-                        </Select>
-                        : null}
-                </form>
+                </form >
+            </Box >
+            <Button variant="contained" onClick={handleSubmit} disabled={startDate && endDate ? false : true} isLoading={isLoading}>Submit</Button>
+            {/* <Button variant="contained" onClick={handleSubmit}>Submit</Button> */}
+        </Box >
+        {showRange ?
+            <Box sx={{ display: 'flex', justifyContent: 'flex-start', my: 3, alignItems: 'center' }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                        value={rangeStartDate}
+                        onChange={(newValue) => {
+                            setRangeStartDate(newValue);
+                            let tempStartDate = newValue && convertDateToString(newValue)
+                            setStartDate(tempStartDate)
+                        }}
+                        maxDate={rangeEndDate ? rangeEndDate : undefined}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                </LocalizationProvider>
+                <Text textAlign="center" sx={{ mx: 1 }}>until</Text>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                        value={rangeEndDate}
+                        onChange={(newValue) => {
+                            setRangeEndDate(newValue);
+                            let tempEndDate = newValue && convertDateToString(newValue)
+                            setEndDate(tempEndDate)
+                        }}
+                        minDate={rangeStartDate ? rangeStartDate : undefined}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                </LocalizationProvider>
             </Box>
-            <Button variant="contained" onClick={handleSubmit}>Submit</Button>
-        </Box>
+            : null}
         <Box sx={{ width: '100%', height: 300, mt: 2 }}>
             <ResponsiveContainer>
                 <LineChart
@@ -150,39 +251,7 @@ const Charts = () => {
                 </LineChart>
             </ResponsiveContainer>
         </Box>
-        {/* <Grid item xs={12} md={9}>
-            <Grid container alignItems="center">
-                <Grid item xs={5}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                            value={startDate}
-                            onChange={(newValue) => {
-                                setStartDate(newValue);
-                            }}
-                            maxDate={endDate ? endDate : undefined}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </LocalizationProvider>
-                </Grid>
-                <Grid item xs={2}>
-                    <Text textAlign="center">until</Text>
-                </Grid>
-                <Grid item xs={5}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                            value={endDate}
-                            onChange={(newValue) => {
-                                setEndDate(newValue);
-                            }}
-                            minDate={startDate ? startDate : undefined}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </LocalizationProvider>
-                </Grid>
-            </Grid>
-        </Grid> */}
-
-    </Box>
+    </Box >
 }
 
 export default Charts;
