@@ -260,7 +260,7 @@ module.exports = {
       );
 
       let resetPassword = fs
-        .readFileSync("./src/mail/resetPassword.html")
+        .readFileSync("../src/mail/resetPassword.html")
         .toString();
 
       resetPassword = resetPassword.replace("#fullname", name);
