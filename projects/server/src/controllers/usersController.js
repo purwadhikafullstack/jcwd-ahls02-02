@@ -39,48 +39,58 @@ module.exports = {
     try {
       const { name, email, phone_number, password } = req.body;
 
-      let insertData = await dbQuery(
-        `Insert into users (name, email, phone_number, password) values ('${name}', '${email}', '${phone_number}', '${hashPassword(
-          password
-        )}');`
-      );
+      const checkEmail = await dbQuery(`select id from users where email = '${email}'`)
 
-      if (insertData.insertId) {
-        let result = await dbQuery(
-          `Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id='${insertData.insertId}';`
-        );
-
-        let { id, role, name, email, phone_number } = result[0];
-
-        let token = createToken({ id, role, name, email, phone_number });
-
-        await dbQuery(
-          `Update users set token_verification = '${token}' WHERE id=${insertData.insertId};`
-        );
-
-        let verificationEmail = fs
-          .readFileSync("./mail/verification.html")
-          .toString();
-
-        verificationEmail = verificationEmail.replace("#name", name);
-        verificationEmail = verificationEmail.replace(
-          "#token",
-          `${process.env.FE_URL}/auth/verification/${token}`
-        );
-
-        await transporter.sendMail({
-          from: "LifeServe Admin",
-          to: email,
-          subject: "Email Verification",
-          html: `${verificationEmail}`,
-        });
-
-        return res.status(200).send({ ...result[0], token });
-      } else {
-        return res.status(404).send({
+      if (checkEmail[0]) {
+        return res.status(400).send({
           success: false,
-          message: "User not found",
+          message: "Email already registered",
         });
+      } else {
+
+        let insertData = await dbQuery(
+          `Insert into users (name, email, phone_number, password) values ('${name}', '${email}', '${phone_number}', '${hashPassword(
+            password
+          )}');`
+        );
+
+        if (insertData.insertId) {
+          let result = await dbQuery(
+            `Select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id='${insertData.insertId}';`
+          );
+
+          let { id, role, name, email, phone_number } = result[0];
+
+          let token = createToken({ id, role, name, email, phone_number });
+
+          await dbQuery(
+            `Update users set token_verification = '${token}' WHERE id=${insertData.insertId};`
+          );
+
+          let verificationEmail = fs
+            .readFileSync("./src/mail/verification.html")
+            .toString();
+
+          verificationEmail = verificationEmail.replace("#name", name);
+          verificationEmail = verificationEmail.replace(
+            "#token",
+            `${process.env.FE_URL}/auth/verification/${token}`
+          );
+
+          await transporter.sendMail({
+            from: "LifeServe Admin",
+            to: email,
+            subject: "Email Verification",
+            html: `${verificationEmail}`,
+          });
+
+          return res.status(200).send({ ...result[0], token });
+        } else {
+          return res.status(404).send({
+            success: false,
+            message: "User not found",
+          });
+        }
       }
     } catch (error) {
       return next(error);
@@ -205,7 +215,7 @@ module.exports = {
         );
 
         let verificationEmail = fs
-          .readFileSync("./mail/verification.html")
+          .readFileSync("./src/mail/verification.html")
           .toString();
 
         verificationEmail = verificationEmail.replace("#name", name);
@@ -250,7 +260,7 @@ module.exports = {
       );
 
       let resetPassword = fs
-        .readFileSync("./mail/resetPassword.html")
+        .readFileSync("./src/mail/resetPassword.html")
         .toString();
 
       resetPassword = resetPassword.replace("#fullname", name);

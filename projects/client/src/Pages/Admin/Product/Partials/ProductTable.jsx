@@ -52,11 +52,11 @@ const ProductTable = (props) => {
                     <Text>No Data Found</Text>
                 </Box>
                 : null : null}
-            <Box textAlign='right' sx={{ display: 'flex' }}>
+            {/* <Box textAlign='right' sx={{ display: 'flex' }}>
                 {productData ? productData.length > 0 ?
                     < Pagination count={totalPage} page={page} color='primary' onChange={clickPage} />
                     : null : null}
-            </Box>
+            </Box> */}
         </Box>
         <Box sx={{ display: { xs: 'block', md: 'none' } }}>
             <TableContainer>
@@ -84,11 +84,16 @@ const ProductTable = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Box textAlign='right' sx={{ display: 'flex' }}>
+            {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 {totalPage ?
                     <Pagination count={totalPage} page={page} color='primary' onChange={clickPage} />
                     : null}
-            </Box>
+                </Box> */}
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            {productData ? productData.length > 0 ?
+                < Pagination count={totalPage} page={page} color='primary' onChange={clickPage} />
+                : null : null}
         </Box>
     </>
     );

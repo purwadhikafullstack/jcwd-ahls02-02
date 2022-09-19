@@ -19,29 +19,32 @@ import AdminOrderPage from "./Pages/Admin/Order/AdminOrderPage";
 import AdminPrescriptionPage from "./Pages/Admin/Order/AdminPrescriptionPage";
 import AdminProductPage from "./Pages/Admin/Product/AdminProductPage";
 import AdminCategoryPage from "./Pages/Admin/Product/CategoryPage";
-import ReportPage from "./Pages/Admin/Report/ReportPage";
+import HistoryReportPage from "./Pages/Admin/Report/HistoryReportPage";
 import Cookies from "js-cookie";
 import { API_URL } from "./helper";
 import { useDispatch, useSelector } from "react-redux";
-import { loginAction } from "./Redux/Actions/userAction";
+import { getCartAction, loginAction } from "./Redux/Actions/userAction";
 import ForgotPasswordPage from "./Pages/Auth/ForgotPasswordPage";
 import NotFoundPage from "./Pages/404";
 import Navbar from "./Components/Navbar";
-import CustomizedMenus from "./Pages/Test";
 import PrescriptionListPage from "./Pages/Order/PrescriptionListPage";
+import SalesReportPage from "./Pages/Admin/Report/SalesReportPage";
+import Footer from "./Components/Footer";
 
 function App() {
 
   const dispatch = useDispatch();
-  const { role } = useSelector((state) => {
+  const { id, role } = useSelector((state) => {
     return {
-      role: state.userReducer.role
+      role: state.userReducer.role,
+      id: state.userReducer.id
     }
   })
 
 
   useEffect(() => {
     keepLogin()
+    getCartData()
   }, [])
 
   const keepLogin = async () => {
@@ -62,9 +65,27 @@ function App() {
     }
   }
 
+  const getCartData = async () => {
+    try {
+      const token = Cookies.get("userToken");
+      const res = await axios.get(`${API_URL}/users/cart/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.data.success && res.data.data) {
+        const resDataData = res.data.data;
+        dispatch(getCartAction(resDataData));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   return (
-    <div className="App">
+    <div className="App" style={{ position: 'relative', minHeight: '100vh' }}>
       <Navbar />
       <Routes>
         {role ? role === "admin" ?
@@ -75,7 +96,8 @@ function App() {
             <Route path='/admin/prescription' element={<AdminPrescriptionPage />} />
             <Route path='/admin/product' element={<AdminProductPage />} />
             <Route path='/admin/product/category' element={<AdminCategoryPage />} />
-            <Route path='/admin/report' element={<ReportPage />} />
+            <Route path='/admin/report' element={<HistoryReportPage />} />
+            <Route path='/admin/sales' element={<SalesReportPage />} />
           </>
           :
           <>
@@ -104,9 +126,14 @@ function App() {
         }
         <Route path='/auth/verification/:token' element={<VerificationPage />} />
         <Route path='*' element={<NotFoundPage />} />
-        <Route path='/test' element={<CustomizedMenus />} />
       </Routes>
-
+      {role ? role === "admin" ?
+        null
+        :
+        <Footer />
+        :
+        <Footer />
+      }
     </div>
   );
 }

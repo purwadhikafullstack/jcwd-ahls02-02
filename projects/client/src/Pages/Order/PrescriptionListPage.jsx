@@ -174,9 +174,11 @@ const PrescriptionListPage = () => {
             </Grid>
             <Grid item xs={12} md={9}>
                 {printCard()}
-                {prescriptionList ?
-                    <Pagination count={totalPage} color='primary' onChange={clickPage} />
-                    : null}
+                <Box display="flex" sx={{ justifyContent: "flex-end" }}>
+                    {prescriptionList ?
+                        <Pagination count={totalPage} color='primary' onChange={clickPage} />
+                        : null}
+                </Box>
             </Grid>
         </Grid>
         <ModalConfirm

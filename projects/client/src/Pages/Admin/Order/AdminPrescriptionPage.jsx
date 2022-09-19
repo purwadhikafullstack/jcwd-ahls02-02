@@ -3,12 +3,13 @@ import { API_IMAGE_URL, API_URL } from "../../../helper"
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { useEffect } from "react";
-import { Box, Card, Container, Divider, Grid, Typography } from "@mui/material";
+import { Box, Card, Container, Divider, Grid, Pagination, Typography } from "@mui/material";
 import Button from "../../../Components/atoms/Button";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import ModalConfirm from "../../../Components/ModalConfirm";
 import ModalAddPrescription from "./partials/ModalAddPrescription";
+import PrescriptionSidebar from "./partials/PrescriptionSidebar";
 
 const AdminPrescriptionPage = () => {
     const userData = useSelector((state) => {
@@ -22,29 +23,72 @@ const AdminPrescriptionPage = () => {
     let [prescriptionImage, setPrescriptionImage] = useState()
     let [selectedOrder, setSelectedOrder] = useState()
 
+    let [page, setPage] = useState(1)
+    let [limit, setLimit] = useState(5)
+    let [totalPage, setTotalPage] = useState()
+
+    let [selectedTab, setSelectedTab] = useState()
+    let [selectedStatus, setSelectedStatus] = useState("")
+
     useEffect(() => {
         getData();
-    }, [])
+    }, [selectedStatus])
 
-    const getData = async () => {
+    // useEffect(() => {
+    //     getData();
+    // }, [])
+
+    const getData = async (currentPage = page, currentLimit = limit, currentStatus = selectedStatus) => {
         try {
-            const data = await axios.get(`${API_URL}/admin/prescription`)
-            if (data.data.data.length > 0) {
-                setPrescriptionList(data.data.data)
+            if (currentStatus) {
+                let query = ``
+                if (currentStatus === 'Validated') {
+                    query += `status=Waiting for Payment&status=Processed&status=Sent&status=Completed`
+                } else {
+                    query += `status=${currentStatus}`
+                }
+                const data = await axios.get(`${API_URL}/admin/prescription?page=${currentPage}&limit=${currentLimit}&${query}`)
+                if (data.data.data.length > 0) {
+                    setPrescriptionList(data.data.data)
+                    setTotalPage(data.data.totalPage)
+                } else {
+                    setPrescriptionList()
+                }
             } else {
-                setPrescriptionList()
+                const data = await axios.get(`${API_URL}/admin/prescription?page=${currentPage}&limit=${currentLimit}`)
+                if (data.data.data.length > 0) {
+                    setPrescriptionList(data.data.data)
+                    setTotalPage(data.data.totalPage)
+                } else {
+                    setPrescriptionList()
+                }
+
             }
+
         } catch (error) {
             console.log(error)
         }
     }
+
+    // const getData = async () => {
+    //     try {
+    //         const data = await axios.get(`${API_URL}/admin/prescription`)
+    //         if (data.data.data.length > 0) {
+    //             setPrescriptionList(data.data.data)
+    //         } else {
+    //             setPrescriptionList()
+    //         }
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     const printStatus = (status) => {
         if (status === "Waiting for Prescription Validation") {
             return <Typography fontSize='12px' color="secondary" fontWeight="bold" sx={{ m: 1 }}>
                 Waiting for Validation
             </Typography>
-        } else if (status === "Cancelled") {
+        } else if (status === "Cancelled" || status === "Cancelled Prescription") {
             return <Typography fontSize='12px' color="error" fontWeight="bold" sx={{ m: 1 }}>
                 Cancelled
             </Typography>
@@ -151,8 +195,33 @@ const AdminPrescriptionPage = () => {
         }
     }
 
+    const clickPage = (event, value) => {
+        console.log(value)
+        setPage(value)
+        getData(value, limit)
+    }
+
     return <Container>
-        {printCard()}
+        <Grid container>
+            <Grid item xs={12} md={3}>
+                <PrescriptionSidebar
+                    selectedTab={selectedTab}
+                    setSelectedTab={setSelectedTab}
+                    setSelectedStatus={setSelectedStatus}
+                    setCurrentPage={setPage}
+                />
+
+            </Grid>
+            <Grid item xs={12} md={9}>
+                {printCard()}
+                <Box display="flex" sx={{ justifyContent: "flex-end" }}>
+                    {prescriptionList ?
+                        <Pagination count={totalPage} color='primary' onChange={clickPage} />
+                        : null}
+                </Box>
+            </Grid>
+
+        </Grid>
         <ModalConfirm
             isOpen={openConfirm}
             toggle={() => setOpenConfirm(!openConfirm)}

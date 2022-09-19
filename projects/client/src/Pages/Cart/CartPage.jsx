@@ -28,7 +28,7 @@ const CartPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       if (res.data.success && res.data.data) {
         const resDataData = res.data.data;
         dispatch(getCartAction(resDataData));
@@ -53,7 +53,7 @@ const CartPage = () => {
   }, []);
 
   return (
-    <Container sx={{ mt: 5 }}>
+    <Container sx={{ mt: 5, minHeight: '100%' }}>
       <Box>
         <Text fontWeight="bold" fontSize="h5">
           My Cart
