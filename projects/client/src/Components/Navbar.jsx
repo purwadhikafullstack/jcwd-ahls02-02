@@ -219,7 +219,7 @@ const Navbar = () => {
                                     <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_IMAGE_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
-                            {verified_status ?
+                            {verified_status === 'verified' ?
                                 <Menu
                                     sx={{ mt: '45px' }}
                                     id="menu-appbar"
@@ -248,10 +248,10 @@ const Navbar = () => {
                                         <MedicationIcon sx={{ mr: 1 }} />
                                         <Typography textAlign="center">Prescription</Typography>
                                     </MenuItem>
-                                    <MenuItem onClick={handleNavigateCart}>
+                                    {/* <MenuItem onClick={handleNavigateCart}>
                                         <ShoppingCartIcon sx={{ mr: 1 }} />
                                         <Typography textAlign="center">Cart</Typography>
-                                    </MenuItem>
+                                    </MenuItem> */}
                                     <MenuItem onClick={handleNavigateOrder}>
                                         <ShoppingBagIcon sx={{ mr: 1 }} />
                                         <Typography textAlign="center">Order</Typography>
@@ -298,10 +298,10 @@ const Navbar = () => {
                                         <MedicationIcon sx={{ mr: 1 }} />
                                         <Typography textAlign="center">Prescription</Typography>
                                     </MenuItem>
-                                    <MenuItem disabled onClick={handleNavigateCart}>
+                                    {/* <MenuItem disabled onClick={handleNavigateCart}>
                                         <ShoppingCartIcon sx={{ mr: 1 }} />
                                         <Typography textAlign="center">Cart</Typography>
-                                    </MenuItem>
+                                    </MenuItem> */}
                                     <MenuItem disabled onClick={handleNavigateOrder}>
                                         <ShoppingBagIcon sx={{ mr: 1 }} />
                                         <Typography textAlign="center">Order</Typography>
@@ -442,7 +442,7 @@ const Navbar = () => {
                                     <Avatar alt={`profile-picture-${name}`} src={profile_picture && `${API_IMAGE_URL}${profile_picture}`} />
                                 </IconButton>
                             </Tooltip>
-                            {verified_status ?
+                            {verified_status === 'verified' ?
                                 <Menu
                                     sx={{ mt: '45px' }}
                                     id="menu-appbar"

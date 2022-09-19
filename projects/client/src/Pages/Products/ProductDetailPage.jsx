@@ -252,19 +252,21 @@ const ProductDetailPage = () => {
 
 
 
-    return <Container sx={{ pt: 3, pb: 5 }}>
-        <BasicBreadcrumbs
-            prevLinks={link}
-            currentLink={detailProduct ? detailProduct.name : null}
-        />
-        {printProductInfo()}
-        <Box sx={{ mt: 10 }}>
-            <SimilarProducts
-                productData={similarProducts}
+    return <div style={{ paddingBottom: '2.5rem' }}>
+        <Container sx={{ pt: 3, pb: 5 }}>
+            <BasicBreadcrumbs
+                prevLinks={link}
+                currentLink={detailProduct ? detailProduct.name : null}
             />
-        </Box>
-        <ToastNotification />
-    </Container>
+            {printProductInfo()}
+            <Box sx={{ mt: 10 }}>
+                <SimilarProducts
+                    productData={similarProducts}
+                />
+            </Box>
+            <ToastNotification />
+        </Container>
+    </div>
 }
 
 export default ProductDetailPage;

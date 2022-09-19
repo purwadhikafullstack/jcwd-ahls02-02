@@ -5,7 +5,7 @@ import Button from "./atoms/Button";
 import Text from "./atoms/Text";
 
 const AdminOrderCard = (props) => {
-  const { orderData, handleCancelOrder, handleUpload } = props;
+  const { orderData, handleCancelOrder, handleUpload, handleReceiveOrder } = props;
   const { status } = orderData;
   let statusColor = "";
 
@@ -31,11 +31,11 @@ const AdminOrderCard = (props) => {
 
   // };
 
-  const handleConfirmOrder = () => {
-    if (status === "Waiting for Confirmation") {
-    } else if (status === "Processed") {
-    }
-  };
+  // const handleConfirmOrder = () => {
+  //   if (status === "Waiting for Confirmation") {
+  //   } else if (status === "Processed") {
+  //   }
+  // };
 
   return (
     <>
@@ -182,7 +182,7 @@ const AdminOrderCard = (props) => {
                     variant="contained"
                     color="primary"
                     size="small"
-                    onClick={() => handleCancelOrder(orderData.id)}
+                    onClick={() => handleReceiveOrder(orderData.id)}
                   >
                     Confirm Received
                   </Button>

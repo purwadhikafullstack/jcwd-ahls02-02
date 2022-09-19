@@ -21,7 +21,7 @@ const CheckoutPage = () => {
   const [shippingMethod, setShippingMethod] = useState(null);
   const [shippingPrice, setShippingPrice] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     addressList.forEach((value) => {
       if (value.default_address === "true") {
@@ -31,7 +31,7 @@ const CheckoutPage = () => {
     setIsLoading(false);
   }, []);
 
-  return (
+  return (<div style={{ paddingBottom: '2.5rem' }}>
     <Container sx={{ mt: 5, pb: 2 }}>
       <Box>
         <Text fontWeight="bold" fontSize="h5">
@@ -81,6 +81,7 @@ const CheckoutPage = () => {
         </>
       )}
     </Container>
+  </div>
   );
 };
 

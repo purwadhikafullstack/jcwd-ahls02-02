@@ -620,15 +620,13 @@ module.exports = {
 
         // update default unit stock
         const updateDefaultUnit = await dbQuery(
-          `update stock SET quantity = ${
-            defaultUnitStock.quantity - conversionInput
+          `update stock SET quantity = ${defaultUnitStock.quantity - conversionInput
           } WHERE id=${defaultUnitStock.idStock}`
         );
 
         // update conversion unit stock
         const updateConversionUnit = await dbQuery(
-          `update stock SET quantity = ${
-            conversionUnitStock.quantity + conversionResult
+          `update stock SET quantity = ${conversionUnitStock.quantity + conversionResult
           } where id = ${conversionUnitStock.idStock}`
         );
 
@@ -660,4 +658,24 @@ module.exports = {
       return next(error);
     }
   },
+  getPopularProduct: async (req, res, next) => {
+    try {
+      let data = await dbQuery(`select s.id_product as id, p.name, count(sh.quantity) as sold, p.selling_price as price, s.quantity, p.image from stock_history sh
+      LEFT JOIN stock s ON sh.id_stock = s.id
+      LEFT JOIN products p ON p.id = s.id_product
+      WHERE s.default_unit = 'true'
+      GROUP BY id_stock
+      ORDER BY sold desc limit 4`)
+
+      return res.status(200).send({
+        success: true,
+        message: "Data fetched successfully",
+        data
+      });
+
+      return res
+    } catch (error) {
+      return next(error)
+    }
+  }
 };
