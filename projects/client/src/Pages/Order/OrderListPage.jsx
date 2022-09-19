@@ -115,7 +115,7 @@ const OrderListPage = () => {
     }, [selectedStatus, sortBy, currentPage]);
 
     return (
-        <div>
+        <div style={{ paddingBottom: '2.5rem' }}>
             <Container>
                 {!isLoading && (
                     <Grid container>

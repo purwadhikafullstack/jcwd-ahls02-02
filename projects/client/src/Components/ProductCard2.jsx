@@ -69,7 +69,7 @@ const ProductCard = (props) => {
             <Button
               variant="contained"
               sx={{ width: "100%", mt: 1 }}
-              onClick={handleDetail}
+              onClick={() => handleDetail(id)}
             // onClick={() => navigate(`/product/${id}`)}
             >
               Detail

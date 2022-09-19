@@ -4,6 +4,7 @@ const { readToken } = require('../config/encription');
 
 route.get("/all", productsController.getAllProducts);
 route.get("/", productsController.getProducts);
+route.get("/popular", productsController.getPopularProduct);
 route.get("/categories", productsController.getCategories);
 route.post("/", readToken, productsController.addProduct);
 route.patch("/editData", readToken, productsController.editProductData);
@@ -18,6 +19,6 @@ route.get("/:product_id", productsController.getDetailProduct);
 route.get("/similarProduct/:product_id", productsController.getSimilarProducts);
 
 route.patch("/stock", productsController.updateStock);
-route.patch("/conversion/:product_id",readToken, productsController.unitConversion);
+route.patch("/conversion/:product_id", readToken, productsController.unitConversion);
 
 module.exports = route
