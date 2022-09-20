@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 import Button from "../../../../Components/atoms/Button";
 
 const Filter = (props) => {
-    const { getDataFilter, category } = props
+    const { getDataFilter, category, setPage } = props
     // const [category, setCategory] = useState()
 
     const [name, setName] = useState()
@@ -45,7 +45,8 @@ const Filter = (props) => {
 
     const handleChangeCategory = (id) => {
         setIdCategory(id)
-        getDataFilter(name, id, minPrice, maxPrice, sort)
+        setPage(1)
+        getDataFilter(name, id, minPrice, maxPrice, sort, 1)
     }
 
     return <div>
