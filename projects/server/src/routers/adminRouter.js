@@ -10,5 +10,6 @@ route.post("/order/prescription", readToken, adminController.addPrescriptionOrde
 route.patch("/payment", adminController.confirmPayment);
 route.get("/highlight", readToken, adminController.getHighlightReport);
 route.get("/dailyProfit", readToken, adminController.getDailyProfit);
+route.get("/dailyReport", readToken, adminController.getReportData);
 
 module.exports = route
