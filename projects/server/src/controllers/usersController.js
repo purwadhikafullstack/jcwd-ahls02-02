@@ -403,7 +403,7 @@ module.exports = {
                 `select profile_picture from users where id=${req.dataUser.id}`
               );
               if (currentPicture[0].profile_picture) {
-                fs.unlinkSync(`./src/public${currentPicture[0].profile_picture}`);
+                 fs.unlinkSync(join(__dirname, `../public${currentPicture[0].profile_picture}`));
               }
             } catch (error) {
               return next(error);
