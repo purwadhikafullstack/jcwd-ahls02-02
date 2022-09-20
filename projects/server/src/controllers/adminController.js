@@ -465,7 +465,7 @@ module.exports = {
 
           // add prescription content jika ada racikan
           const addPrescriptionContent = await dbQuery(
-            `INSERT INTO prescription_content (id_order, id_prescription, medicine_name) VALUES ${insertPrescriptionContentQuery}`
+            `INSERT INTO prescription_content (id_order, id_prescription, product_name) VALUES ${insertPrescriptionContentQuery}`
           );
 
           // let addPrescriptionContent = { affectedRows: 2 };
@@ -532,8 +532,8 @@ module.exports = {
                   valueIngredient.id_stock
                 }, ${valueIngredient.quantity * -1}, 'Sales')`;
 
-                if (index < formStockPrescription.length - 1) {
-                  insertPrescriptionOrderQuery += `, `;
+                if (index < formStockPrescription.length - 1 || indexIngredient < value.ingredients.length-1) {
+                  insertPrescriptionOrderQuery += ", ";
                   updateStockPrescriptionHistoryQuery += ", ";
                   updateStockPrescriptionQuery += ` UNION ALL `;
                 }
