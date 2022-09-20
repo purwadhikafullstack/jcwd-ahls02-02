@@ -243,9 +243,12 @@ module.exports = {
             `UPDATE category SET category_name = '${req.body.category_name}' WHERE id=${req.body.id}`
           );
           if (update) {
+            let data = await dbQuery("Select * from category;")
+
             return res.status(200).send({
               success: true,
               message: "Category successfully updated",
+              data
             });
           } else {
             return res.status(401).send({
@@ -547,7 +550,7 @@ module.exports = {
               `select image from products where id=${req.query.id}`
             );
             if (currentPicture[0].image) {
-              fs.unlinkSync(`./public/${currentPicture[0].image}`);
+              fs.unlinkSync(`./src/public${currentPicture[0].image}`);
             }
           } catch (error) {
             return next(error);

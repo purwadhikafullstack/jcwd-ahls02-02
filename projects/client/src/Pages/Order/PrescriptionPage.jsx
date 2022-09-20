@@ -87,68 +87,70 @@ const PrescriptionPage = () => {
         })
     }
 
-    return <Container sx={{ pt: 3 }}>
-        <BasicBreadcrumbs
-            prevLinks={link}
-            currentLink="Upload"
-        />
-        <Grid container spacing={2} sx={{ pt: 2 }}>
-            <Grid item xs={12} md={6}>
-                <Card variant="outlined" sx={{ pt: 2, height: "457px" }}>
-                    <Container>
-                        <Text fontSize="h6" fontWeight="bold">Upload your prescription</Text>
-                        <Divider />
-                        {newImage ?
-                            <Box display="flex" sx={{ flexDirection: "column", alignItems: "center", py: 5 }}>
-                                <img src={newImage} alt={`prescription image`} style={{ width: '30%', minWidth: '200px', maxHeight: '300px' }} />
-                                <Button onClick={() => setNewImage()} color='error' variant='outlined' sx={{ mt: 2 }}>Remove</Button>
-                            </Box>
-                            :
-                            <Box display="flex" sx={{ flexDirection: "column", alignItems: "center", pt: 10 }}>
-                                <img src="https://i.ibb.co/1KJ1bxP/upload.png" alt="upload image" style={{ width: '30%', minWidth: '250px' }} />
-                                <Button
-                                    variant="contained"
-                                    component="label"
-                                    sx={{ mt: 2 }}
-                                >
-                                    Upload Image
-                                    <input
-                                        type="file"
-                                        hidden
-                                        onChange={(e) => handleUpload(e)}
-                                    />
-                                </Button>
-                            </Box>
-                        }
-                    </Container>
-                </Card>
-            </Grid>
-            <Grid item xs={12} md={6}>
-                <Grid container direction="column" spacing={1} >
-                    <Grid item>
-                        <AddressSelection
-                            addressList={addressList}
-                            setAddressList={setAddressList}
-                            selectedAddress={selectedAddress}
-                            setSelectedAddress={setSelectedAddress}
-                            setShippingPrice={setShippingPrice}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <ShippingMethod
-                            selectedAddress={selectedAddress}
-                            shippingMethod={shippingMethod}
-                            setShippingMethod={setShippingMethod}
-                            setShippingPrice={setShippingPrice}
-                        />
+    return <div style={{ paddingBottom: '5rem' }}>
+        <Container sx={{ pt: 3 }}>
+            <BasicBreadcrumbs
+                prevLinks={link}
+                currentLink="Upload"
+            />
+            <Grid container spacing={2} sx={{ pt: 2 }}>
+                <Grid item xs={12} md={6}>
+                    <Card variant="outlined" sx={{ pt: 2, height: "457px" }}>
+                        <Container>
+                            <Text fontSize="h6" fontWeight="bold">Upload your prescription</Text>
+                            <Divider />
+                            {newImage ?
+                                <Box display="flex" sx={{ flexDirection: "column", alignItems: "center", py: 5 }}>
+                                    <img src={newImage} alt={`prescription image`} style={{ width: '30%', minWidth: '200px', maxHeight: '300px' }} />
+                                    <Button onClick={() => setNewImage()} color='error' variant='outlined' sx={{ mt: 2 }}>Remove</Button>
+                                </Box>
+                                :
+                                <Box display="flex" sx={{ flexDirection: "column", alignItems: "center", pt: 10 }}>
+                                    <img src="https://i.ibb.co/1KJ1bxP/upload.png" alt="upload image" style={{ width: '30%', minWidth: '250px' }} />
+                                    <Button
+                                        variant="contained"
+                                        component="label"
+                                        sx={{ mt: 2 }}
+                                    >
+                                        Upload Image
+                                        <input
+                                            type="file"
+                                            hidden
+                                            onChange={(e) => handleUpload(e)}
+                                        />
+                                    </Button>
+                                </Box>
+                            }
+                        </Container>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <Grid container direction="column" spacing={1} >
+                        <Grid item>
+                            <AddressSelection
+                                addressList={addressList}
+                                setAddressList={setAddressList}
+                                selectedAddress={selectedAddress}
+                                setSelectedAddress={setSelectedAddress}
+                                setShippingPrice={setShippingPrice}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <ShippingMethod
+                                selectedAddress={selectedAddress}
+                                shippingMethod={shippingMethod}
+                                setShippingMethod={setShippingMethod}
+                                setShippingPrice={setShippingPrice}
+                            />
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
-        </Grid>
-        <Box display="flex" sx={{ justifyContent: "flex-end" }}>
-            <Button variant="contained" sx={{ mt: 3 }} onClick={handleSubmit} disabled={shippingMethod && newImage ? isLoading : true}>Process Prescription</Button>
-        </Box>
-    </Container>
+            <Box display="flex" sx={{ justifyContent: "flex-end" }}>
+                <Button variant="contained" sx={{ mt: 3 }} onClick={handleSubmit} disabled={shippingMethod && newImage ? isLoading : true}>Process Prescription</Button>
+            </Box>
+        </Container>
+    </div>
 }
 
 export default PrescriptionPage;

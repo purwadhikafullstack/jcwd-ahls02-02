@@ -52,8 +52,6 @@ const LoginPage = () => {
         } catch (error) {
             if (error.response.data.message === "User not found") {
                 setSubmitData(false)
-                // setEmailValidity(false)
-                // setEmailInfo("Email or password is incorret")
                 setPasswordInfo("Email or password is incorrect")
             } else if (error.response.data.message === "Password Incorrect") {
                 setSubmitData(false)
@@ -134,14 +132,6 @@ const LoginPage = () => {
                             LOGIN
                         </Button>
                     </Box>
-                    <Button
-                        type="button"
-                        width='100%'
-                        variant="outlined"
-                        color="primary"
-                    >
-                        LOGIN WITH GOOGLE
-                    </Button>
                 </Grid>
                 <Grid item md={7} sx={{ display: { xs: 'none', md: 'block' } }}>
                     <img src='https://i.ibb.co/qsKyN61/Capture2.png' alt='login' style={{ width: '80%' }} />

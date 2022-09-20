@@ -131,7 +131,6 @@ const ProductDetailPage = () => {
                                         </Box>
                                         <Box display='flex' sx={{ mt: 2, mb: 1 }}>
                                             <Button variant='contained' startIcon={<ShoppingCartOutlined />} sx={{ mr: 2 }} onClick={handleAddToCart}>Add to cart</Button>
-                                            <Button variant='outlined'>Buy now</Button>
                                         </Box>
                                     </>
                                     :
