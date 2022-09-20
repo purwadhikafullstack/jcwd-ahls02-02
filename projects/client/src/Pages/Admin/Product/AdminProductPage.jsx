@@ -185,6 +185,11 @@ const AdminProductPage = () => {
         getDataFilter(name, idCategory, minPrice, maxPrice, sort, page)
     }
 
+    const closeAddModal = () => {
+        setOpenAddProduct(false)
+        getDataFilter(name, idCategory, minPrice, maxPrice, sort, page)
+    }
+
     const handleDelete = (id = idDelete) => {
         let token = Cookies.get("userToken")
 
@@ -212,6 +217,7 @@ const AdminProductPage = () => {
                         maxPrice={maxPrice}
                         sort={sort}
                         category={category}
+                        setPage={setPage}
                     />
                 </Grid>
                 <Grid item xs={12} md={9} sx={{ pt: 4 }}>
@@ -231,7 +237,8 @@ const AdminProductPage = () => {
         </Container>
         <ModalAddProduct
             open={openAddProduct}
-            close={() => setOpenAddProduct(false)}
+            // close={() => setOpenAddProduct(false)}
+            close={closeAddModal}
             categoryList={category}
         />
         <ModalEditProduct

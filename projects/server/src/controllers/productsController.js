@@ -124,7 +124,7 @@ module.exports = {
         LEFT JOIN stock s ON s.id_product = p.id
         LEFT JOIN category c ON c.id = p.id_category ${filter} ${sort};`);
 
-        let totalData = allData.length + 1;
+        let totalData = allData.length;
 
         if (req.query.limit) {
           if (req.query.page) {
@@ -331,6 +331,8 @@ module.exports = {
               stock,
               unit_conversion,
             } = JSON.parse(req.body.data);
+
+            console.log('stock', stock)
 
             let newProduct = await dbQuery(
               `INSERT INTO products (name, description, image, id_category, selling_price, buying_price, unit_conversion, needs_receipt) VALUE ('${name}', '${description}', ${newFileName}, ${id_category}, ${selling_price}, ${buying_price}, ${unit_conversion}, '${needs_receipt}');`
