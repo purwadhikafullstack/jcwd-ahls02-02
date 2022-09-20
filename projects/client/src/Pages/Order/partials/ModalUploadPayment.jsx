@@ -1,6 +1,7 @@
 import { FileUploadRounded } from "@mui/icons-material";
 import { Avatar, Box, Button, Modal, Typography } from "@mui/material";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import ModalConfirm from "../../../Components/ModalConfirm";
 // import Button from "../../../Components/atoms/Button";
 
@@ -24,23 +25,38 @@ const ModalUploadPayment = (props) => {
     const [newImage, setNewImage] = useState()
     const [openConfirm, setOpenConfirm] = useState(false)
     const [disableButton, setDisableButton] = useState(false)
+    const [inputKey, setInputKey] = useState(null);
 
     const handleUpload = (e) => {
-        setPaymentProof(e.target.files[0])
-        console.log(e.target.files[0])
-        let files = e.target.files;
-        let reader = new FileReader();
-        reader.readAsDataURL(files[0])
-        reader.onload = (e) => {
-            setNewImage(e.target.result)
-        }
+        if (
+            e.target.files[0].type === "image/jpeg" ||
+            e.target.files[0].type === "image/png" ||
+            e.target.files[0].type === "image/gif"
+          ) {
+            if (e.target.files[0].size <= 1000000) {
+                setPaymentProof(e.target.files[0])
+                let files = e.target.files;
+                let reader = new FileReader();
+                reader.readAsDataURL(files[0])
+                reader.onload = (e) => {
+                    setNewImage(e.target.result)
+                }
+
+            } else {
+                toast.error("Your file must not exceed 1MB")
+                setInputKey(Date.now);
+            }
+
+          } else {
+              toast.error("File type error")
+              setInputKey(Date.now);
+          }
     }
 
     const handleCancel = () => {
         setPaymentProof()
         setNewImage()
         toggle();
-
     }
 
     return (
@@ -68,6 +84,7 @@ const ModalUploadPayment = (props) => {
                             <input
                                 type="file"
                                 hidden
+                                key={inputKey || ""}
                                 onChange={(e) => handleUpload(e)}
                             />
                         </Button>
@@ -97,6 +114,7 @@ const ModalUploadPayment = (props) => {
                             <input
                                 type="file"
                                 hidden
+                                key={inputKey || ""}
                                 onChange={(e) => handleUpload(e)}
                             />
                         </Button>
