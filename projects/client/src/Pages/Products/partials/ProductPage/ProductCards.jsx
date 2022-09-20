@@ -26,6 +26,7 @@ const ProductCards = (props) => {
                   image={`${API_IMAGE_URL}${value.image}`}
                   quantity={value.quantity}
                   handleDetail={() => navigate(`/product/${value.id}`)}
+                  needs_receipt={value.needs_receipt}
                 />
               </Box>
             </Grid>
