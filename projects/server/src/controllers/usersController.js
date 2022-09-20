@@ -888,22 +888,46 @@ module.exports = {
           orderIds = orderIds.substring(0, orderIds.length - 2);
 
           const orderContents = await dbQuery(
-            `select id, id_order, id_stock, product_name, product_image, quantity, selling_price, unit from order_content where id_order IN (${orderIds})`
+            `select id, id_order, id_stock, id_prescription_content, product_name, product_image, quantity, selling_price, unit from order_content where id_order IN (${orderIds})`
           );
 
-          orderList.forEach((orderListValue, index) => {
+          const prescriptionContents = await dbQuery(
+            `SELECT * from prescription_content where id_order IN (${orderIds})`
+          );
+
+          const tempOrderList = orderList.map((val) => {
+            return { ...val };
+          });
+
+          tempOrderList.forEach((orderListValue) => {
             let content = [];
             orderContents.forEach((orderContentValue) => {
               if (orderListValue.id === orderContentValue.id_order) {
-                content.push({
-                  id_content: orderContentValue.id,
-                  id_stock: orderContentValue.id_stock,
-                  product_name: orderContentValue.product_name,
-                  image: orderContentValue.product_image,
-                  quantity: orderContentValue.quantity,
-                  selling_price: orderContentValue.selling_price,
-                  unit: orderContentValue.unit,
-                });
+                if (orderContentValue.id_prescription_content === null) {
+                  content.push(orderContentValue);
+                } else {
+                  if (
+                    content.length < 1 ||
+                    !content[content.length - 1].hasOwnProperty("ingredients") ||
+                    content[content.length-1].ingredients[0].id_prescription_content !== orderContentValue.id_prescription_content
+                  ) {
+                    prescriptionContents.forEach((prescriptionContentValue) => {
+                      if (
+                        prescriptionContentValue.id ===
+                        orderContentValue.id_prescription_content
+                      ) {
+                        content.push({
+                          ...prescriptionContentValue,
+                          ingredients: [orderContentValue],
+                        });
+                      }
+                    });
+                  } else {
+                    content[content.length - 1].ingredients.push(
+                      orderContentValue
+                    );
+                  }
+                }
               }
             });
             orderListValue.content = content;
@@ -912,7 +936,7 @@ module.exports = {
           return res.status(200).send({
             success: true,
             message: "Order list successfully fetched",
-            data: orderList,
+            data: tempOrderList,
             totalPage,
           });
         } else {

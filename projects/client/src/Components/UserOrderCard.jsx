@@ -94,7 +94,7 @@ const AdminOrderCard = (props) => {
                     }}
                   >
                     <img
-                      src={`${API_IMAGE_URL}${value.image}`}
+                      src={`${API_IMAGE_URL}${value.product_image}`}
                       style={{ width: "85px", maxWidth: "100%" }}
                     />
                   </Box>
@@ -104,17 +104,52 @@ const AdminOrderCard = (props) => {
                     {value.product_name}
                   </Text>
                   <Text>
-                    x {value.quantity} {value.unit}
+                    {!value.hasOwnProperty("ingredients") ? (
+                      <>
+                        x {value.quantity} {value.unit}
+                      </>
+                    ) : (
+                      <>
+                        Ingredients:{" "}
+                        {value.ingredients.map(
+                          (ingredientsValue, ingredientsIndex) => {
+                            return (
+                              <span key={`ingredient-${ingredientsIndex}`}>
+                                {ingredientsValue.product_name}
+                                {ingredientsIndex <
+                                  value.ingredients.length - 1 && `, `}
+                              </span>
+                            );
+                          }
+                        )}
+                      </>
+                    )}
                   </Text>
                   <Text sx={{ display: { xs: "block", sm: "none" } }}>
                     IDR
-                    {(value.quantity * value.selling_price).toLocaleString()}
+                    {!value.hasOwnProperty("ingredients") ? (
+                      <>
+                        {(
+                          value.quantity * value.selling_price
+                        ).toLocaleString()}
+                      </>
+                    ) : (
+                      <>{value.subtotal_selling_price.toLocaleString()}</>
+                    )}
                   </Text>
                 </Grid>
                 <Grid item xs={2} sx={{ display: { xs: "none", sm: "block" } }}>
                   <Text textAlign="right" fontSize="subtitle2">
                     IDR
-                    {(value.quantity * value.selling_price).toLocaleString()}
+                    {!value.hasOwnProperty("ingredients") ? (
+                      <>
+                        {(
+                          value.quantity * value.selling_price
+                        ).toLocaleString()}
+                      </>
+                    ) : (
+                      <>{value.subtotal_selling_price.toLocaleString()}</>
+                    )}
                   </Text>
                 </Grid>
               </Grid>
