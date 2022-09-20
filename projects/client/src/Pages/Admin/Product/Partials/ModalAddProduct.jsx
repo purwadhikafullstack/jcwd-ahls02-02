@@ -83,7 +83,6 @@ const ModalAddProduct = (props) => {
 
     const handleUpload = (e) => {
         setNewDataImage(e.target.files[0])
-        console.log(e.target.files[0])
         let files = e.target.files;
         let reader = new FileReader();
         reader.readAsDataURL(files[0])
@@ -131,16 +130,17 @@ const ModalAddProduct = (props) => {
                                     variant='outlined'
                                     onChange={(e) => {
                                         let temp = [...formStock]
-                                        if (temp[id]) {
-                                            temp[id].quantity = e.target.value
+                                        if (temp[1]) {
+                                            temp[1].quantity = e.target.value
+                                            temp[1].default_unit = false
                                         } else {
                                             temp.push({ quantity: '', unit: '', default_unit: false })
-                                            temp[id].quantity = e.target.value
+                                            temp[1].quantity = e.target.value
+                                            temp[1].default_unit = false
                                         }
                                         setFormStock(temp)
                                         checkAvailability(temp)
                                     }}
-                                // sx={{ mb: 2 }}
                                 />
                             </form>
                         </Grid>
@@ -154,11 +154,13 @@ const ModalAddProduct = (props) => {
                                         onChange={(e) => {
                                             handleChangeSmallUnit(e)
                                             let temp = [...formStock]
-                                            if (temp[id]) {
-                                                temp[id].unit = e.target.value
+                                            if (temp[1]) {
+                                                temp[1].unit = e.target.value
+                                                temp[1].default_unit = false
                                             } else {
                                                 temp.push({ quantity: '', unit: '', default_unit: false })
-                                                temp[id].unit = e.target.value
+                                                temp[1].unit = e.target.value
+                                                temp[1].default_unit = false
                                             }
                                             setFormStock(temp)
                                             checkAvailability(temp)
@@ -193,13 +195,8 @@ const ModalAddProduct = (props) => {
                                     variant='outlined'
                                     onChange={(e) => {
                                         let temp = [...formStock]
-                                        if (temp[id]) {
-                                            temp[id].quantity = e.target.value
-                                        } else {
-                                            temp.push({ quantity: '', unit: '', default_unit: true })
-                                            temp[id].quantity = e.target.value
-                                        }
-                                        console.log('id', id)
+                                        temp[0].quantity = e.target.value
+                                        temp[0].default_unit = true
                                         setFormStock(temp)
                                         checkAvailability(temp)
                                     }}
@@ -215,12 +212,8 @@ const ModalAddProduct = (props) => {
                                         onChange={(e) => {
                                             handleChangeDefaultUnit(e)
                                             let temp = [...formStock]
-                                            if (temp[id]) {
-                                                temp[id].unit = e.target.value
-                                            } else {
-                                                temp.push({ quantity: '', unit: '', default_unit: true })
-                                                temp[id].unit = e.target.value
-                                            }
+                                            temp[0].unit = e.target.value
+                                            temp[0].default_unit = true
                                             setFormStock(temp)
                                             checkAvailability(temp)
                                         }}
@@ -274,7 +267,6 @@ const ModalAddProduct = (props) => {
             }
         }).then((response) => {
             handleClose();
-            console.log(response.data)
             toast.success(`Product successfully added`)
 
         }).catch((error) => {
