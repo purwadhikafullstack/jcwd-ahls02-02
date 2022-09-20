@@ -200,7 +200,7 @@ const ProductPage = () => {
     };
 
     return (
-        <div style={{ paddingBottom: '2.5rem' }}>
+        <div style={{ paddingBottom: '5rem' }}>
             {!isLoading && (
                 <Container>
                     <Grid container>

@@ -162,33 +162,35 @@ const PrescriptionListPage = () => {
         getData(value, limit)
     }
 
-    return <Container>
-        <Grid container>
-            <Grid item xs={12} md={3}>
-                <PrescriptionSidebar
-                    selectedTab={selectedTab}
-                    setSelectedTab={setSelectedTab}
-                    setSelectedStatus={setSelectedStatus}
-                    setCurrentPage={setPage}
-                />
+    return <div style={{ paddingBottom: '5rem' }}>
+        <Container>
+            <Grid container>
+                <Grid item xs={12} md={3}>
+                    <PrescriptionSidebar
+                        selectedTab={selectedTab}
+                        setSelectedTab={setSelectedTab}
+                        setSelectedStatus={setSelectedStatus}
+                        setCurrentPage={setPage}
+                    />
+                </Grid>
+                <Grid item xs={12} md={9}>
+                    {printCard()}
+                    <Box display="flex" sx={{ justifyContent: "flex-end" }}>
+                        {prescriptionList ?
+                            <Pagination count={totalPage} color='primary' onChange={clickPage} />
+                            : null}
+                    </Box>
+                </Grid>
             </Grid>
-            <Grid item xs={12} md={9}>
-                {printCard()}
-                <Box display="flex" sx={{ justifyContent: "flex-end" }}>
-                    {prescriptionList ?
-                        <Pagination count={totalPage} color='primary' onChange={clickPage} />
-                        : null}
-                </Box>
-            </Grid>
-        </Grid>
-        <ModalConfirm
-            isOpen={openConfirm}
-            toggle={() => setOpenConfirm(!openConfirm)}
-            text='Are you sure you want to cancel this order?'
-            type='warning'
-            handleConfirm={() => cancelOrder(userData.id, orderId)}
-        />
-    </Container>
+            <ModalConfirm
+                isOpen={openConfirm}
+                toggle={() => setOpenConfirm(!openConfirm)}
+                text='Are you sure you want to cancel this order?'
+                type='warning'
+                handleConfirm={() => cancelOrder(userData.id, orderId)}
+            />
+        </Container>
+    </div>
 }
 
 export default PrescriptionListPage;

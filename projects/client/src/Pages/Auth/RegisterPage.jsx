@@ -319,15 +319,6 @@ const RegisterPage = () => {
                             SIGN UP
                         </Button>
                     </Box>
-                    <Button
-                        type="button"
-                        width='100%'
-                        variant="outlined"
-                        color="primary"
-                    >
-
-                        SIGN UP WITH GOOGLE
-                    </Button>
                 </Grid>
                 <Grid item md={7} sx={{ display: { xs: 'none', md: 'block' } }}>
                     <img src='https://static.vecteezy.com/system/resources/previews/005/867/677/non_2x/online-registration-illustration-design-concept-vector.jpg' alt='registration' style={{ width: '90%' }} />
