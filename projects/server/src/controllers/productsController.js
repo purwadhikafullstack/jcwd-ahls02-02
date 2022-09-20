@@ -2,6 +2,7 @@ const fs = require("fs");
 const { dbConf, dbQuery } = require("../config/database");
 const { hashPassword, createToken } = require("../config/encription");
 const { uploader } = require("../config/uploader");
+const { join } = require("path")
 
 module.exports = {
   // get all products
@@ -332,8 +333,6 @@ module.exports = {
               unit_conversion,
             } = JSON.parse(req.body.data);
 
-            console.log('stock', stock)
-
             let newProduct = await dbQuery(
               `INSERT INTO products (name, description, image, id_category, selling_price, buying_price, unit_conversion, needs_receipt) VALUE ('${name}', '${description}', ${newFileName}, ${id_category}, ${selling_price}, ${buying_price}, ${unit_conversion}, '${needs_receipt}');`
             );
@@ -552,7 +551,8 @@ module.exports = {
               `select image from products where id=${req.query.id}`
             );
             if (currentPicture[0].image) {
-              fs.unlinkSync(`./src/public${currentPicture[0].image}`);
+              fs.unlinkSync(join(__dirname, `../public${currentPicture[0].image}`));
+              // fs.unlinkSync(`./src/public${currentPicture[0].image}`);
             }
           } catch (error) {
             return next(error);
