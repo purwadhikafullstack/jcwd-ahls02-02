@@ -5,7 +5,6 @@ const { hashPassword, createToken } = require("../config/encription");
 const { uploader } = require("../config/uploader");
 const { transporter } = require("../config/nodemailer");
 const crypto = require("crypto");
-const { join } = require("path")
 
 module.exports = {
   userData: async (req, res, next) => {
