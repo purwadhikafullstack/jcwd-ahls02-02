@@ -44,17 +44,23 @@ const AdminCategoryPage = () => {
                 if (editCategory !== val.id) {
                     return <Box key={val.id} sx={{ display: 'flex', mb: 2 }}>
                         <TextField fullWidth defaultValue={val.category_name} sx={{ mr: 1 }} disabled={editCategory === val.id ? false : true} />
-                        <Button variant='contained' color='secondary' sx={{ mr: 1 }} onClick={() => setEditCategory(val.id)}>EDIT</Button>
-                        <Button variant='contained' color='error' sx={{ mr: 1 }} onClick={() => {
+                        <Button variant='contained' color='secondary' sx={{ mr: 1 }} onClick={() => {
+                            setEditCategory(val.id)
+                            setEditCategoryValue(val.category_name)
+                        }}>EDIT</Button>
+                        <Button variant='outlined' color='error' sx={{ mr: 1 }} onClick={() => {
                             handleCheckProduct(val.id)
-                            // handleDeleteCategory(val.id)
                             setIdDelete(val.id)
                         }}>DELETE</Button>
                     </Box>
                 } else {
                     return <Box sx={{ display: 'flex', mb: 2 }}>
                         <TextField fullWidth defaultValue={val.category_name} sx={{ mr: 1 }} disabled={editCategory === val.id ? false : true} onChange={(e) => setEditCategoryValue(e.target.value)} />
-                        <Button variant='contained' color='primary' sx={{ mr: 1 }} onClick={() => handleEditCategory(editCategoryValue, val.id)}>SAVE</Button>
+                        <Button variant='outlined' color='primary' sx={{ mr: 1 }} onClick={() => handleEditCategory(editCategoryValue, val.id)}>SAVE</Button>
+                        <Button variant='contained' color='error' sx={{ mr: 1 }} onClick={() => {
+                            setEditCategory(null)
+                            setEditCategoryValue()
+                        }}>CANCEL</Button>
                     </Box>
 
                 }
@@ -90,19 +96,38 @@ const AdminCategoryPage = () => {
                 console.log(error)
             })
     }
-    const handleEditCategory = (category_name, id) => {
-        let token = Cookies.get("userToken")
-        axios.patch(`${API_URL}/products/categories`, { id, category_name }, {
-            headers: {
-                'Authorization': `Bearer ${token}`
+
+    const handleEditCategory = async (category_name, id) => {
+        try {
+            let token = Cookies.get("userToken")
+            let edit = await axios.patch(`${API_URL}/products/categories`, { id, category_name }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            if (edit.data.success) {
+                setCategory(edit.data.data);
+                setEditCategory(null)
+                setEditCategoryValue()
+                toast.success('Category successfully updated')
             }
-        }).then((response) => {
-            setEditCategory(null)
-            toast.success('Category successfully updated')
-        }).catch((error) => {
-            toast.error('Something went wrong. Please try again')
-        })
+        } catch (error) {
+            console.log(error)
+        }
     }
+    // const handleEditCategory = (category_name, id) => {
+    //     let token = Cookies.get("userToken")
+    //     axios.patch(`${API_URL}/products/categories`, { id, category_name }, {
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`
+    //         }
+    //     }).then((response) => {
+    //         setEditCategory(null)
+    //         toast.success('Category successfully updated')
+    //     }).catch((error) => {
+    //         toast.error('Something went wrong. Please try again')
+    //     })
+    // }
 
     const handleDeleteCategory = (id) => {
         let token = Cookies.get("userToken")
@@ -151,7 +176,6 @@ const AdminCategoryPage = () => {
                 <Button variant='contained' color='primary' onClick={() => setMoreCategory(true)}>ADD MORE CATEGORY</Button>
                 : null
             }
-            {/* <Button variant='contained' color='primary' onClick={handleAddMoreCategory}>ADD MORE CATEGORY</Button> */}
         </form>
         <ToastNotification />
         <ModalConfirm

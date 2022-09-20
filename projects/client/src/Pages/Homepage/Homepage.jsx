@@ -64,7 +64,7 @@ const Homepage = () => {
         navigate(`/product/${idProduct}`)
     }
 
-    return <div style={{ paddingBottom: '2.5rem' }}>
+    return <div style={{ paddingBottom: '5rem' }}>
         <Box sx={{ mb: 3 }}>
             <Banner
                 idUser={idUser}
