@@ -55,12 +55,12 @@ const ProfilePicture = () => {
         setIsSubmitting(false);
         setFormIsChanged(false)
       } else {
-        toast.error("Please try again");
+        toast.error("Something went wrong, please try again");
         setIsSubmitting(false);
       }
     } catch (error) {
       console.log(error);
-      toast.error("There's an error. Please try again");
+      toast.error("Something went wrong, please try again");
     }
   };
 

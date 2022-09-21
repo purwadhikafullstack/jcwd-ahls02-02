@@ -91,11 +91,11 @@ const Address = () => {
         dispatch(editProfileAction({ address: res.data.data }));
         setAddressList(res.data.data);
       } else {
-        toast.error("Please try again");
+        toast.error("Something went wrong, please try again");
       }
     } catch (error) {
       console.log(error);
-      toast.error("Please try again");
+      toast.error("Something went wrong, please try again");
     }
   };
 

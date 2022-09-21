@@ -40,6 +40,7 @@ const ForgotPasswordPage = () => {
             setUserData(userData.data)
         } catch (error) {
             console.log(error)
+            toast.error("Something went wrong, please try again");
         }
     }
 
@@ -142,6 +143,7 @@ const ForgotPasswordPage = () => {
         }).catch((error) => {
             console.log(error)
             setDisableButton(false)
+            toast.error("Something went wrong, please try again");
         })
     }
 

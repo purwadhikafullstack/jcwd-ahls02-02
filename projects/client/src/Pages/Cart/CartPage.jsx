@@ -45,6 +45,7 @@ const CartPage = () => {
     } catch (error) {
       console.log(error);
       setIsLoading(false);
+      toast.error("Something went wrong, please try again");
     }
   };
 

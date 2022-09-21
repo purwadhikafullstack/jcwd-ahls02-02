@@ -32,6 +32,7 @@ const VerificationPage = () => {
             setUserData(userData.data)
         } catch (error) {
             console.log(error)
+            toast.error("Something went wrong, please try again");
         }
     }
 
@@ -50,6 +51,7 @@ const VerificationPage = () => {
         } catch (error) {
             setDisableButton(false)
             console.log(error)
+            toast.error("Something went wrong, please try again");
         }
     }
 

@@ -126,6 +126,7 @@ const ModalAddPrescription = (props) => {
       setProductData(getData.data);
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong, please try again");
     }
   };
 
@@ -617,6 +618,7 @@ const ModalAddPrescription = (props) => {
       }
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong, please try again");
     }
   };
 

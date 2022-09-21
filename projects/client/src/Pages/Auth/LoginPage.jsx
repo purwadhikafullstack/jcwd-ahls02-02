@@ -59,6 +59,7 @@ const LoginPage = () => {
             } else {
                 setSubmitData(false)
                 console.log(error)
+                toast.error("Something went wrong, please try again");
             }
         }
     }

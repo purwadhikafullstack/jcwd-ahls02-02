@@ -56,6 +56,7 @@ const ShippingMethod = (props) => {
     } catch (error) {
       console.log(error);
       setIsLoadingService(false);
+      toast.error("Something went wrong, please try again");
     }
   };
 

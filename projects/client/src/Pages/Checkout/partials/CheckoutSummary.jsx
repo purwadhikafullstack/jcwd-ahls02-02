@@ -64,6 +64,7 @@ const CheckoutSummary = (props) => {
     } catch (error) {
       console.log(error);
       setConfirmCheckout(false);
+      toast.error("Something went wrong, please try again");
     }
   };
 

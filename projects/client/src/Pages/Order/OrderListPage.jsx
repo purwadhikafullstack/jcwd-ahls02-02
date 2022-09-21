@@ -100,9 +100,12 @@ const OrderListPage = () => {
                 setOrderData(res.data.data);
                 setTotalPage(res.data.totalPage);
                 setIsLoading(false);
+            } else {
+                toast.error("Something went wrong, please try again");
             }
         } catch (error) {
             console.log(error);
+            toast.error("Something went wrong, please try again");
         }
     };
 
