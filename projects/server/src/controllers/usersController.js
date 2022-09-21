@@ -5,7 +5,6 @@ const { hashPassword, createToken } = require("../config/encription");
 const { uploader } = require("../config/uploader");
 const { transporter } = require("../config/nodemailer");
 const crypto = require("crypto");
-const { join } = require("path")
 
 module.exports = {
   userData: async (req, res, next) => {
@@ -404,7 +403,7 @@ module.exports = {
                 `select profile_picture from users where id=${req.dataUser.id}`
               );
               if (currentPicture[0].profile_picture) {
-                 fs.unlinkSync(join(__dirname, `../public${currentPicture[0].profile_picture}`));
+                fs.unlinkSync(join(__dirname, `../public${currentPicture[0].profile_picture}`));
               }
             } catch (error) {
               return next(error);
@@ -910,7 +909,7 @@ module.exports = {
                   if (
                     content.length < 1 ||
                     !content[content.length - 1].hasOwnProperty("ingredients") ||
-                    content[content.length-1].ingredients[0].id_prescription_content !== orderContentValue.id_prescription_content
+                    content[content.length - 1].ingredients[0].id_prescription_content !== orderContentValue.id_prescription_content
                   ) {
                     prescriptionContents.forEach((prescriptionContentValue) => {
                       if (

@@ -204,7 +204,7 @@ const ProductPage = () => {
         <Container>
           <Grid container>
             {/* Filter */}
-            <Grid xs={12} md={3} sx={{ p: 1 }}>
+            <Grid item xs={12} md={3} sx={{ p: 1 }}>
               <FilterProducts
                 getDataFilter={getDataFilter}
                 name={name}
@@ -216,7 +216,7 @@ const ProductPage = () => {
               />
             </Grid>
             {/* Product Cards */}
-            <Grid xs={12} md={9} sx={{ pt: 4, pl: 0 }}>
+            <Grid item xs={12} md={9} sx={{ pt: 4, pl: 0 }}>
               <ProductCards
                 productData={productData}
                 totalPage={totalPage}
