@@ -89,7 +89,7 @@ const Homepage = () => {
                 </Grid>
                 <Grid item xs={6}>
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <Button>
+                        <Button onClick={()=>navigate(`/product`)}>
                             See All Product
                         </Button>
                     </Box>
@@ -118,7 +118,7 @@ const Homepage = () => {
         </Container>
         <Container sx={{ mt: 2 }}>
             <Box sx={{ display: { xs: 'flex', md: 'none' }, justifyContent: 'center' }}>
-                <Button>
+                <Button onClick={()=>navigate(`/product`)}>
                     See All Product
                 </Button>
             </Box>
