@@ -191,7 +191,7 @@ const ModalAddPrescription = (props) => {
                   ? productData.map((valueProduct) => {
                       return (
                         <MenuItem
-                          key={`i-${valueProduct.id}`}
+                          key={`i-generic-${index}-${valueProduct.id}`}
                           value={valueProduct.id}
                         >
                           {valueProduct.name}
@@ -242,7 +242,7 @@ const ModalAddPrescription = (props) => {
                         return valueProduct.stock.map((valueStock) => {
                           return (
                             <MenuItem
-                              key={`i-${valueProduct.id}`}
+                              key={`i-generic-${index}-stock-${valueProduct.id}`}
                               value={valueStock.idStock}
                             >
                               {valueStock.unit}({valueStock.quantity})
@@ -305,6 +305,24 @@ const ModalAddPrescription = (props) => {
     });
     setSelectedProductConvert(productToConvert[0]);
     setOpenModalConvert(true);
+  };
+
+  const handleSelectIngredientUnit = (idProduct, idStock, prescriptionIndex, ingredientIndex) => {
+    let temp = [...formStockPrescription];
+    temp[prescriptionIndex].ingredients[ingredientIndex].id_stock = idStock;
+    productData.map((valueProduct) => {
+      if (valueProduct.id === idProduct) {
+        valueProduct.stock.map((valueStock) => {
+          if (valueStock.id === idStock) {
+            temp[prescriptionIndex].ingredients[ingredientIndex].unit =
+              valueStock.unit;
+            temp[prescriptionIndex].ingredients[ingredientIndex].default_unit =
+              valueStock.default_unit;
+          }
+        });
+      }
+    });
+    setFormStockPrescription(temp);
   };
 
   const printStockPrescription = () => {
@@ -408,7 +426,7 @@ const ModalAddPrescription = (props) => {
                         ? productData.map((valueProduct) => {
                             return (
                               <MenuItem
-                                key={`i-${valueProduct.id}`}
+                              key={`i-prescription-product-${index}-${indexIngredient}-${valueProduct.id}`}
                                 value={valueProduct.id}
                               >
                                 {valueProduct.name}
@@ -462,13 +480,13 @@ const ModalAddPrescription = (props) => {
                       value={valueIngredient.id_stock}
                       fullWidth
                       onChange={(e) => {
-                        let temp = [...formStockPrescription];
-                        temp[index].ingredients[indexIngredient].id_stock =
-                          e.target.value;
-                        setFormStockPrescription(temp);
+                        // let temp = [...formStockPrescription];
+                        // temp[index].ingredients[indexIngredient].id_stock =
+                        //   e.target.value;
+                        // setFormStockPrescription(temp);
+                        handleSelectIngredientUnit(valueIngredient.id_product, e.target.value, index, indexIngredient);
                       }}
                       displayEmpty
-                      disabled
                     >
                       <MenuItem value="">
                         <Typography color="grey.400">Choose One</Typography>
@@ -479,7 +497,7 @@ const ModalAddPrescription = (props) => {
                               return valueProduct.stock.map((valueStock) => {
                                 return (
                                   <MenuItem
-                                    key={`i-${valueProduct.id}`}
+                                  key={`i-prescription-unit-${index}-${indexIngredient}-${valueProduct.id}`}
                                     value={valueStock.idStock}
                                   >
                                     {valueStock.unit}({valueStock.quantity})

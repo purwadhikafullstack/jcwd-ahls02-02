@@ -489,15 +489,23 @@ module.exports = {
               value.ingredients.forEach((valueIngredient, indexIngredient) => {
                 productData.forEach((valueProduct) => {
                   if (valueProduct.id === valueIngredient.id_product) {
-                    subtotal_selling_price +=
-                      (valueProduct.selling_price /
-                        valueProduct.unit_conversion) *
-                      valueIngredient.quantity;
+                    if (valueIngredient.default_unit === "false") {
+                      subtotal_selling_price +=
+                        (valueProduct.selling_price /
+                          valueProduct.unit_conversion) *
+                        valueIngredient.quantity;
 
-                    subtotal_buying_price +=
-                      (valueProduct.buying_price /
-                        valueProduct.unit_conversion) *
-                      valueIngredient.quantity;
+                      subtotal_buying_price +=
+                        (valueProduct.buying_price /
+                          valueProduct.unit_conversion) *
+                        valueIngredient.quantity;
+                    } else {
+                      // Total price for default unit
+                      subtotal_selling_price +=
+                        valueProduct.selling_price * valueIngredient.quantity;
+                      subtotal_buying_price +=
+                        valueProduct.buying_price * valueIngredient.quantity;
+                    }
 
                     insertPrescriptionOrderQuery += `(${id_order}, ${
                       valueIngredient.id_stock
