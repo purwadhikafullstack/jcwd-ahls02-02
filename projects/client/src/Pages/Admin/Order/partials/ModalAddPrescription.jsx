@@ -25,6 +25,7 @@ import {
 } from "@mui/icons-material";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import { ToastNotification } from "../../../../Components/Toast";
 
 const styleBig = {
   position: "absolute",
@@ -636,11 +637,13 @@ const ModalAddPrescription = (props) => {
 
   return (
     <div>
+      <ToastNotification/>
       <Modal
         open={isOpen}
         onClose={toggle}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{zIndex:30}}
       >
         <Box sx={styleBig}>
           <Typography variant="h6" component="h2" sx={{ mb: 2 }}>

@@ -11,11 +11,11 @@ export const ToastNotification = (props) => {
         right,
         left,
         bottom,
-        zIndex:9999
+        zIndex:20000
       }}
       toastOptions={{
         style: {
-          zIndex: 9999
+          zIndex: 20000
         },
         success: {
           duration: 3000,
