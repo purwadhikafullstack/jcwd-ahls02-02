@@ -286,8 +286,12 @@ module.exports = {
                 } else {
                   if (
                     content.length < 1 ||
-                    !content[content.length - 1].hasOwnProperty("ingredients") ||
-                    content[content.length-1].ingredients[0].id_prescription_content !== orderContentValue.id_prescription_content
+                    !content[content.length - 1].hasOwnProperty(
+                      "ingredients"
+                    ) ||
+                    content[content.length - 1].ingredients[0]
+                      .id_prescription_content !==
+                      orderContentValue.id_prescription_content
                   ) {
                     prescriptionContents.forEach((prescriptionContentValue) => {
                       if (
@@ -315,7 +319,7 @@ module.exports = {
             success: true,
             message: "Order list successfully fetched",
             data: tempOrderList,
-            totalPage
+            totalPage,
           });
         } else {
           return res.status(200).send({
@@ -454,6 +458,8 @@ module.exports = {
 
         let prescriptionContentInsertIds;
 
+        let total_selling_price = 0;
+
         // UPDATE OBAT RACIKAN / PRESCRIPTION
         if (formStockPrescription.length) {
           formStockPrescription.forEach((value, index) => {
@@ -532,13 +538,17 @@ module.exports = {
                   valueIngredient.id_stock
                 }, ${valueIngredient.quantity * -1}, 'Sales')`;
 
-                if (index < formStockPrescription.length - 1 || indexIngredient < value.ingredients.length-1) {
+                if (
+                  index < formStockPrescription.length - 1 ||
+                  indexIngredient < value.ingredients.length - 1
+                ) {
                   insertPrescriptionOrderQuery += ", ";
                   updateStockPrescriptionHistoryQuery += ", ";
                   updateStockPrescriptionQuery += ` UNION ALL `;
                 }
               });
 
+              total_selling_price += subtotal_selling_price;
               // Update kolom subtotal pada prescription
               const updatePrescriptionContentSubtotal = await dbQuery(
                 `UPDATE prescription_content SET subtotal_selling_price = ${subtotal_selling_price}, subtotal_buying_price = ${subtotal_buying_price} WHERE id = ${prescriptionContentInsertIds[index].id}`
@@ -590,6 +600,8 @@ module.exports = {
                     }
                   }
                 });
+                total_selling_price +=
+                  valueProduct.buying_price * value.quantity;
               }
             });
 
@@ -627,7 +639,7 @@ module.exports = {
 
         // update status order list
         const updateStatus = await dbQuery(
-          `UPDATE order_list SET status = 'Waiting for Payment' WHERE id = ${id_order}`
+          `UPDATE order_list SET status = 'Waiting for Payment', subtotal = ${total_selling_price} WHERE id = ${id_order}`
         );
 
         return res.status(200).send({
@@ -956,7 +968,6 @@ module.exports = {
         // const start_date_array = start_date.split("-")
         // const end_date_array = start_date.split("-")
 
-
         return res.status(200).send({
           success: true,
           message: "Data fetched successfully",
@@ -975,18 +986,19 @@ module.exports = {
   getReportData: async (req, res, next) => {
     try {
       if (req.dataUser.role === "admin") {
-        let { start_date, end_date } = req.query
+        let { start_date, end_date } = req.query;
 
-        let sales = await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
+        let sales =
+          await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
           where created_at >= '${start_date}' and created_at <= '${end_date}'
-          group by DATE_FORMAT(created_at,'%Y-%m-%d')`)
+          group by DATE_FORMAT(created_at,'%Y-%m-%d')`);
 
-        const start = new Date(start_date)
-        const end = new Date(end_date)
+        const start = new Date(start_date);
+        const end = new Date(end_date);
 
         const numberOfDays = Math.abs((start - end) / (1000 * 60 * 60 * 24));
 
-        const dates = []
+        const dates = [];
 
         for (let index = 0; index <= numberOfDays; index++) {
           let currentDate = new Date(start_date);
@@ -1013,9 +1025,8 @@ module.exports = {
         return res.status(200).send({
           success: true,
           message: "Data fetched successfully",
-          data
+          data,
         });
-
       } else {
         return res.status(400).send({
           success: false,
@@ -1023,7 +1034,7 @@ module.exports = {
         });
       }
     } catch (error) {
-      return next(error)
+      return next(error);
     }
-  }
+  },
 };
