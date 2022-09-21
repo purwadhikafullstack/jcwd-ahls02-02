@@ -1,6 +1,7 @@
 import { Card, Box, Divider, Select, MenuItem, Grid } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Text from "../../../Components/atoms/Text";
 import { API_URL } from "../../../helper";
 
@@ -70,9 +71,9 @@ const ShippingMethod = (props) => {
     setSelectedService(tempSelectedService);
     setShippingPrice(tempSelectedService.cost[0].value);
     setShippingMethod({
-      courier:selectedCourier.toUpperCase(),
-      service:tempSelectedService
-    })
+      courier: selectedCourier.toUpperCase(),
+      service: tempSelectedService,
+    });
   };
 
   return (

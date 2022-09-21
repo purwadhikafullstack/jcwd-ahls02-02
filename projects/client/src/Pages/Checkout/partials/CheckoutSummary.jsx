@@ -10,6 +10,7 @@ import { API_URL } from "../../../helper";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { editCartAction } from "../../../Redux/Actions/userAction";
+import toast from "react-hot-toast";
 
 const CheckoutSummary = (props) => {
   const dispatch = useDispatch();

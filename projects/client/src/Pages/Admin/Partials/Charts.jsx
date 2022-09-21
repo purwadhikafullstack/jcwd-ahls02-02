@@ -19,6 +19,7 @@ import {
     Legend,
     ResponsiveContainer
 } from "recharts";
+import toast from "react-hot-toast";
 
 const today = new Date();
 let array = today.setDate(today.getDate());
