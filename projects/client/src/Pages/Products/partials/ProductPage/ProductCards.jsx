@@ -15,9 +15,9 @@ const ProductCards = (props) => {
   const printCards = () => {
     return (
       <Grid container spacing={2}>
-        {productData.length > 0 ? productData.map((value) => {
+        {productData.length > 0 ? productData.map((value, index) => {
           return (
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={3} key={`pd-${index}`}>
               <Box>
                 <ProductCard
                   id={value.id}

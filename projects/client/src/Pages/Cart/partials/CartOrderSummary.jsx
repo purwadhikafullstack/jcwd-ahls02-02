@@ -19,9 +19,9 @@ const CartOrderSummary = (props) => {
   const printOrderSummary = () => {
     return (
       <>
-        {cartList.map((value) => {
+        {cartList.map((value, index) => {
           return (
-            <>
+            <Box key={`k-${index}`}>
               {value.selected === true && (
                 <>
                   <Grid item xs={7}>
@@ -36,7 +36,7 @@ const CartOrderSummary = (props) => {
                   </Grid>
                 </>
               )}
-            </>
+            </Box>
           );
         })}
       </>

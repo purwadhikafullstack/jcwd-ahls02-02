@@ -19,7 +19,6 @@ const CategoryShop = () => {
     const getCategory = () => {
         axios.get(`${API_URL}/products/categories`)
             .then((response) => {
-                console.log(response.data)
                 setCategory(response.data)
             }).catch((error) => {
                 console.log(error)
@@ -42,7 +41,7 @@ const CategoryShop = () => {
                     </Typography>
                     <Grid container>
                         {category.map((value, index) => {
-                            return <Grid item xs={12} sx={{ pt: 1 }}>
+                            return <Grid item xs={12} sx={{ pt: 1 }} key={`c-${index}`}>
                                 <Button size='small' variant='outlined' sx={{ width: '100%' }} onClick={() => handleNavigate(value.id)}>
                                     <Text sx={{ textAlign: 'center' }}>
                                         {value.category_name.toUpperCase()}
@@ -59,7 +58,7 @@ const CategoryShop = () => {
                     <Grid container sx={{ mt: 2 }}>
                         {category.map((value, index) => {
                             if (index < 4) {
-                                return <Grid item md={3} sx={{ pt: 1, pr: 1 }}>
+                                return <Grid item md={3} sx={{ pt: 1, pr: 1 }} key={`cm-${index}`}>
                                     <Button variant='outlined' sx={{ height: 80, width: '100%' }} onClick={() => handleNavigate(value.id)}>
                                         <Text sx={{ textAlign: 'center' }}>
                                             {value.category_name.toUpperCase()}

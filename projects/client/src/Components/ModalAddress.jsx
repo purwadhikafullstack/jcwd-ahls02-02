@@ -248,7 +248,7 @@ const ModalAddress = (props) => {
                     </MenuItem>
                     {provinceOption.map((value, index) => {
                       return (
-                        <MenuItem value={value.province_id}>
+                        <MenuItem value={value.province_id} key={`ka-${index}`}>
                           {value.province}
                         </MenuItem>
                       );

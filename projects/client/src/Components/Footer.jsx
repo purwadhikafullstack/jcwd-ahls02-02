@@ -9,9 +9,10 @@ const Footer = () => {
     return (
         <Box sx={{ position: 'absolute', bottom: 0, width: '100%', height: '2.5rem' }}>
             {(location.pathname.includes('auth') || location.pathname.includes('*') || location.pathname.includes('profile')) ? null :
-                <Box fullWidth sx={{
+                <Box sx={{
                     height: { xs: 220, sm: 175 },
                     backgroundColor: 'primary.dark',
+                    width: '100%'
                 }}>
                     <Container>
                         <Grid container sx={{ pt: 3, textAlign: "center" }} >
