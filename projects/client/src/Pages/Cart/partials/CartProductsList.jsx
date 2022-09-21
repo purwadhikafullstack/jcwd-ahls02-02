@@ -182,7 +182,7 @@ const CartProductsList = (props) => {
       <>
         {cartList.map((value, index) => {
           return (
-            <>
+            <Box key={`k-${index}`}>
               <Grid container alignItems="center">
                 <Grid item xs={1}>
                   <Checkbox
@@ -261,7 +261,7 @@ const CartProductsList = (props) => {
                 </Grid>
               </Grid>
               {index !== cartList.length - 1 && <Divider sx={{ py: 2 }} />}
-            </>
+            </Box>
           );
         })}
       </>

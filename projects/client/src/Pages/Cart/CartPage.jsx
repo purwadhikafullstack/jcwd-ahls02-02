@@ -53,39 +53,41 @@ const CartPage = () => {
   }, []);
 
   return (
-    <Container sx={{ mt: 5, minHeight: '100%' }}>
-      <Box>
-        <Text fontWeight="bold" fontSize="h5">
-          My Cart
-        </Text>
-      </Box>
-      {!isLoading && (
+    <div style={{ paddingBottom: "5rem" }}>
+      <Container sx={{ mt: 5, minHeight: '100%' }}>
         <Box>
-          <Grid container spacing={1} sx={{ py: 3 }}>
-            <Grid item xs={12} md={8}>
-              <Box sx={{ m: 1 }}>
-                <CartProductsList
-                  cartList={cartList}
-                  setCartList={setCartList}
-                  totalPrice={totalPrice}
-                  setTotalPrice={setTotalPrice}
-                  setDisableCheckout={setDisableCheckout}
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Box sx={{ m: 1 }}>
-                <CartOrderSummary
-                  cartList={cartList}
-                  totalPrice={totalPrice}
-                  disableCheckout={disableCheckout}
-                />
-              </Box>
-            </Grid>
-          </Grid>
+          <Text fontWeight="bold" fontSize="h5">
+            My Cart
+          </Text>
         </Box>
-      )}
-    </Container>
+        {!isLoading && (
+          <Box>
+            <Grid container spacing={1} sx={{ py: 3 }}>
+              <Grid item xs={12} md={8}>
+                <Box sx={{ m: 1 }}>
+                  <CartProductsList
+                    cartList={cartList}
+                    setCartList={setCartList}
+                    totalPrice={totalPrice}
+                    setTotalPrice={setTotalPrice}
+                    setDisableCheckout={setDisableCheckout}
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Box sx={{ m: 1 }}>
+                  <CartOrderSummary
+                    cartList={cartList}
+                    totalPrice={totalPrice}
+                    disableCheckout={disableCheckout}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        )}
+      </Container>
+    </div>
   );
 };
 

@@ -38,6 +38,8 @@ const PrescriptionPage = () => {
     const [shippingPrice, setShippingPrice] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [inputKey, setInputKey] = useState(null);
+
     const [idUser, setIdUser] = useState(userData.id)
 
     useEffect(() => {
@@ -49,16 +51,43 @@ const PrescriptionPage = () => {
         setIsLoading(false);
     }, []);
 
+
     const handleUpload = (e) => {
-        setNewDataImage(e.target.files[0])
-        console.log(e.target.files[0])
-        let files = e.target.files;
-        let reader = new FileReader();
-        reader.readAsDataURL(files[0])
-        reader.onload = (e) => {
-            setNewImage(e.target.result)
+        if (
+            e.target.files[0].type === "image/jpeg" ||
+            e.target.files[0].type === "image/png" ||
+            e.target.files[0].type === "image/gif"
+        ) {
+            if (e.target.files[0].size <= 1000000) {
+                setNewDataImage(e.target.files[0])
+                let files = e.target.files;
+                let reader = new FileReader();
+                reader.readAsDataURL(files[0])
+                reader.onload = (e) => {
+                    setNewImage(e.target.result)
+                }
+
+            } else {
+                toast.error("Your file must not exceed 1MB")
+                setInputKey(Date.now);
+            }
+
+        } else {
+            toast.error("File type error")
+            setInputKey(Date.now);
         }
     }
+
+    // const handleUpload = (e) => {
+    //     setNewDataImage(e.target.files[0])
+    //     console.log(e.target.files[0])
+    //     let files = e.target.files;
+    //     let reader = new FileReader();
+    //     reader.readAsDataURL(files[0])
+    //     reader.onload = (e) => {
+    //         setNewImage(e.target.result)
+    //     }
+    // }
 
     const handleSubmit = () => {
         setIsLoading(true)
@@ -116,6 +145,7 @@ const PrescriptionPage = () => {
                                         <input
                                             type="file"
                                             hidden
+                                            key={inputKey || ""}
                                             onChange={(e) => handleUpload(e)}
                                         />
                                     </Button>

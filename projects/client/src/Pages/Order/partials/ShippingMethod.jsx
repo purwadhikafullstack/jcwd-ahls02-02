@@ -69,8 +69,8 @@ const ShippingMethod = (props) => {
     setSelectedService(tempSelectedService);
     setShippingPrice(tempSelectedService.cost[0].value);
     setShippingMethod({
-      courier:selectedCourier.toUpperCase(),
-      service:tempSelectedService
+      courier: selectedCourier.toUpperCase(),
+      service: tempSelectedService
     })
   };
 
@@ -132,9 +132,9 @@ const ShippingMethod = (props) => {
                         <MenuItem value="" disabled>
                           Choose service type
                         </MenuItem>
-                        {serviceOption?.map((value) => {
+                        {serviceOption?.map((value, index) => {
                           return (
-                            <MenuItem value={value.service}>
+                            <MenuItem value={value.service} key={`sm-${index}`}>
                               {value.description} ({value.service})
                             </MenuItem>
                           );
