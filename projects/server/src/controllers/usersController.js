@@ -871,8 +871,6 @@ module.exports = {
           sort = `order by id desc limit ${req.query.limit}${offSet}`;
         }
 
-        // console.log(`select ol.id, ol.id_user, u.name, ol.status, ol.shipping_address, ol.shipping_method, ol.invoice_number, ol.payment_slip_image, ol.subtotal, ol.shipping_cost, ol.created_at from order_list ol JOIN users u on u.id = ol.id_user WHERE ol.id_user=${req.params.user_id} ${filter} ${sort}`)
-
         const orderList = await dbQuery(
           `select ol.id, ol.id_user, u.name, ol.status, ol.shipping_address, ol.shipping_method, ol.invoice_number, ol.payment_slip_image, ol.subtotal, ol.shipping_cost, ol.created_at from order_list ol JOIN users u on u.id = ol.id_user ${filter} ${sort}`
         );

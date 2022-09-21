@@ -87,8 +87,6 @@ const OrderList = (props) => {
   }
 
   const handleUploadPayment = async () => {
-    // console.log(paymentProof)
-    // console.log(orderId)
     try {
       let token = Cookies.get("userToken")
       let formData = new FormData();
@@ -118,8 +116,6 @@ const OrderList = (props) => {
 
   const handleReceiveOrder = async () => {
     try {
-      // console.log('userId', userId)
-      // console.log('order_id', orderId)
       let token = Cookies.get("userToken")
       let data = {
         new_status: "Completed",

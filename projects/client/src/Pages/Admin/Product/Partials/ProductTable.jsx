@@ -10,7 +10,6 @@ const ProductTable = (props) => {
 
     const clickPage = (event, value) => {
         changePage(value)
-        console.log(value)
         setPage(value)
     }
 

@@ -15,7 +15,6 @@ const ProfilePicture = () => {
   const user = useSelector((state) => {
     return state.userReducer;
   });
-  console.log(user);
   const dispatch = useDispatch();
   const filePickerRef = useRef(null);
   // Image yang akan dikirim

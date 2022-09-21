@@ -83,7 +83,6 @@ const AdminCategoryPage = () => {
     const handleCheckProduct = (id) => {
         axios.get(`${API_URL}/products?id_category=${id}`)
             .then((response) => {
-                console.log(response.data.product.length)
                 if (response.data.product.length > 0) {
                     setOpenDeleteCategory(true)
                     setTextDelete(`There are ${response.data.product.length} products in this category. You have to move the products before you delete the category`)
@@ -131,7 +130,6 @@ const AdminCategoryPage = () => {
 
     const handleDeleteCategory = (id) => {
         let token = Cookies.get("userToken")
-        console.log(id)
         axios.delete(`${API_URL}/products/categories?id=${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`

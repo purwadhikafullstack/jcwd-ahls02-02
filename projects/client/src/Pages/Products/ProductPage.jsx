@@ -38,7 +38,6 @@ const ProductPage = () => {
   useEffect(() => {
     getData();
     getCategory();
-    // console.log('query.get("id_category")', query.get("id_category"))
     // setIdCategory(query.get("id_category"))
   }, []);
 

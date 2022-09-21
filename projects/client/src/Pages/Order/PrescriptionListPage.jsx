@@ -143,7 +143,7 @@ const PrescriptionListPage = () => {
                     'Authorization': `Bearer ${token}`
                 }
             })
-            // console.log('cancel', cancel)
+            
             if (cancel.data.success) {
                 toast.success('order cancelled')
                 getData()
@@ -157,7 +157,6 @@ const PrescriptionListPage = () => {
     }
 
     const clickPage = (event, value) => {
-        console.log(value)
         setPage(value)
         getData(value, limit)
     }

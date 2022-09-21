@@ -22,7 +22,6 @@ const Filter = (props) => {
     const defaultSort = useRef(null);
 
     const handleFilter = () => {
-        console.log(name, idCategory, minPrice, maxPrice, sort)
         getDataFilter(name, idCategory, minPrice, maxPrice, sort)
     }
 
