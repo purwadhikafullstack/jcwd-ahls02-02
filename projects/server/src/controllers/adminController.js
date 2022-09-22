@@ -735,7 +735,7 @@ module.exports = {
 
         if (range === "Now") {
           let sales = await dbQuery(
-            `select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list  where month(created_at)='${todayMonth}' group by DATE_FORMAT(created_at,'%Y-%m-%d')`
+            `select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list  where month(created_at)='${todayMonth}' AND status IN ('Completed','Processed','Sent')  group by DATE_FORMAT(created_at,'%Y-%m-%d')`
           );
 
           const sales_data = [];
@@ -779,7 +779,7 @@ module.exports = {
         } else if (range === "7 Days") {
           let sales =
             await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
-          where created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) and created_at <= CURDATE()
+          where created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) and created_at <= CURDATE() AND status IN ('Completed','Processed','Sent') 
           group by DATE_FORMAT(created_at,'%Y-%m-%d')`);
 
           const sales_data = [];
@@ -813,7 +813,7 @@ module.exports = {
         } else if (range === "30 Days") {
           let sales =
             await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
-          where created_at >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) and created_at <= CURDATE()
+          where created_at >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) and created_at <= CURDATE() AND status IN ('Completed','Processed','Sent') 
           group by DATE_FORMAT(created_at,'%Y-%m-%d')`);
 
           const sales_data = [];
@@ -906,7 +906,7 @@ module.exports = {
           }
         } else if (range === "Specific Month") {
           let sales = await dbQuery(
-            `select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list  where month(created_at)='${month}' group by DATE_FORMAT(created_at,'%Y-%m-%d')`
+            `select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list  where month(created_at)='${month}' AND status IN ('Completed','Processed','Sent') group by DATE_FORMAT(created_at,'%Y-%m-%d')`
           );
 
           const sales_data = [];
@@ -983,7 +983,7 @@ module.exports = {
 
         let sales =
           await dbQuery(`select DATE_FORMAT(created_at,'%Y-%m-%d') as date, sum(subtotal) as total_sales from order_list
-          where created_at >= '${start_date}' and created_at <= '${end_date}'
+          where created_at >= '${start_date}' and created_at <= '${end_date}' AND status IN ('Completed','Processed','Sent') 
           group by DATE_FORMAT(created_at,'%Y-%m-%d')`);
 
         const start = new Date(start_date);
