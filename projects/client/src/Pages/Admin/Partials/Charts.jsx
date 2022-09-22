@@ -160,8 +160,8 @@ const Charts = () => {
                         displayEmpty
                         sx={{ mr: 2, width: 200 }}
                     >
-                        <MenuItem value="">
-                            <Typography color='grey.400'>Choose Range</Typography>
+                        <MenuItem value="" disabled>
+                            <Typography>Choose Range</Typography>
                         </MenuItem>
                         <MenuItem value={`Now`}>Current Month</MenuItem>
                         <MenuItem value={`7 Days`}>Last 7 Days</MenuItem>
