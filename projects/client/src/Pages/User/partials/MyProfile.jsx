@@ -32,20 +32,22 @@ const MyProfile = () => {
   const [dateOfBirth, setDateOfBirth] = useState(
     user.birthdate ? JSON.parse(user.birthdate) : null
   );
-  const email = user.email;
+  const [email, setEmail] = useState(user.email);
+  const currentEmail = user.email
   const [phoneNumber, setPhoneNumber] = useState(user.phone_number);
   const [formIsChanged, setFormIsChanged] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
       const birthdate = JSON.stringify(dateOfBirth);
       const data = {
         name,
         gender,
         birthdate,
         email,
+        currentEmail,
         phone_number: phoneNumber,
       };
       const token = Cookies.get("userToken");
@@ -59,15 +61,18 @@ const MyProfile = () => {
         }
       );
       if (res.data.success) {
-        setIsSubmitting(false)
+        setIsSubmitting(false);
         toast.success("Your profile successfully updated!");
         Cookies.set("userToken", res.data.token, { expires: 1, secure: true });
         dispatch(editProfileAction(res.data.data));
+      } else {
+        setIsSubmitting(false);
+        toast.error(res.data.message);
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong, please try again");
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   };
 
@@ -76,14 +81,18 @@ const MyProfile = () => {
       <ToastNotification />
       <Grid container spacing={2} alignItems="center">
         <Grid sx={{ pb: 2 }}>
-          <Text fontSize="h5" fontWeight="bold">My Profile</Text>
+          <Text fontSize="h5" fontWeight="bold">
+            My Profile
+          </Text>
           <Text>Manage your personal information</Text>
         </Grid>
 
         <FormControl>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left" fontWeight="medium">Name</Text>
+              <Text textAlign="left" fontWeight="medium">
+                Name
+              </Text>
             </Grid>
             <Grid
               item
@@ -106,7 +115,9 @@ const MyProfile = () => {
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left" fontWeight="medium">Gender</Text>
+              <Text textAlign="left" fontWeight="medium">
+                Gender
+              </Text>
             </Grid>
             <Grid
               item
@@ -143,7 +154,9 @@ const MyProfile = () => {
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left" fontWeight="medium">Birthdate</Text>
+              <Text textAlign="left" fontWeight="medium">
+                Birthdate
+              </Text>
             </Grid>
             <Grid
               item
@@ -166,7 +179,9 @@ const MyProfile = () => {
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left" fontWeight="medium">Email</Text>
+              <Text textAlign="left" fontWeight="medium">
+                Email
+              </Text>
             </Grid>
             <Grid
               item
@@ -182,12 +197,17 @@ const MyProfile = () => {
                 type="email"
                 fullWidth
                 defaultValue={email}
-                disabled
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setFormIsChanged(true);
+                }}
               />
             </Grid>
 
             <Grid item xs={12} md={2} alignItems="center">
-              <Text textAlign="left" fontWeight="medium">Phone Number</Text>
+              <Text textAlign="left" fontWeight="medium">
+                Phone Number
+              </Text>
             </Grid>
             <Grid
               item
