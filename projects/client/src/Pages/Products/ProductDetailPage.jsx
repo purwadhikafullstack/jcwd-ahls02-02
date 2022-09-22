@@ -237,7 +237,7 @@ const ProductDetailPage = () => {
     const handleUpload = () => {
         if (idUser) {
             if (status === 'verified') {
-                navigate('/prescription')
+                navigate('/prescription/upload')
             } else {
                 toast.error('Please verify your account first')
             }

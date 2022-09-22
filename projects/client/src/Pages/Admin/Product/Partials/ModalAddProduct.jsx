@@ -34,7 +34,7 @@ const ModalAddProduct = (props) => {
     const [sellingPrice, setSellingPrice] = useState()
     const [buyingPrice, setBuyingPrice] = useState()
     const [formStock, setFormStock] = useState([{ quantity: '', unit: '', default_unit: true }])
-    const [unitConversion, setUnitConversion] = useState()
+    const [unitConversion, setUnitConversion] = useState(0)
 
     const [stockValidity, setStockValidity] = useState(false)
 

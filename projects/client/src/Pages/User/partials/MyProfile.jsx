@@ -56,8 +56,8 @@ const MyProfile = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-        );
-        if (res.data.success) {
+      );
+      if (res.data.success) {
         setIsSubmitting(false)
         toast.success("Your profile successfully updated!");
         Cookies.set("userToken", res.data.token, { expires: 1, secure: true });

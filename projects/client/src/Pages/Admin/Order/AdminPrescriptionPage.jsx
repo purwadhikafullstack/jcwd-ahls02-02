@@ -40,6 +40,7 @@ const AdminPrescriptionPage = () => {
 
     const getData = async (currentPage = page, currentLimit = limit, currentStatus = selectedStatus) => {
         try {
+            console.log(`${API_URL}/admin/prescription?page=${currentPage}&limit=${currentLimit}`)
             if (currentStatus) {
                 let query = ``
                 if (currentStatus === 'Validated') {
@@ -51,6 +52,7 @@ const AdminPrescriptionPage = () => {
                 if (data.data.data.length > 0) {
                     setPrescriptionList(data.data.data)
                     setTotalPage(data.data.totalPage)
+                    console.log('data.data.data', data.data.data)
                 } else {
                     setPrescriptionList()
                 }
@@ -59,6 +61,7 @@ const AdminPrescriptionPage = () => {
                 if (data.data.data.length > 0) {
                     setPrescriptionList(data.data.data)
                     setTotalPage(data.data.totalPage)
+                    console.log('data.data.data', data.data.data)
                 } else {
                     setPrescriptionList()
                 }
@@ -167,7 +170,7 @@ const AdminPrescriptionPage = () => {
                     'Authorization': `Bearer ${token}`
                 }
             })
-          
+
             if (cancel.data.success) {
                 toast.success('order cancelled')
                 getData()

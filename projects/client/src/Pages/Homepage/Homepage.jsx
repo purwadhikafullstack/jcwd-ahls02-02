@@ -72,13 +72,9 @@ const Homepage = () => {
         </Box>
         <CategoryShop />
         <Container sx={{ display: { xs: 'flex', md: 'none' }, justifyContent: 'center', mt: 5 }}>
-            {/* <Grid container>
-                <Grid item xs={12}> */}
             <Typography variant='h6' sx={{ textAlign: 'center', mb: 2 }}>
                 Our Most Popular Products
             </Typography>
-            {/* </Grid>
-            </Grid> */}
         </Container>
         <Container sx={{ display: { xs: 'none', md: 'flex' }, mt: 5 }}>
             <Grid container>
@@ -89,7 +85,7 @@ const Homepage = () => {
                 </Grid>
                 <Grid item xs={6}>
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <Button onClick={()=>navigate(`/product`)}>
+                        <Button onClick={() => navigate(`/product`)}>
                             See All Product
                         </Button>
                     </Box>
@@ -118,7 +114,7 @@ const Homepage = () => {
         </Container>
         <Container sx={{ mt: 2 }}>
             <Box sx={{ display: { xs: 'flex', md: 'none' }, justifyContent: 'center' }}>
-                <Button onClick={()=>navigate(`/product`)}>
+                <Button onClick={() => navigate(`/product`)}>
                     See All Product
                 </Button>
             </Box>
