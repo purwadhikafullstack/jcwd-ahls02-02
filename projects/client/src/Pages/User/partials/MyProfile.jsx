@@ -19,6 +19,7 @@ import Text from "../../../Components/atoms/Text";
 import { API_URL } from "../../../helper";
 import { editProfileAction } from "../../../Redux/Actions/userAction";
 import { ToastNotification } from "../../../Components/Toast";
+import dayjs from "dayjs";
 
 const MyProfile = () => {
   const dispatch = useDispatch();
@@ -159,6 +160,7 @@ const MyProfile = () => {
                     setFormIsChanged(true);
                   }}
                   renderInput={(params) => <TextField {...params} />}
+                  maxDate={dayjs()}
                 />
               </LocalizationProvider>
             </Grid>
