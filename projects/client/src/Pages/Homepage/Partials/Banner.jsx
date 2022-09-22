@@ -72,7 +72,7 @@ const Banner = (props) => {
                                 Order now and get a free bottle of vitamin D3
                             </Typography>
                         </Box>
-                        <Button variant='contained' onClick={() => navigate('/prescription')}>Get Your Prescription Now</Button>
+                        <Button variant='contained' onClick={handleGetPrescription}>Get Your Prescription Now</Button>
                     </Box>
                 </Grid>
             </Grid>

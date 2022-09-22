@@ -513,8 +513,7 @@ module.exports = {
         } = req.body;
 
         await dbQuery(
-          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${
-            req.dataUser.id
+          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${req.dataUser.id
           }', '${street}','${Number(
             province_id
           )}','${province_label}','${Number(
@@ -918,7 +917,7 @@ module.exports = {
                     ) ||
                     content[content.length - 1].ingredients[0]
                       .id_prescription_content !==
-                      orderContentValue.id_prescription_content
+                    orderContentValue.id_prescription_content
                   ) {
                     prescriptionContents.forEach((prescriptionContentValue) => {
                       if (
@@ -1006,19 +1005,16 @@ module.exports = {
 
             if (index === 0) {
               // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
-              stockUpdateQuery += `SELECT ${value.id_stock} as id, ${
-                value.current_stock - value.quantity
-              } as new_quantity`;
+              stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity
+                } as new_quantity`;
             } else {
               // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
-              stockUpdateQuery += `SELECT ${value.id_stock}, ${
-                value.current_stock - value.quantity
-              }`;
+              stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock - value.quantity
+                }`;
             }
 
-            stockHistoryUpdate += `(${value.id_stock}, ${
-              value.quantity * -1
-            }, 'Sales')`;
+            stockHistoryUpdate += `(${value.id_stock}, ${value.quantity * -1
+              }, 'Sales')`;
 
             if (index < productList.length - 1) {
               cartIds += ", ";
@@ -1115,14 +1111,12 @@ module.exports = {
                 orderContent.forEach((value, index) => {
                   if (index === 0) {
                     // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
-                    stockUpdateQuery += `SELECT ${value.id_stock} as id, ${
-                      value.current_stock + value.quantity
-                    } as new_quantity`;
+                    stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock + value.quantity
+                      } as new_quantity`;
                   } else {
                     // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
-                    stockUpdateQuery += `SELECT ${value.id_stock}, ${
-                      value.current_stock + value.quantity
-                    }`;
+                    stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock + value.quantity
+                      }`;
                   }
 
                   stockHistoryUpdate += `(${value.id_stock}, ${value.quantity}, 'Returned Order')`;
@@ -1230,14 +1224,12 @@ module.exports = {
                   orderContent.forEach((value, index) => {
                     if (index === 0) {
                       // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
-                      stockUpdateQuery += `SELECT ${value.id_stock} as id, ${
-                        value.current_stock + value.quantity
-                      } as new_quantity`;
+                      stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock + value.quantity
+                        } as new_quantity`;
                     } else {
                       // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
-                      stockUpdateQuery += `SELECT ${value.id_stock}, ${
-                        value.current_stock + value.quantity
-                      }`;
+                      stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock + value.quantity
+                        }`;
                     }
 
                     stockHistoryUpdate += `(${value.id_stock}, ${value.quantity}, 'Returned Order')`;
@@ -1319,7 +1311,7 @@ module.exports = {
             let { order_id, new_status } = JSON.parse(req.body.data);
 
             const newFileName = req.files[0]
-              ? `'/imgPrescription/${req.files[0].filename}'`
+              ? `'/imgPayment/${req.files[0].filename}'`
               : null;
 
             let currentStatus = await dbQuery(

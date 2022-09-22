@@ -1,7 +1,6 @@
 import { Call, Email, Facebook, Instagram, Twitter, YouTube } from "@mui/icons-material";
-import { BottomNavigation, Box, Container, Divider, Grid, Typography } from "@mui/material";
-import Button from "./atoms/Button";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Box, Container, Divider, Grid, Typography } from "@mui/material";
+import { useLocation } from 'react-router-dom';
 
 const Footer = () => {
     const location = useLocation();
@@ -10,13 +9,13 @@ const Footer = () => {
         <Box sx={{ position: 'absolute', bottom: 0, width: '100%', height: '2.5rem' }}>
             {(location.pathname.includes('auth') || location.pathname.includes('*') || location.pathname.includes('profile')) ? null :
                 <Box sx={{
-                    height: { xs: 220, sm: 175 },
+                    height: { xs: 220, sm: 200 },
                     backgroundColor: 'primary.dark',
                     width: '100%'
                 }}>
                     <Container>
                         <Grid container sx={{ pt: 3, textAlign: "center" }} >
-                            <Grid item xs={12} sx={{pb:1}}>
+                            <Grid item xs={12} sx={{ pb: 1 }}>
                                 <Typography fontWeight="bold" fontSize="h6" color="white" textAlign="left">Contact Us</Typography>
                             </Grid>
                             <Grid item xs={6} sm={6}>
@@ -55,7 +54,9 @@ const Footer = () => {
                             <Twitter sx={{ color: "white", mr: 1 }} />
                             <YouTube sx={{ color: "white", mr: 1 }} />
                         </Box>
-                        <Box display="flex" sx={{ justifyContent: "center" }}>
+                        <Box display="flex" sx={{
+                            justifyContent: "center"
+                        }}>
                             <Typography color="white" fontSize="12px">©LIFESERVE, 2022. ALL RIGHTS RESERVED</Typography>
                         </Box>
                     </Container>

@@ -291,7 +291,7 @@ module.exports = {
                     ) ||
                     content[content.length - 1].ingredients[0]
                       .id_prescription_content !==
-                      orderContentValue.id_prescription_content
+                    orderContentValue.id_prescription_content
                   ) {
                     prescriptionContents.forEach((prescriptionContentValue) => {
                       if (
@@ -350,16 +350,20 @@ module.exports = {
           req.query.status === "Waiting for Prescription Validation"
         ) {
           let allData =
-            await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-            LEFT JOIN order_list o ON o.id = p.id_order where o.status = '${req.query.status}' order by p.updated_at desc`);
+            await dbQuery(`Select p.id as id_prescription, p.id_user, u.name, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+            LEFT JOIN order_list o ON o.id = p.id_order 
+            LEFT JOIN users u ON u.id = p.id_user
+            where o.status = '${req.query.status}' order by p.updated_at desc`);
 
           let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`;
 
           let totalPage = Math.ceil(allData.length / limit);
 
           let prescriptionList =
-            await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-            LEFT JOIN order_list o ON o.id = p.id_order where o.status = '${req.query.status}' order by p.updated_at desc ${filterLimit}`);
+            await dbQuery(`Select p.id as id_prescription, p.id_user, u.name, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+            LEFT JOIN order_list o ON o.id = p.id_order
+            LEFT JOIN users u ON u.id = p.id_user
+            where o.status = '${req.query.status}' order by p.updated_at desc ${filterLimit}`);
 
           return res.status(200).send({
             success: true,
@@ -378,16 +382,16 @@ module.exports = {
           });
 
           let allData =
-            await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-          LEFT JOIN order_list o ON o.id = p.id_order where ${filterStatus} order by p.updated_at desc`);
+            await dbQuery(`Select p.id as id_prescription, p.id_user, u.name, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+          LEFT JOIN order_list o ON o.id = p.id_order LEFT JOIN users u ON u.id = p.id_user where ${filterStatus} order by p.updated_at desc`);
 
           let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`;
 
           let totalPage = Math.ceil(allData.length / limit);
 
           let prescriptionList =
-            await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-          LEFT JOIN order_list o ON o.id = p.id_order where ${filterStatus} order by p.updated_at desc ${filterLimit}`);
+            await dbQuery(`Select p.id as id_prescription, p.id_user, u.name, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+          LEFT JOIN order_list o ON o.id = p.id_order LEFT JOIN users u ON u.id = p.id_user where ${filterStatus} order by p.updated_at desc ${filterLimit}`);
 
           return res.status(200).send({
             success: true,
@@ -398,16 +402,16 @@ module.exports = {
         }
       } else {
         let allData =
-          await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-        LEFT JOIN order_list o ON o.id = p.id_order order by p.updated_at desc`);
+          await dbQuery(`Select p.id as id_prescription, p.id_user, u.name, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+        LEFT JOIN order_list o ON o.id = p.id_order LEFT JOIN users u ON u.id = p.id_user order by p.updated_at desc`);
 
         let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`;
 
         let totalPage = Math.ceil(allData.length / limit);
 
         let prescriptionList =
-          await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-        LEFT JOIN order_list o ON o.id = p.id_order order by p.updated_at desc ${filterLimit}`);
+          await dbQuery(`Select p.id as id_prescription, p.id_user, u.name, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+        LEFT JOIN order_list o ON o.id = p.id_order LEFT JOIN users u ON u.id = p.id_user order by p.updated_at desc ${filterLimit}`);
 
         return res.status(200).send({
           success: true,
@@ -507,44 +511,32 @@ module.exports = {
                         valueProduct.buying_price * valueIngredient.quantity;
                     }
 
-                    insertPrescriptionOrderQuery += `(${id_order}, ${
-                      valueIngredient.id_stock
-                    }, ${prescriptionContentInsertIds[index].id}, '${
-                      valueProduct.name
-                    }', '${valueProduct.description}', '${
-                      valueProduct.image
-                    }', '${valueProduct.category_name}', ${
-                      valueIngredient.quantity
-                    }, ${
-                      valueProduct.selling_price / valueProduct.unit_conversion
-                    }, ${
-                      valueProduct.buying_price / valueProduct.unit_conversion
-                    }, '${valueIngredient.unit}' , ${
-                      valueProduct.unit_conversion
-                    })`;
+                    insertPrescriptionOrderQuery += `(${id_order}, ${valueIngredient.id_stock
+                      }, ${prescriptionContentInsertIds[index].id}, '${valueProduct.name
+                      }', '${valueProduct.description}', '${valueProduct.image
+                      }', '${valueProduct.category_name}', ${valueIngredient.quantity
+                      }, ${valueProduct.selling_price / valueProduct.unit_conversion
+                      }, ${valueProduct.buying_price / valueProduct.unit_conversion
+                      }, '${valueIngredient.unit}' , ${valueProduct.unit_conversion
+                      })`;
 
                     valueProduct.stock.forEach((valueStock) => {
                       if (valueStock.idStock === valueIngredient.id_stock) {
                         if (index === 0 && indexIngredient === 0) {
-                          updateStockPrescriptionQuery += ` SELECT ${
-                            valueIngredient.id_stock
-                          } as id, ${
-                            valueStock.quantity - valueIngredient.quantity
-                          } as new_quantity `;
+                          updateStockPrescriptionQuery += ` SELECT ${valueIngredient.id_stock
+                            } as id, ${valueStock.quantity - valueIngredient.quantity
+                            } as new_quantity `;
                         } else {
-                          updateStockPrescriptionQuery += `SELECT ${
-                            valueIngredient.id_stock
-                          }, ${
-                            valueStock.quantity - valueIngredient.quantity
-                          } `;
+                          updateStockPrescriptionQuery += `SELECT ${valueIngredient.id_stock
+                            }, ${valueStock.quantity - valueIngredient.quantity
+                            } `;
                         }
                       }
                     });
                   }
                 });
-                updateStockPrescriptionHistoryQuery += `(${
-                  valueIngredient.id_stock
-                }, ${valueIngredient.quantity * -1}, 'Sales')`;
+                updateStockPrescriptionHistoryQuery += `(${valueIngredient.id_stock
+                  }, ${valueIngredient.quantity * -1}, 'Sales')`;
 
                 if (
                   index < formStockPrescription.length - 1 ||
@@ -585,26 +577,20 @@ module.exports = {
           formStockGeneric.forEach((value, index) => {
             productData.forEach((valueProduct) => {
               if (valueProduct.id === value.id_product) {
-                insertGenericOrderQuery += `(${id_order}, ${
-                  value.id_stock
-                }, ${null}, '${valueProduct.name}', '${
-                  valueProduct.description
-                }', '${valueProduct.image}', '${valueProduct.category_name}', ${
-                  value.quantity
-                }, ${valueProduct.selling_price}, ${
-                  valueProduct.buying_price
-                }, '${value.unit}' , ${valueProduct.unit_conversion} )`;
+                insertGenericOrderQuery += `(${id_order}, ${value.id_stock
+                  }, ${null}, '${valueProduct.name}', '${valueProduct.description
+                  }', '${valueProduct.image}', '${valueProduct.category_name}', ${value.quantity
+                  }, ${valueProduct.selling_price}, ${valueProduct.buying_price
+                  }, '${value.unit}' , ${valueProduct.unit_conversion} )`;
 
                 valueProduct.stock.forEach((valueStock) => {
                   if (valueStock.idStock === value.id_stock) {
                     if (index === 0) {
-                      updateStockQuery += `SELECT ${value.id_stock} as id, ${
-                        valueStock.quantity - value.quantity
-                      } as new_quantity`;
+                      updateStockQuery += `SELECT ${value.id_stock} as id, ${valueStock.quantity - value.quantity
+                        } as new_quantity`;
                     } else {
-                      updateStockQuery += ` SELECT ${value.id_stock}, ${
-                        valueStock.quantity - value.quantity
-                      }`;
+                      updateStockQuery += ` SELECT ${value.id_stock}, ${valueStock.quantity - value.quantity
+                        }`;
                     }
                   }
                 });
@@ -613,9 +599,8 @@ module.exports = {
               }
             });
 
-            updateStockHistoryQuery += `(${value.id_stock}, ${
-              value.quantity * -1
-            }, 'Sales')`;
+            updateStockHistoryQuery += `(${value.id_stock}, ${value.quantity * -1
+              }, 'Sales')`;
 
             if (index < formStockGeneric.length - 1) {
               insertGenericOrderQuery += ", ";
