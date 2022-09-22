@@ -47,7 +47,7 @@ const AdminOrderPage = () => {
         filterStartDate = convertDateToString(filterStartDate);
       }
       if (endDate !== null && typeof filterEndDate === "object") {
-        filterEndDate = convertDateToString(filterEndDate);
+        filterEndDate = convertDateToString(filterEndDate.add(1,"day"));
       }
 
       let query = "";
