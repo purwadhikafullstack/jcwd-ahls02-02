@@ -551,6 +551,7 @@ const ModalEditProduct = (props) => {
                                     onChange={(e) => setName(e.target.value)}
                                     sx={{ mb: 2 }}
                                     defaultValue={data ? data[0].name : null}
+                                    inputProps={{ maxLength: 100 }}
                                 // inputRef={defaultName}
                                 />
                                 <Typography color='grey.600' fontSize='14px'>Product Image</Typography>
@@ -584,6 +585,7 @@ const ModalEditProduct = (props) => {
                                     variant='outlined'
                                     onChange={(e) => setDescription(e.target.value)}
                                     defaultValue={data ? data[0].description : null}
+                                    inputProps={{ maxLength: 1000 }}
                                 // inputRef={defaultDescription}
                                 />
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>

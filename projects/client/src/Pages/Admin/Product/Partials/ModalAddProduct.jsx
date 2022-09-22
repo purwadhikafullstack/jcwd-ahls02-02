@@ -311,6 +311,7 @@ const ModalAddProduct = (props) => {
                                     sx={{ mb: 2 }}
                                     // inputRef={defaultName}
                                     defaultValue={name}
+                                    inputProps={{ maxLength: 100 }}
                                 />
                                 <Typography color='grey.600' fontSize='14px'>Product Image</Typography>
 
@@ -360,6 +361,7 @@ const ModalAddProduct = (props) => {
                                     variant='outlined'
                                     onChange={(e) => setDescription(e.target.value)}
                                     defaultValue={description}
+                                    inputProps={{ maxLength: 1000 }}
                                     // inputRef={defaultDescription}
                                 />
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
