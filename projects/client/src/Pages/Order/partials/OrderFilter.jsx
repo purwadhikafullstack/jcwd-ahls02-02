@@ -33,13 +33,14 @@ const OrderFilter = (props) => {
   };
 
   const handleSubmit = () => {
-    setCurrentPage(0);
+    setCurrentPage(1);
     let tempStartDate = startDate && convertDateToString(startDate);
     let tempEndDate = endDate && convertDateToString(endDate);
     getOrderData(invoiceNumber, tempStartDate, tempEndDate);
   };
 
   const handleReset = () => {
+    setCurrentPage(1);
     setInvoiceNumber("");
     setStartDate(null);
     setEndDate(null);
