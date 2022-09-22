@@ -144,7 +144,7 @@ const ProductTable = (props) => {
       </Box>
       <Box sx={{ display: "flex", justifyContent: "flex-end", pt:2 }}>
         {productData ? (
-          totalPage > 0 ? (
+          totalPage > 1 ? (
             <Pagination
               count={totalPage}
               page={page}

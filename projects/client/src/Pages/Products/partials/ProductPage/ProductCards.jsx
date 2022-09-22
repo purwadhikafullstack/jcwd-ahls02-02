@@ -45,8 +45,8 @@ const ProductCards = (props) => {
   return (
     <Box sx={{ px: { xs: 1, sm: 3 }, pb: 3 }}>
       <Box sx={{ minHeight: "100vh" }}>{printCards()}</Box>
-      <Box textAlign="right" sx={{ display: "flex" }}>
-        {totalPage.length > 0 ? (
+      <Box sx={{ display: "flex", justifyContent:"flex-end" }}>
+        {totalPage > 1 ? (
           <Pagination
             count={totalPage}
             defaultPage={page}
