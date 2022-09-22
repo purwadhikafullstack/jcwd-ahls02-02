@@ -19,6 +19,7 @@ import {
     Legend,
     ResponsiveContainer
 } from "recharts";
+import toast from "react-hot-toast";
 
 const today = new Date();
 let array = today.setDate(today.getDate());
@@ -58,40 +59,17 @@ const Charts = () => {
             })
 
             if (submit.data.success) {
-                console.log('submit.data', submit.data)
                 setData(submit.data.data)
                 setIsLoading(false)
             }
         } catch (error) {
             console.log(error)
+            toast.error("Something went wrong, please try again");
         }
     }
 
-    // const getChartData = async () => {
-    //     try {
-    //         let token = Cookies.get("userToken")
-    //         // let submit = await axios.get(`${API_URL}/admin/dailyProfit?start_date=${start}&end_date=${end}`, {
-    //         let submit = await axios.get(`${API_URL}/admin/dailyProfit?range=${range}&month=${month}`, {
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`
-    //             }
-    //         })
-
-    //         console.log('submit.data.data', submit.data.data)
-    //         setData(submit.data.data)
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
-
     const handleSubmit = (start_date = startDate, end_date = endDate) => {
-        // if (rangeStartDate && rangeEndDate) {
-        //     let tempStartDate = rangeStartDate && convertDateToString(rangeStartDate);
-        //     let tempEndDate = rangeEndDate && convertDateToString(rangeEndDate);
-        //     getChartData(tempStartDate, tempEndDate)
-        // } else {
         getChartData()
-        // }
     }
 
     const handleSetDate = (type) => {

@@ -8,6 +8,7 @@ import { API_URL } from "../../helper";
 import CartOrderSummary from "./partials/CartOrderSummary";
 import CartProductsList from "./partials/CartProductsList";
 import { getCartAction } from "../../Redux/Actions/userAction";
+import toast from "react-hot-toast";
 
 const CartPage = () => {
   const user = useSelector((state) => {
@@ -45,6 +46,7 @@ const CartPage = () => {
     } catch (error) {
       console.log(error);
       setIsLoading(false);
+      toast.error("Something went wrong, please try again");
     }
   };
 

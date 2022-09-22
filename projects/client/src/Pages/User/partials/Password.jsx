@@ -158,7 +158,7 @@ const Password = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("There's an error, please try again")
+      toast.error("Something went wrong, please try again");
       setIsSubmitting(false);
     }
   };

@@ -60,7 +60,6 @@ const ProductDetailPage = () => {
                     let temp = []
                     similar.data.product.forEach(value => {
                         if (value.default_unit === 'true') {
-                            // console.log('id', value.id)
                             temp.push({ id: value.id, name: value.name, price: value.selling_price, image: value.image, quantity: value.quantity })
                         }
                     })
@@ -71,9 +70,9 @@ const ProductDetailPage = () => {
             }
         } catch (error) {
             if (error.response.data.message === `Product doesn't exist`) {
-                console.log(`product gak ada bro`)
+                console.log(`Product does not exist`)
             } else if (error.response.data.message === `Params doesn't exist`) {
-                console.log(`paramsnya salah bro`)
+                console.log(`Params doesn't exist`)
             } else {
                 console.log(error)
             }
@@ -173,15 +172,12 @@ const ProductDetailPage = () => {
 
     const handleAddToCart = async () => {
         try {
-            // console.log('cart reducer', cart)
             if (idUser) {
                 if (status === 'verified') {
                     if (cart.length > 0) {
                         let index = cart.findIndex(value => value.id_stock == detailProduct.id_stock)
                         if (index >= 0) {
                             let remainingStock = cart[index].current_stock - cart[index].quantity
-                            console.log('remainingStock', remainingStock)
-                            console.log('quantity', quantity)
                             if (quantity > remainingStock) {
                                 toast.error(`Stock is insufficient. You already have some in your cart`)
                             } else {
@@ -234,6 +230,7 @@ const ProductDetailPage = () => {
             }
         } catch (error) {
             console.log(error)
+            toast.error("Something went wrong, please try again");
         }
     }
 

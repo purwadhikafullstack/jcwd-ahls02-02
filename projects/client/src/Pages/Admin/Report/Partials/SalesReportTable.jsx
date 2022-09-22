@@ -54,7 +54,7 @@ const SalesReportTable = (props) => {
   const handleClickPage = (event, value) => {
     setCurrentPage(value);
   };
-console.log("limit",limit)
+
   return (
     <>
       <Box sx={{ display: { xs: "block", md: "block" } }}>

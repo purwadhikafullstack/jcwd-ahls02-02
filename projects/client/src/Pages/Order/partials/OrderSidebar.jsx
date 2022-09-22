@@ -1,13 +1,10 @@
 import Text from "../../../Components/atoms/Text";
 import { Box } from "@mui/material";
+import toast from "react-hot-toast";
 
 const OrderSidebar = (props) => {
-  const {
-    selectedTab,
-    setSelectedTab,
-    setSelectedStatus,
-    setCurrentPage,
-  } = props;
+  const { selectedTab, setSelectedTab, setSelectedStatus, setCurrentPage } =
+    props;
   const tabMenu = [
     { label: "All", status: "" },
     { label: "Waiting for Payment", status: "Waiting for Payment" },
@@ -25,6 +22,7 @@ const OrderSidebar = (props) => {
       setCurrentPage(0);
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong, please try again");
     }
   };
 

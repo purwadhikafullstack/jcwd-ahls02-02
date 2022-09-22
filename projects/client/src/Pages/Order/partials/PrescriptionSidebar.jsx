@@ -12,9 +12,6 @@ const PrescriptionSidebar = (props) => {
     { label: "All", status: "" },
     { label: "Waiting for Validation", status: "Waiting for Prescription Validation" },
     { label: "Validated", status: "Validated" },
-    // { label: "Validated", status: "Processed" },
-    // { label: "Validated", status: "Sent" },
-    // { label: "Validated", status: "Completed" },
     { label: "Cancelled", status: "Cancelled" },
   ];
 

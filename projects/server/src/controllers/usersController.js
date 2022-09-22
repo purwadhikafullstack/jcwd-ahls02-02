@@ -40,7 +40,9 @@ module.exports = {
     try {
       const { name, email, phone_number, password } = req.body;
 
-      const checkEmail = await dbQuery(`select id from users where email = '${email}'`)
+      const checkEmail = await dbQuery(
+        `select id from users where email = '${email}'`
+      );
 
       if (checkEmail[0]) {
         return res.status(400).send({
@@ -48,7 +50,6 @@ module.exports = {
           message: "Email already registered",
         });
       } else {
-
         let insertData = await dbQuery(
           `Insert into users (name, email, phone_number, password) values ('${name}', '${email}', '${phone_number}', '${hashPassword(
             password
@@ -80,8 +81,8 @@ module.exports = {
 
           await transporter.sendMail({
             from: {
-              name: 'LifeServe Admin',
-              address: 'help@LifeServe.com'
+              name: "LifeServe Admin",
+              address: "help@LifeServe.com",
             },
             to: email,
             subject: "Email Verification - LifeServe Account",
@@ -230,8 +231,8 @@ module.exports = {
 
         await transporter.sendMail({
           from: {
-            name: 'LifeServe Admin',
-            address: 'help@LifeServe.com'
+            name: "LifeServe Admin",
+            address: "help@LifeServe.com",
           },
           to: email,
           subject: "Email Verification - LifeServe Account",
@@ -278,8 +279,8 @@ module.exports = {
 
       await transporter.sendMail({
         from: {
-          name: 'LifeServe Admin',
-          address: 'help@LifeServe.com'
+          name: "LifeServe Admin",
+          address: "help@LifeServe.com",
         },
         to: email,
         subject: "Reset Password - LifeServe Account",
@@ -403,7 +404,12 @@ module.exports = {
                 `select profile_picture from users where id=${req.dataUser.id}`
               );
               if (currentPicture[0].profile_picture) {
-                fs.unlinkSync(join(__dirname, `../public${currentPicture[0].profile_picture}`));
+                fs.unlinkSync(
+                  join(
+                    __dirname,
+                    `../public${currentPicture[0].profile_picture}`
+                  )
+                );
               }
             } catch (error) {
               return next(error);
@@ -507,7 +513,8 @@ module.exports = {
         } = req.body;
 
         await dbQuery(
-          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${req.dataUser.id
+          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${
+            req.dataUser.id
           }', '${street}','${Number(
             province_id
           )}','${province_label}','${Number(
@@ -871,8 +878,6 @@ module.exports = {
           sort = `order by id desc limit ${req.query.limit}${offSet}`;
         }
 
-        // console.log(`select ol.id, ol.id_user, u.name, ol.status, ol.shipping_address, ol.shipping_method, ol.invoice_number, ol.payment_slip_image, ol.subtotal, ol.shipping_cost, ol.created_at from order_list ol JOIN users u on u.id = ol.id_user WHERE ol.id_user=${req.params.user_id} ${filter} ${sort}`)
-
         const orderList = await dbQuery(
           `select ol.id, ol.id_user, u.name, ol.status, ol.shipping_address, ol.shipping_method, ol.invoice_number, ol.payment_slip_image, ol.subtotal, ol.shipping_cost, ol.created_at from order_list ol JOIN users u on u.id = ol.id_user ${filter} ${sort}`
         );
@@ -908,8 +913,12 @@ module.exports = {
                 } else {
                   if (
                     content.length < 1 ||
-                    !content[content.length - 1].hasOwnProperty("ingredients") ||
-                    content[content.length - 1].ingredients[0].id_prescription_content !== orderContentValue.id_prescription_content
+                    !content[content.length - 1].hasOwnProperty(
+                      "ingredients"
+                    ) ||
+                    content[content.length - 1].ingredients[0]
+                      .id_prescription_content !==
+                      orderContentValue.id_prescription_content
                   ) {
                     prescriptionContents.forEach((prescriptionContentValue) => {
                       if (
@@ -997,16 +1006,19 @@ module.exports = {
 
             if (index === 0) {
               // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
-              stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity
-                } as new_quantity`;
+              stockUpdateQuery += `SELECT ${value.id_stock} as id, ${
+                value.current_stock - value.quantity
+              } as new_quantity`;
             } else {
               // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
-              stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock - value.quantity
-                }`;
+              stockUpdateQuery += `SELECT ${value.id_stock}, ${
+                value.current_stock - value.quantity
+              }`;
             }
 
-            stockHistoryUpdate += `(${value.id_stock}, ${value.quantity * -1
-              }, 'Sales')`;
+            stockHistoryUpdate += `(${value.id_stock}, ${
+              value.quantity * -1
+            }, 'Sales')`;
 
             if (index < productList.length - 1) {
               cartIds += ", ";
@@ -1091,43 +1103,46 @@ module.exports = {
                 `update order_list set status = '${new_status}' WHERE id=${order_id}`
               );
 
-              // get quantity and current stock
-              const orderContent = await dbQuery(
-                `select oc.id, oc.id_stock, oc.quantity, s.quantity as current_stock from order_content oc JOIN stock s ON oc.id_stock = s.id WHERE oc.id_order = ${order_id}`
-              );
+              if (currentStatus[0].status !== "Waiting for Prescription Validation") {
+                // get quantity and current stock
+                const orderContent = await dbQuery(
+                  `select oc.id, oc.id_stock, oc.quantity, s.quantity as current_stock from order_content oc JOIN stock s ON oc.id_stock = s.id WHERE oc.id_order = ${order_id}`
+                );
 
-              let stockUpdateQuery = "";
-              let stockHistoryUpdate = "";
+                let stockUpdateQuery = "";
+                let stockHistoryUpdate = "";
 
-              orderContent.forEach((value, index) => {
-                if (index === 0) {
-                  // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
-                  stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock + value.quantity
+                orderContent.forEach((value, index) => {
+                  if (index === 0) {
+                    // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
+                    stockUpdateQuery += `SELECT ${value.id_stock} as id, ${
+                      value.current_stock + value.quantity
                     } as new_quantity`;
-                } else {
-                  // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
-                  stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock + value.quantity
+                  } else {
+                    // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
+                    stockUpdateQuery += `SELECT ${value.id_stock}, ${
+                      value.current_stock + value.quantity
                     }`;
-                }
+                  }
 
-                stockHistoryUpdate += `(${value.id_stock}, ${value.quantity
-                  }, 'Returned Order')`;
+                  stockHistoryUpdate += `(${value.id_stock}, ${value.quantity}, 'Returned Order')`;
 
-                if (index < orderContent.length - 1) {
-                  stockHistoryUpdate += ",";
-                  stockUpdateQuery += ` UNION ALL `;
-                }
-              });
+                  if (index < orderContent.length - 1) {
+                    stockHistoryUpdate += ",";
+                    stockUpdateQuery += ` UNION ALL `;
+                  }
+                });
 
-              // update stock table
-              const updateStockTable = await dbQuery(
-                `UPDATE stock s JOIN (${stockUpdateQuery}) vals ON s.id = vals.id SET s.quantity = vals.new_quantity `
-              );
+                // update stock table
+                const updateStockTable = await dbQuery(
+                  `UPDATE stock s JOIN (${stockUpdateQuery}) vals ON s.id = vals.id SET s.quantity = vals.new_quantity `
+                );
 
-              // add to stock_history
-              const addStockHistory = await dbQuery(
-                `INSERT INTO stock_history (id_stock, quantity, type) VALUES ${stockHistoryUpdate}`
-              );
+                // add to stock_history
+                const addStockHistory = await dbQuery(
+                  `INSERT INTO stock_history (id_stock, quantity, type) VALUES ${stockHistoryUpdate}`
+                );
+              }
 
               return res.status(200).send({
                 success: true,
@@ -1137,7 +1152,6 @@ module.exports = {
                   status_after: new_status,
                 },
               });
-
             } else {
               let updateStatus = await dbQuery(
                 `update order_list set status = '${new_status}' WHERE id=${order_id}`
@@ -1201,43 +1215,49 @@ module.exports = {
                   `update order_list set status = 'Cancelled' WHERE id=${order_id}`
                 );
 
-                // get quantity and current stock
-                const orderContent = await dbQuery(
-                  `select oc.id, oc.id_stock, oc.quantity, s.quantity as current_stock from order_content oc JOIN stock s ON oc.id_stock = s.id WHERE oc.id_order = ${order_id}`
-                );
+                if (
+                  currentStatus[0].status !==
+                  "Waiting for Prescription Validation"
+                ) {
+                  // get quantity and current stock
+                  const orderContent = await dbQuery(
+                    `select oc.id, oc.id_stock, oc.quantity, s.quantity as current_stock from order_content oc JOIN stock s ON oc.id_stock = s.id WHERE oc.id_order = ${order_id}`
+                  );
 
-                let stockUpdateQuery = "";
-                let stockHistoryUpdate = "";
+                  let stockUpdateQuery = "";
+                  let stockHistoryUpdate = "";
 
-                orderContent.forEach((value, index) => {
-                  if (index === 0) {
-                    // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
-                    stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock + value.quantity
+                  orderContent.forEach((value, index) => {
+                    if (index === 0) {
+                      // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
+                      stockUpdateQuery += `SELECT ${value.id_stock} as id, ${
+                        value.current_stock + value.quantity
                       } as new_quantity`;
-                  } else {
-                    // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
-                    stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock + value.quantity
+                    } else {
+                      // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
+                      stockUpdateQuery += `SELECT ${value.id_stock}, ${
+                        value.current_stock + value.quantity
                       }`;
-                  }
+                    }
 
-                  stockHistoryUpdate += `(${value.id_stock}, ${value.quantity
-                    }, 'Returned Order')`;
+                    stockHistoryUpdate += `(${value.id_stock}, ${value.quantity}, 'Returned Order')`;
 
-                  if (index < orderContent.length - 1) {
-                    stockHistoryUpdate += ",";
-                    stockUpdateQuery += ` UNION ALL `;
-                  }
-                });
+                    if (index < orderContent.length - 1) {
+                      stockHistoryUpdate += ",";
+                      stockUpdateQuery += ` UNION ALL `;
+                    }
+                  });
 
-                // update stock table
-                const updateStockTable = await dbQuery(
-                  `UPDATE stock s JOIN (${stockUpdateQuery}) vals ON s.id = vals.id SET s.quantity = vals.new_quantity `
-                );
+                  // update stock table
+                  const updateStockTable = await dbQuery(
+                    `UPDATE stock s JOIN (${stockUpdateQuery}) vals ON s.id = vals.id SET s.quantity = vals.new_quantity `
+                  );
 
-                // add to stock_history
-                const addStockHistory = await dbQuery(
-                  `INSERT INTO stock_history (id_stock, quantity, type) VALUES ${stockHistoryUpdate}`
-                );
+                  // add to stock_history
+                  const addStockHistory = await dbQuery(
+                    `INSERT INTO stock_history (id_stock, quantity, type) VALUES ${stockHistoryUpdate}`
+                  );
+                }
 
                 return res.status(200).send({
                   success: true,
@@ -1341,16 +1361,20 @@ module.exports = {
   // get user prescription list
   getPrescriptionList: async (req, res, next) => {
     try {
-      let { page, limit } = req.query
+      let { page, limit } = req.query;
 
       if (req.query.status) {
-        if (req.query.status === 'Cancelled' || req.query.status === 'Waiting for Prescription Validation') {
-          let allData = await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-            LEFT JOIN order_list o ON o.id = p.id_order where p.id_user = ${req.params.user_id} and o.status = '${req.query.status}' order by p.updated_at desc`)
+        if (
+          req.query.status === "Cancelled" ||
+          req.query.status === "Waiting for Prescription Validation"
+        ) {
+          let allData =
+            await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+            LEFT JOIN order_list o ON o.id = p.id_order where p.id_user = ${req.params.user_id} and o.status = '${req.query.status}' order by p.updated_at desc`);
 
-          let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`
+          let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`;
 
-          let totalPage = Math.ceil(allData.length / limit)
+          let totalPage = Math.ceil(allData.length / limit);
 
           let prescriptionList =
             await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
@@ -1360,60 +1384,57 @@ module.exports = {
             success: true,
             message: "success",
             data: prescriptionList,
-            totalPage
+            totalPage,
           });
-
         } else {
-          let filterStatus = ``
+          let filterStatus = ``;
           req.query.status.forEach((value, index) => {
             if (filterStatus) {
-              filterStatus += ` or o.status = '${value}'`
+              filterStatus += ` or o.status = '${value}'`;
             } else {
-              filterStatus += `o.status = '${value}'`
+              filterStatus += `o.status = '${value}'`;
             }
-          })
+          });
 
-          let allData = await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-          LEFT JOIN order_list o ON o.id = p.id_order where p.id_user = ${req.params.user_id} and ${filterStatus} order by p.updated_at desc`)
+          let allData =
+            await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+          LEFT JOIN order_list o ON o.id = p.id_order where p.id_user = ${req.params.user_id} and ${filterStatus} order by p.updated_at desc`);
 
-          let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`
+          let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`;
 
-          let totalPage = Math.ceil(allData.length / limit)
+          let totalPage = Math.ceil(allData.length / limit);
 
           let prescriptionList =
             await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
           LEFT JOIN order_list o ON o.id = p.id_order where p.id_user = ${req.params.user_id} and  ${filterStatus} order by p.updated_at desc ${filterLimit}`);
 
-
           return res.status(200).send({
             success: true,
             message: "success",
             data: prescriptionList,
-            totalPage
+            totalPage,
           });
         }
       } else {
-        let allData = await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
-        LEFT JOIN order_list o ON o.id = p.id_order where p.id_user = ${req.params.user_id} order by p.updated_at desc`)
+        let allData =
+          await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
+        LEFT JOIN order_list o ON o.id = p.id_order where p.id_user = ${req.params.user_id} order by p.updated_at desc`);
 
-        let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`
+        let filterLimit = `limit ${limit * (page - 1)}, ${limit * page}`;
 
-        let totalPage = Math.ceil(allData.length / limit)
+        let totalPage = Math.ceil(allData.length / limit);
 
         let prescriptionList =
           await dbQuery(`Select p.id as id_prescription, p.id_user, p.id_order, p.processed_status, p.prescription_image, o.invoice_number, o.shipping_address, o.shipping_method, p.updated_at, o.status from prescription p
         LEFT JOIN order_list o ON o.id = p.id_order where p.id_user = ${req.params.user_id} order by p.updated_at desc ${filterLimit}`);
 
-
         return res.status(200).send({
           success: true,
           message: "success",
           data: prescriptionList,
-          totalPage
+          totalPage,
         });
-
       }
-
     } catch (error) {
       return next(error);
     }

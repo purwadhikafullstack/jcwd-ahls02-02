@@ -143,21 +143,21 @@ const PrescriptionListPage = () => {
                     'Authorization': `Bearer ${token}`
                 }
             })
-            // console.log('cancel', cancel)
+            
             if (cancel.data.success) {
-                toast.success('order cancelled')
+                toast.success('Order cancelled')
                 getData()
                 setOrderId()
             } else {
-                toast.error('something went wrong, please try again')
+                toast.error('Something went wrong, please try again')
             }
         } catch (error) {
             console.log(error)
+            toast.error("Something went wrong, please try again");
         }
     }
 
     const clickPage = (event, value) => {
-        console.log(value)
         setPage(value)
         getData(value, limit)
     }

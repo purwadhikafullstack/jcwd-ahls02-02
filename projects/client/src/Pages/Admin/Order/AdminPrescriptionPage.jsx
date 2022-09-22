@@ -70,19 +70,6 @@ const AdminPrescriptionPage = () => {
         }
     }
 
-    // const getData = async () => {
-    //     try {
-    //         const data = await axios.get(`${API_URL}/admin/prescription`)
-    //         if (data.data.data.length > 0) {
-    //             setPrescriptionList(data.data.data)
-    //         } else {
-    //             setPrescriptionList()
-    //         }
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
-
     const printStatus = (status) => {
         if (status === "Waiting for Prescription Validation") {
             return <Typography fontSize='12px' color="secondary" fontWeight="bold" sx={{ m: 1 }}>
@@ -153,7 +140,6 @@ const AdminPrescriptionPage = () => {
                                     <Button variant="contained" color="primary" onClick={() => {
                                         setOpenModalAdd(true)
                                         setPrescriptionImage(value.prescription_image)
-                                        console.log(value)
                                         setSelectedOrder(value)
                                     }}>
                                         Submit Order</Button>
@@ -176,13 +162,12 @@ const AdminPrescriptionPage = () => {
                 new_status: "Cancelled"
             }
 
-            // let cancel = await axios.patch(`${API_URL}/users/order/${userId}`, data, {
             let cancel = await axios.patch(`${API_URL}/users/order`, data, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             })
-            // console.log('cancel', cancel)
+          
             if (cancel.data.success) {
                 toast.success('order cancelled')
                 getData()
@@ -196,7 +181,6 @@ const AdminPrescriptionPage = () => {
     }
 
     const clickPage = (event, value) => {
-        console.log(value)
         setPage(value)
         getData(value, limit)
     }

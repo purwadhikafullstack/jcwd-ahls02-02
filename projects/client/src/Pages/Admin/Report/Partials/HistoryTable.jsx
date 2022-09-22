@@ -172,7 +172,7 @@ const HistoryTable = (props) => {
                     }}
                   >
                     <TableCell component="th" scope="row" align="center">
-                      {(currentPage-1)*limit+(index + 1)}
+                      {(currentPage - 1) * limit + (index + 1)}
                     </TableCell>
                     <TableCell align="center">
                       {value.created_at.substring(0, 10)}

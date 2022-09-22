@@ -9,6 +9,7 @@ import { getCartAction, loginAction } from "../../Redux/Actions/userAction";
 import Cookies from "js-cookie";
 import ResetPasswordModal from "./Partials/ResetPasswordModal";
 import Button from '../../Components/atoms/Button'
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -59,6 +60,7 @@ const LoginPage = () => {
             } else {
                 setSubmitData(false)
                 console.log(error)
+                toast.error("Something went wrong, please try again");
             }
         }
     }
