@@ -336,57 +336,69 @@ module.exports = {
   editProfile: async (req, res, next) => {
     try {
       if (req.dataUser.id) {
-        const userData = await dbQuery(
-          `select * from users where id = ${req.dataUser.id}`
+        // check email
+        const allEmail = await dbQuery(
+          `select id from users where email = '${req.body.email}'`
         );
 
-        let editScript = "";
-        for (userProp in userData[0]) {
-          for (dataProp in req.body) {
-            if (userProp == dataProp) {
-              editScript += `${userProp} = ${dbConf.escape(
-                req.body[dataProp]
-              )}, `;
+        if (allEmail.length && req.body.email !== req.body.currentEmail) {
+          return res.status(200).send({
+            success: false,
+            message: "Email is already used",
+          });
+        } else {
+          const userData = await dbQuery(
+            `select * from users where id = ${req.dataUser.id}`
+          );
+
+          let editScript = "";
+          for (userProp in userData[0]) {
+            for (dataProp in req.body) {
+              if (userProp == dataProp) {
+                editScript += `${userProp} = ${dbConf.escape(
+                  req.body[dataProp]
+                )}, `;
+              }
             }
           }
+          // remove ,
+          editScript = editScript.substring(0, editScript.length - 2);
+
+          await dbQuery(
+            `update users set ${editScript} where id = ${req.dataUser.id};`
+          );
+
+          const newUserData = await dbQuery(
+            `select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id = ${req.dataUser.id}`
+          );
+
+          const {
+            id,
+            role,
+            verified_status,
+            name,
+            email,
+            phone_number,
+            profile_picture,
+            birthdate,
+            gender,
+          } = newUserData[0];
+
+          const newToken = createToken({
+            id,
+            role,
+            name,
+            email,
+            phone_number,
+          });
+
+          return res.status(200).send({
+            success: true,
+            message: "User data updated successfully",
+            data: newUserData[0],
+            token: newToken,
+          });
         }
-        // remove ,
-        editScript = editScript.substring(0, editScript.length - 2);
-
-        await dbQuery(
-          `update users set ${editScript} where id = ${req.dataUser.id};`
-        );
-
-        const newUserData = await dbQuery(
-          `select id, role, verified_status, name, email, phone_number, profile_picture, birthdate, gender from users where id = ${req.dataUser.id}`
-        );
-
-        const {
-          id,
-          role,
-          verified_status,
-          name,
-          email,
-          phone_number,
-          profile_picture,
-          birthdate,
-          gender,
-        } = newUserData[0];
-
-        const newToken = createToken({
-          id,
-          role,
-          name,
-          email,
-          phone_number,
-        });
-
-        return res.status(200).send({
-          success: true,
-          message: "User data updated successfully",
-          data: newUserData[0],
-          token: newToken,
-        });
       }
     } catch (error) {
       return next(error);
@@ -513,7 +525,8 @@ module.exports = {
         } = req.body;
 
         await dbQuery(
-          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${req.dataUser.id
+          `insert into address (id_user, street, province_id, province_label, city_id, city_label, postal_code) values ('${
+            req.dataUser.id
           }', '${street}','${Number(
             province_id
           )}','${province_label}','${Number(
@@ -917,7 +930,7 @@ module.exports = {
                     ) ||
                     content[content.length - 1].ingredients[0]
                       .id_prescription_content !==
-                    orderContentValue.id_prescription_content
+                      orderContentValue.id_prescription_content
                   ) {
                     prescriptionContents.forEach((prescriptionContentValue) => {
                       if (
@@ -1005,16 +1018,19 @@ module.exports = {
 
             if (index === 0) {
               // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
-              stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity
-                } as new_quantity`;
+              stockUpdateQuery += `SELECT ${value.id_stock} as id, ${
+                value.current_stock - value.quantity
+              } as new_quantity`;
             } else {
               // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
-              stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock - value.quantity
-                }`;
+              stockUpdateQuery += `SELECT ${value.id_stock}, ${
+                value.current_stock - value.quantity
+              }`;
             }
 
-            stockHistoryUpdate += `(${value.id_stock}, ${value.quantity * -1
-              }, 'Sales')`;
+            stockHistoryUpdate += `(${value.id_stock}, ${
+              value.quantity * -1
+            }, 'Sales')`;
 
             if (index < productList.length - 1) {
               cartIds += ", ";
@@ -1099,7 +1115,10 @@ module.exports = {
                 `update order_list set status = '${new_status}' WHERE id=${order_id}`
               );
 
-              if (currentStatus[0].status !== "Waiting for Prescription Validation") {
+              if (
+                currentStatus[0].status !==
+                "Waiting for Prescription Validation"
+              ) {
                 // get quantity and current stock
                 const orderContent = await dbQuery(
                   `select oc.id, oc.id_stock, oc.quantity, s.quantity as current_stock from order_content oc JOIN stock s ON oc.id_stock = s.id WHERE oc.id_order = ${order_id}`
@@ -1111,12 +1130,14 @@ module.exports = {
                 orderContent.forEach((value, index) => {
                   if (index === 0) {
                     // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
-                    stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock + value.quantity
-                      } as new_quantity`;
+                    stockUpdateQuery += `SELECT ${value.id_stock} as id, ${
+                      value.current_stock + value.quantity
+                    } as new_quantity`;
                   } else {
                     // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
-                    stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock + value.quantity
-                      }`;
+                    stockUpdateQuery += `SELECT ${value.id_stock}, ${
+                      value.current_stock + value.quantity
+                    }`;
                   }
 
                   stockHistoryUpdate += `(${value.id_stock}, ${value.quantity}, 'Returned Order')`;
@@ -1224,12 +1245,14 @@ module.exports = {
                   orderContent.forEach((value, index) => {
                     if (index === 0) {
                       // stockUpdate.push(`SELECT ${value.id_stock} as id, ${value.current_stock - value.quantity} as quantity`)
-                      stockUpdateQuery += `SELECT ${value.id_stock} as id, ${value.current_stock + value.quantity
-                        } as new_quantity`;
+                      stockUpdateQuery += `SELECT ${value.id_stock} as id, ${
+                        value.current_stock + value.quantity
+                      } as new_quantity`;
                     } else {
                       // stockUpdate.push(`SELECT ${value.id_stock}, ${value.current_stock - value.quantity}`)
-                      stockUpdateQuery += `SELECT ${value.id_stock}, ${value.current_stock + value.quantity
-                        }`;
+                      stockUpdateQuery += `SELECT ${value.id_stock}, ${
+                        value.current_stock + value.quantity
+                      }`;
                     }
 
                     stockHistoryUpdate += `(${value.id_stock}, ${value.quantity}, 'Returned Order')`;

@@ -13,6 +13,8 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
+    maxHeight: "80vh",
+    overflowY:"auto",
     maxWidth: 400,
     width: '100%',
     bgcolor: 'background.paper',
@@ -141,6 +143,7 @@ const ModalEditProduct = (props) => {
                                             temp[0].quantity = e.target.value
                                             setDefaultStock(temp)
                                         }}
+                                        InputProps={{ inputProps: { min: 0 } }}
                                     />
                                 </form>
                             </Grid>
@@ -159,6 +162,7 @@ const ModalEditProduct = (props) => {
                                                 setDefaultStock(temp)
                                             }}
                                             displayEmpty
+                                            InputProps={{ inputProps: { min: 0 } }}
                                         >
                                             <MenuItem value="">
                                                 <Typography color='grey.400'>Choose One</Typography>
@@ -197,6 +201,7 @@ const ModalEditProduct = (props) => {
                                         temp[0].quantity = e.target.value
                                         setSmallStock(temp)
                                     }}
+                                    InputProps={{ inputProps: { min: 0 } }}
                                 />
                             </form>
                         </Grid>
@@ -214,6 +219,7 @@ const ModalEditProduct = (props) => {
                                         }}
                                         displayEmpty
                                         disabled
+                                        InputProps={{ inputProps: { min: 0 } }}
                                     >
                                         <MenuItem value="">
                                             <Typography color='grey.400'>Choose One</Typography>
@@ -251,6 +257,7 @@ const ModalEditProduct = (props) => {
                                     temp[0].quantity = e.target.value
                                     setDefaultStock(temp)
                                 }}
+                                InputProps={{ inputProps: { min: 0 } }}
                             />
                         </form>
                     </Grid>
@@ -295,6 +302,7 @@ const ModalEditProduct = (props) => {
                                     temp[0].quantity = e.target.value
                                     setSmallStock(temp)
                                 }}
+                                InputProps={{ inputProps: { min: 0 } }}
                             />
                         </form>
                     </Grid>
@@ -391,6 +399,7 @@ const ModalEditProduct = (props) => {
                             setUnitConversion(e.target.value)
                             // checkAvailability(formStock, e.target.value)
                         }}
+                        InputProps={{ inputProps: { min: 1 } }}
                     />
                 </form>
             } else {
@@ -410,6 +419,7 @@ const ModalEditProduct = (props) => {
                                     setUnitConversion(e.target.value)
                                     // checkAvailability(formStock, e.target.value)
                                 }}
+                                InputProps={{ inputProps: { min: 1 } }}
                             />
                         </form>
                     } else {
@@ -431,6 +441,7 @@ const ModalEditProduct = (props) => {
                                     setUnitConversion(e.target.value)
                                     // checkAvailability(formStock, e.target.value)
                                 }}
+                                InputProps={{ inputProps: { min: 1 } }}
                             />
                         </form>
                     } else {
@@ -542,6 +553,7 @@ const ModalEditProduct = (props) => {
                                     onChange={(e) => setName(e.target.value)}
                                     sx={{ mb: 2 }}
                                     defaultValue={data ? data[0].name : null}
+                                    inputProps={{ maxLength: 100 }}
                                 // inputRef={defaultName}
                                 />
                                 <Typography color='grey.600' fontSize='14px'>Product Image</Typography>
@@ -575,6 +587,7 @@ const ModalEditProduct = (props) => {
                                     variant='outlined'
                                     onChange={(e) => setDescription(e.target.value)}
                                     defaultValue={data ? data[0].description : null}
+                                    inputProps={{ maxLength: 1000 }}
                                 // inputRef={defaultDescription}
                                 />
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -606,6 +619,7 @@ const ModalEditProduct = (props) => {
                                     variant='outlined'
                                     defaultValue={data ? data[0].selling_price : null}
                                     onChange={(e) => setSellingPrice(e.target.value)}
+                                    InputProps={{ inputProps: { min: 1 } }}
                                 // defaultValue={val.quantity}
                                 />
                             </form>
@@ -619,6 +633,7 @@ const ModalEditProduct = (props) => {
                                     sx={{ mb: 2 }}
                                     defaultValue={data ? data[0].buying_price : null}
                                     onChange={(e) => setBuyingPrice(e.target.value)}
+                                    InputProps={{ inputProps: { min: 1 } }}
                                 />
                             </form>
                             {printStockDefault()}

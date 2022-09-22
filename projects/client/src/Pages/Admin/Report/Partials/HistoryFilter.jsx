@@ -40,7 +40,7 @@ const HistoryFilter = (props) => {
   const handleSubmit = () => {
     setCurrentPage(1);
     let tempStartDate = startDate && convertDateToString(startDate);
-    let tempEndDate = endDate && convertDateToString(endDate);
+    let tempEndDate = endDate && convertDateToString(endDate.add(1,"day"));
     getStockHistoryData(selectedProduct, tempStartDate, tempEndDate);
   };
 

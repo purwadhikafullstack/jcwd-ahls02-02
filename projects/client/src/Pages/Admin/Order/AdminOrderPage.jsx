@@ -26,6 +26,13 @@ const AdminOrderPage = () => {
     return { token: state.userReducer.token };
   });
 
+  const convertDateToString = (fullDate) => {
+    const year = `${fullDate.$y}`;
+    const month = `0${1 + fullDate.$M}`.slice(-2);
+    const date = `0${fullDate.$D}`.slice(-2);
+    return `${year}-${month}-${date}`;
+  };
+
   const getOrderData = async (
     filterInvoice = invoiceNumber,
     filterStartDate = startDate,
@@ -36,6 +43,13 @@ const AdminOrderPage = () => {
     queryLimit = limit
   ) => {
     try {
+      if (startDate !== null && typeof filterStartDate === "object") {
+        filterStartDate = convertDateToString(filterStartDate);
+      }
+      if (endDate !== null && typeof filterEndDate === "object") {
+        filterEndDate = convertDateToString(filterEndDate.add(1,"day"));
+      }
+
       let query = "";
       if (filterStatus) {
         if (query) {
