@@ -7,6 +7,7 @@ import AdminOrderCard from "../../../../Components/AdminOrderCard";
 import Text from "../../../../Components/atoms/Text";
 import ModalConfirm from "../../../../Components/ModalConfirm";
 import { API_URL } from "../../../../helper";
+import ModalShowPayment from "./ModalPaymentReceipt";
 
 const OrderList = (props) => {
   const {
@@ -28,6 +29,9 @@ const OrderList = (props) => {
   const [modalType, setModalType] = useState("");
 
   const [newOrderStatus, setNewOrderStatus] = useState("");
+
+  const [showPaymentImage, setShowPaymentImage] = useState(false)
+  const [paymentImage, setPaymentImage] = useState(null)
 
   const handleChangeSort = (sortValue) => {
     setCurrentPage(0);
@@ -60,7 +64,7 @@ const OrderList = (props) => {
       };
 
       const res = await axios.patch(`${API_URL}/users/order`, data, {
-        headers:{
+        headers: {
           Authorization: `Bearer ${token}`,
         },
       });
@@ -80,6 +84,11 @@ const OrderList = (props) => {
       toast.error("Something went wrong, please try again");
     }
   };
+
+  const handleShowReceipt = (image) => {
+    setPaymentImage(image)
+    setShowPaymentImage(true)
+  }
 
   return (
     <Box sx={{ pb: 2 }}>
@@ -161,6 +170,7 @@ const OrderList = (props) => {
                     orderData={value}
                     setModalText={setModalText}
                     handleOpenModal={handleOpenModal}
+                    handleShowReceipt={handleShowReceipt}
                   />
                 </Box>
               );
@@ -186,6 +196,11 @@ const OrderList = (props) => {
         text={modalText}
         type={modalType}
         handleConfirm={() => handleProcessOrder(orderId)}
+      />
+      <ModalShowPayment
+        isOpen={showPaymentImage}
+        toggle={() => setShowPaymentImage(!showPaymentImage)}
+        image={paymentImage}
       />
     </Box>
   );

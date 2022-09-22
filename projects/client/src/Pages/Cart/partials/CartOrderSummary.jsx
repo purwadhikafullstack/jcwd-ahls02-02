@@ -21,7 +21,7 @@ const CartOrderSummary = (props) => {
       <>
         {cartList.map((value, index) => {
           return (
-            <Box key={`k-${index}`}>
+            <Grid container key={`k-${index}`}>
               {value.selected === true && (
                 <>
                   <Grid item xs={7}>
@@ -36,7 +36,7 @@ const CartOrderSummary = (props) => {
                   </Grid>
                 </>
               )}
-            </Box>
+            </Grid>
           );
         })}
       </>

@@ -1,11 +1,12 @@
-import { Box, Card, Divider, Grid } from "@mui/material";
+import { Receipt, ReceiptLong } from "@mui/icons-material";
+import { Box, Card, Divider, Grid, IconButton } from "@mui/material";
 import axios from "axios";
 import { API_IMAGE_URL } from "../helper";
 import Button from "./atoms/Button";
 import Text from "./atoms/Text";
 
 const AdminOrderCard = (props) => {
-  const { orderData, handleOpenModal } = props;
+  const { orderData, handleOpenModal, handleShowReceipt } = props;
   const { status } = orderData;
   let statusColor = "";
 
@@ -184,44 +185,51 @@ const AdminOrderCard = (props) => {
             sx={{
               pt: { xs: 1, sm: 0 },
               display: "flex",
+              alignItems: "center",
               justifyContent: "flex-end",
-              order: { xs: 2, sm: 1 },
+              order: { xs: 2, sm: 1 }
             }}
           >
             {(status === "Waiting for Confirmation" ||
               status === "Processed") && (
-              <>
-                <Box sx={{ mr: 1 }}>
-                  <Button
-                    variant="text"
-                    color="error"
-                    size="small"
-                    onClick={() => handleProcessOrder("cancel")}
-                  >
-                    {status === "Waiting for Confirmation" ? (
-                      <>Reject Payment</>
-                    ) : status === "Processed" ? (
-                      <>Cancel Order</>
-                    ) : null}
-                  </Button>
-                </Box>
-                <Box sx={{ mr: 1 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    width="130px"
-                    onClick={() => handleProcessOrder("process")}
-                  >
-                    {status === "Waiting for Confirmation" ? (
-                      <>Confirm Payment</>
-                    ) : status === "Processed" ? (
-                      <>Send Order</>
-                    ) : null}
-                  </Button>
-                </Box>
-              </>
-            )}
+                <>
+                  <Box sx={{ mr: 1 }}>
+                    <Button
+                      variant="text"
+                      color="error"
+                      size="small"
+                      onClick={() => handleProcessOrder("cancel")}
+                    >
+                      {status === "Waiting for Confirmation" ? (
+                        <>Reject Payment</>
+                      ) : status === "Processed" ? (
+                        <>Cancel Order</>
+                      ) : null}
+                    </Button>
+                  </Box>
+
+                  <Box sx={{ mr: 1 }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      width="130px"
+                      onClick={() => handleProcessOrder("process")}
+                    >
+                      {status === "Waiting for Confirmation" ? (
+                        <>Confirm Payment</>
+                      ) : status === "Processed" ? (
+                        <>Send Order</>
+                      ) : null}
+                    </Button>
+                    {status === "Waiting for Confirmation" ?
+                      <IconButton onClick={() => handleShowReceipt(orderData.payment_slip_image)}>
+                        <ReceiptLong />
+                      </IconButton>
+                      : null}
+                  </Box>
+                </>
+              )}
           </Grid>
           <Grid item xs={12} sm={3} sx={{ order: { xs: 1, sm: 2 } }}>
             <Box sx={{ minWidth: "100px" }}>
