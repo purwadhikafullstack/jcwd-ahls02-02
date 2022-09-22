@@ -138,7 +138,9 @@ const ModalAddPrescription = (props) => {
         valueProduct.stock.map((valueStock) => {
           if (valueStock.default_unit === "true") {
             temp[genericIndex].id_stock = valueStock.idStock;
+            temp[genericIndex].quantity = 1;
             temp[genericIndex].unit = valueStock.unit;
+            temp[genericIndex].stock = valueStock.quantity;
           }
         });
     });
@@ -212,11 +214,13 @@ const ModalAddPrescription = (props) => {
                 type="number"
                 size="small"
                 variant="outlined"
+                value={formStockGeneric[index].quantity}
                 onChange={(e) => {
                   let temp = [...formStockGeneric];
                   temp[index].quantity = e.target.value;
                   setFormStockGeneric(temp);
                 }}
+                InputProps={{ inputProps: { min:1, max: formStockGeneric[index].stock } }}
               />
             </Grid>
             <Grid item xs={8}>
@@ -289,8 +293,13 @@ const ModalAddPrescription = (props) => {
           if (valueStock.default_unit === "false") {
             temp[prescriptionIndex].ingredients[ingredientIndex].id_stock =
               valueStock.idStock;
+            temp[prescriptionIndex].ingredients[ingredientIndex].quantity = 1;
             temp[prescriptionIndex].ingredients[ingredientIndex].unit =
               valueStock.unit;
+            temp[prescriptionIndex].ingredients[ingredientIndex].default_unit =
+              valueStock.default_unit;
+            temp[prescriptionIndex].ingredients[ingredientIndex].stock =
+              Number(valueStock.quantity);
           }
         });
       }
@@ -315,11 +324,14 @@ const ModalAddPrescription = (props) => {
     productData.map((valueProduct) => {
       if (valueProduct.id === idProduct) {
         valueProduct.stock.map((valueStock) => {
-          if (valueStock.id === idStock) {
+          if (valueStock.idStock === idStock) {
+            temp[prescriptionIndex].ingredients[ingredientIndex].quantity = 1;
             temp[prescriptionIndex].ingredients[ingredientIndex].unit =
               valueStock.unit;
             temp[prescriptionIndex].ingredients[ingredientIndex].default_unit =
               valueStock.default_unit;
+            temp[prescriptionIndex].ingredients[ingredientIndex].stock =
+              Number(valueStock.quantity);              
           }
         });
       }
@@ -364,6 +376,7 @@ const ModalAddPrescription = (props) => {
                 type="text"
                 size="small"
                 variant="outlined"
+                value={formStockPrescription[index].prescriptionName}
                 onChange={(e) => {
                   let temp = [...formStockPrescription];
                   temp[index].prescriptionName = e.target.value;
@@ -447,13 +460,14 @@ const ModalAddPrescription = (props) => {
                       type="number"
                       size="small"
                       variant="outlined"
+                      value={formStockPrescription[index].ingredients[indexIngredient].quantity}
                       onChange={(e) => {
                         let temp = [...formStockPrescription];
                         temp[index].ingredients[indexIngredient].quantity =
                           e.target.value;
                         setFormStockPrescription(temp);
                       }}
-                      InputProps={{ inputProps: { min: 1 } }}
+                      InputProps={{ inputProps: { min:1, max: formStockPrescription[index].ingredients[indexIngredient].stock } }}
                     />
                   </Grid>
                   <Grid item xs={12} md={4}>
