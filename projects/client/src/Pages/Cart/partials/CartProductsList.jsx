@@ -23,7 +23,7 @@ const CartProductsList = (props) => {
     setDisableCheckout,
   } = props;
 
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll, setSelectAll] = useState(true);
   const [openModalConfirm, setOpenModalConfirm] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [indexDelete, setIndexDelete] = useState(null);

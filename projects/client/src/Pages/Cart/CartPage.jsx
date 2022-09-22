@@ -19,7 +19,7 @@ const CartPage = () => {
   const [cartList, setCartList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [disableCheckout, setDisableCheckout] = useState(true);
+  const [disableCheckout, setDisableCheckout] = useState(false);
 
   const getCartData = async () => {
     try {
@@ -34,11 +34,14 @@ const CartPage = () => {
         const resDataData = res.data.data;
         dispatch(getCartAction(resDataData));
         let tempData = [];
+        let tempTotal = 0
         resDataData.forEach((value, idx) => {
-          tempData.push({ ...value, selected: false });
+          tempData.push({ ...value, selected: true });
+          tempTotal+=value.selling_price*value.quantity
         });
 
         setCartList(tempData);
+        setTotalPrice(tempTotal)
         setIsLoading(false);
       } else if (res.data.success && !res.data.data) {
         setIsLoading(false);

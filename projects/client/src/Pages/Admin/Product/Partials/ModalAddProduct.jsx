@@ -12,6 +12,8 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
+    maxHeight: "80vh",
+    overflowY:"auto",
     maxWidth: 400,
     width: '100%',
     bgcolor: 'background.paper',
@@ -141,6 +143,7 @@ const ModalAddProduct = (props) => {
                                         setFormStock(temp)
                                         checkAvailability(temp)
                                     }}
+                                    InputProps={{ inputProps: { min: 0 } }}
                                 />
                             </form>
                         </Grid>
@@ -166,6 +169,7 @@ const ModalAddProduct = (props) => {
                                             checkAvailability(temp)
                                         }}
                                         displayEmpty
+                                        InputProps={{ inputProps: { min: 0 } }}
                                     >
                                         <MenuItem value="">
                                             <Typography color='grey.400'>Choose One</Typography>
@@ -200,6 +204,7 @@ const ModalAddProduct = (props) => {
                                         setFormStock(temp)
                                         checkAvailability(temp)
                                     }}
+                                    InputProps={{ inputProps: { min: 1 } }}
                                 />
                             </form>
                         </Grid>
@@ -306,7 +311,9 @@ const ModalAddProduct = (props) => {
                                     variant='outlined'
                                     onChange={(e) => setName(e.target.value)}
                                     sx={{ mb: 2 }}
-                                    inputRef={defaultName}
+                                    // inputRef={defaultName}
+                                    defaultValue={name}
+                                    inputProps={{ maxLength: 100 }}
                                 />
                                 <Typography color='grey.600' fontSize='14px'>Product Image</Typography>
 
@@ -355,8 +362,9 @@ const ModalAddProduct = (props) => {
                                     rows={3}
                                     variant='outlined'
                                     onChange={(e) => setDescription(e.target.value)}
-                                    // value={description}
-                                    inputRef={defaultDescription}
+                                    defaultValue={description}
+                                    inputProps={{ maxLength: 1000 }}
+                                    // inputRef={defaultDescription}
                                 />
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     <Checkbox checked={checked} onChange={handleChange} />
@@ -384,6 +392,7 @@ const ModalAddProduct = (props) => {
                                     type='number'
                                     size="small"
                                     variant='outlined'
+                                    InputProps={{ inputProps: { min: 1 } }}
                                     sx={{ mb: 2 }}
                                     onChange={(e) => setSellingPrice(e.target.value)}
                                 />
@@ -393,6 +402,7 @@ const ModalAddProduct = (props) => {
                                     type='number'
                                     size="small"
                                     variant='outlined'
+                                    InputProps={{ inputProps: { min: 1 } }}
                                     sx={{ mb: 2 }}
                                     onChange={(e) => setBuyingPrice(e.target.value)}
                                 />
@@ -409,6 +419,7 @@ const ModalAddProduct = (props) => {
                                         type='number'
                                         size="small"
                                         variant='outlined'
+                                        InputProps={{ inputProps: { min: 1 } }}
                                         sx={{ mb: 2 }}
                                         // sx={{ mb: 2, width: '40%' }}
                                         onChange={(e) => {

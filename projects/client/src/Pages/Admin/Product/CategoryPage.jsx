@@ -56,8 +56,8 @@ const AdminCategoryPage = () => {
                 } else {
                     return <Box sx={{ display: 'flex', mb: 2 }}>
                         <TextField fullWidth defaultValue={val.category_name} sx={{ mr: 1 }} disabled={editCategory === val.id ? false : true} onChange={(e) => setEditCategoryValue(e.target.value)} />
-                        <Button variant='outlined' color='primary' sx={{ mr: 1 }} onClick={() => handleEditCategory(editCategoryValue, val.id)}>SAVE</Button>
-                        <Button variant='contained' color='error' sx={{ mr: 1 }} onClick={() => {
+                        <Button variant='contained' color='primary' sx={{ mr: 1 }} onClick={() => handleEditCategory(editCategoryValue, val.id)}>SAVE</Button>
+                        <Button variant='outlined' color='error' sx={{ mr: 1 }} onClick={() => {
                             setEditCategory(null)
                             setEditCategoryValue()
                         }}>CANCEL</Button>

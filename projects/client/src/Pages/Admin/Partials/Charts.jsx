@@ -20,6 +20,7 @@ import {
     ResponsiveContainer
 } from "recharts";
 import toast from "react-hot-toast";
+import dayjs from "dayjs";
 
 const today = new Date();
 let array = today.setDate(today.getDate());
@@ -34,8 +35,8 @@ const Charts = () => {
     const [range, setRange] = useState("Now")
     const [month, setMonth] = useState("")
 
-    const [rangeStartDate, setRangeStartDate] = useState()
-    const [rangeEndDate, setRangeEndDate] = useState()
+    const [rangeStartDate, setRangeStartDate] = useState(null)
+    const [rangeEndDate, setRangeEndDate] = useState(null)
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -159,8 +160,8 @@ const Charts = () => {
                         displayEmpty
                         sx={{ mr: 2, width: 200 }}
                     >
-                        <MenuItem value="">
-                            <Typography color='grey.400'>Choose Range</Typography>
+                        <MenuItem value="" disabled>
+                            <Typography>Choose Range</Typography>
                         </MenuItem>
                         <MenuItem value={`Now`}>Current Month</MenuItem>
                         <MenuItem value={`7 Days`}>Last 7 Days</MenuItem>
@@ -182,7 +183,7 @@ const Charts = () => {
                             let tempStartDate = newValue && convertDateToString(newValue)
                             setStartDate(tempStartDate)
                         }}
-                        maxDate={rangeEndDate ? rangeEndDate : undefined}
+                        maxDate={rangeEndDate ? rangeEndDate : dayjs()}
                         renderInput={(params) => <TextField {...params} />}
                     />
                 </LocalizationProvider>
@@ -196,6 +197,7 @@ const Charts = () => {
                             setEndDate(tempEndDate)
                         }}
                         minDate={rangeStartDate ? rangeStartDate : undefined}
+                        maxDate={dayjs()}
                         renderInput={(params) => <TextField {...params} />}
                     />
                 </LocalizationProvider>
