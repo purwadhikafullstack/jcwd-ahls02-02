@@ -16,14 +16,17 @@ const Footer = () => {
                 }}>
                     <Container>
                         <Grid container sx={{ pt: 3, textAlign: "center" }} >
-                            <Grid item xs={6} sm={4}>
+                            <Grid item xs={12} sx={{pb:1}}>
+                                <Typography fontWeight="bold" fontSize="h6" color="white" textAlign="left">Contact Us</Typography>
+                            </Grid>
+                            <Grid item xs={6} sm={6}>
                                 <Box display="flex" sx={{ flexDirection: "column", alignItems: "start" }}>
                                     <Typography color="white" fontWeight="bold" fontSize="12px">LifeServe Medical Company</Typography>
                                     <Typography color="white" fontSize="12px">Asia Afrika, Gelora</Typography>
                                     <Typography color="white" fontSize="12px">Central Jakarta, 10270</Typography>
                                 </Box>
                             </Grid>
-                            <Grid item xs={6} sm={4}>
+                            <Grid item xs={6} sm={6}>
                                 <Box display="flex" sx={{ alignItems: "center" }}>
                                     <Call fontSize="12px" sx={{ color: "white", mr: 1 }} />
                                     <Typography color="white" fontSize="12px">+62 21-8723-6473</Typography>
@@ -37,13 +40,13 @@ const Footer = () => {
                                     <Typography color="white" fontSize="12px">help@lifeserve.com</Typography>
                                 </Box>
                             </Grid>
-                            <Grid item xs={12} sm={4}>
+                            {/* <Grid item xs={12} sm={4}>
                                 <Box sx={{ display: { xs: "block", sm: "flex" }, justifyContent: { xs: "center", sm: "flex- end" }, mt: { xs: 2, sm: 0 } }}>
                                     <Button variant="contained">
                                         Contact & Services
                                     </Button>
                                 </Box>
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                         <Divider sx={{ bgcolor: "white", my: 2 }} />
                         <Box>

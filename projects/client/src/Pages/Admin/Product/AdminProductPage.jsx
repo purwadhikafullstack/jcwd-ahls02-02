@@ -149,6 +149,7 @@ const AdminProductPage = () => {
                 setTotalPage(response.data.totalPage)
             }).catch((error) => {
                 console.log(error)
+                toast.error("Something went wrong, please try again");
             })
     }
 
@@ -177,6 +178,7 @@ const AdminProductPage = () => {
                 setOpenEditProduct(true)
             }).catch((error) => {
                 console.log(error)
+                toast.error("Something went wrong, please try again");
             })
     }
 
@@ -202,6 +204,7 @@ const AdminProductPage = () => {
             getDataFilter();
         }).catch((error) => {
             console.log(error)
+            toast.error("Something went wrong, please try again");
         })
     }
 

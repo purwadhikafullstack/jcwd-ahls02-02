@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginAction } from "../../Redux/Actions/userAction";
 import TokenExpiredPage from "./Partials/TokenExpiredPage";
+import toast from "react-hot-toast";
 
 
 const VerificationPage = () => {
@@ -32,6 +33,7 @@ const VerificationPage = () => {
             setUserData(userData.data)
         } catch (error) {
             console.log(error)
+            toast.error("Something went wrong, please try again");
         }
     }
 
@@ -50,6 +52,7 @@ const VerificationPage = () => {
         } catch (error) {
             setDisableButton(false)
             console.log(error)
+            toast.error("Something went wrong, please try again");
         }
     }
 

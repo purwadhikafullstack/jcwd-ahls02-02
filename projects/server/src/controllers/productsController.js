@@ -521,7 +521,7 @@ module.exports = {
             `SELECT quantity FROM stock where id = ${secondId};`
           );
           let finalChange = initialQuantity[0].quantity - SecondQuantityChange;
-          console.log("finalChange", finalChange);
+          
           await dbQuery(
             `INSERT INTO stock_history (id_stock, quantity, type) VALUE (${secondId}, ${finalChange}, 'Stock Update')`
           );

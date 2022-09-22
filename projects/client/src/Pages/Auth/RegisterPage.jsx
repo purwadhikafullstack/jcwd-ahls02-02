@@ -50,42 +50,6 @@ const RegisterPage = () => {
         }
     }
 
-    // const handleButtonAvailability = (email) => {
-    //     if (email === "") {
-    //         setEmailValidity("null")
-    //         setEmailInfo()
-    //         setDisableAvailability(true)
-    //     } else if (email.includes("@") && email.includes(".com")) {
-    //         setEmailValidity("null")
-    //         setDisableAvailability(false)
-    //         setEmailInfo()
-    //     } else {
-    //         setEmailInfo("Please fill in with a proper email address")
-    //         setEmailValidity(false)
-    //         setDisableAvailability(true)
-    //     }
-    // }
-
-    // const handleCheckEmail = async (email) => {
-    //     try {
-    //         let dataEmail = await axios.get(`${API_URL}/users/userData`)
-    //         let index = dataEmail.data.findIndex(val => val.email === email)
-    //         if (index > 0) {
-    //             setDisableAvailability(true)
-    //             setEmailAvailability(false)
-    //             setEmailValidity(false)
-    //             setEmailInfo("This email is already registered")
-    //         } else {
-    //             setDisableAvailability(true)
-    //             setEmailAvailability(true)
-    //             setEmailValidity("null")
-    //             setEmailInfo("Nice! This email is available")
-    //         }
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
-
     const handleCheckPassword = (password) => {
         let temp = password.split("")
         let checkNumber = "";
@@ -182,8 +146,6 @@ const RegisterPage = () => {
                 phone_number,
                 password
             })
-
-            console.log('signup', signup)
 
             navigate('/')
             dispatch(loginAction(signup.data))

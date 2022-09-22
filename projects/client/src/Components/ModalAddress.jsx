@@ -292,10 +292,11 @@ const ModalAddress = (props) => {
                                   <TextField
                                     fullWidth
                                     required
-                                    disabled
+                                    type="number"
                                     id="select-postal-code"
                                     label="postal-code"
-                                    value={postalCode}
+                                    defaultValue={postalCode}
+                                    InputLabelProps={{ shrink: true }}
                                   />
                                 </Box>
                               </>
