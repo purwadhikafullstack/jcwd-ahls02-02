@@ -27,6 +27,7 @@ const SimilarProducts = (props) => {
                                     window.location.reload()
                                 }}
                                 quantity={value.quantity}
+                                needs_receipt={value.needs_receipt}
                             />
                         </Box>
                     </Grid>
