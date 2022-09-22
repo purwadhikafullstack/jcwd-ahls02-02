@@ -201,11 +201,13 @@ const AdminPrescriptionPage = () => {
             </Grid>
             <Grid item xs={12} md={9}>
                 {printCard()}
-                <Box display="flex" sx={{ justifyContent: "flex-end" }}>
-                    {prescriptionList ?
-                        <Pagination count={totalPage} color='primary' onChange={clickPage} />
-                        : null}
-                </Box>
+                {totalPage>1 &&
+                    <Box display="flex" sx={{ justifyContent: "flex-end" }}>
+                        {prescriptionList ?
+                            <Pagination count={totalPage} color='primary' onChange={clickPage} />
+                            : null}
+                    </Box>
+                }
             </Grid>
 
         </Grid>
