@@ -20,6 +20,7 @@ import {
     ResponsiveContainer
 } from "recharts";
 import toast from "react-hot-toast";
+import dayjs from "dayjs";
 
 const today = new Date();
 let array = today.setDate(today.getDate());
@@ -34,8 +35,8 @@ const Charts = () => {
     const [range, setRange] = useState("Now")
     const [month, setMonth] = useState("")
 
-    const [rangeStartDate, setRangeStartDate] = useState()
-    const [rangeEndDate, setRangeEndDate] = useState()
+    const [rangeStartDate, setRangeStartDate] = useState(null)
+    const [rangeEndDate, setRangeEndDate] = useState(null)
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -182,7 +183,7 @@ const Charts = () => {
                             let tempStartDate = newValue && convertDateToString(newValue)
                             setStartDate(tempStartDate)
                         }}
-                        maxDate={rangeEndDate ? rangeEndDate : undefined}
+                        maxDate={rangeEndDate ? rangeEndDate : dayjs()}
                         renderInput={(params) => <TextField {...params} />}
                     />
                 </LocalizationProvider>
@@ -196,6 +197,7 @@ const Charts = () => {
                             setEndDate(tempEndDate)
                         }}
                         minDate={rangeStartDate ? rangeStartDate : undefined}
+                        maxDate={dayjs()}
                         renderInput={(params) => <TextField {...params} />}
                     />
                 </LocalizationProvider>
